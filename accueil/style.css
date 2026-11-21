@@ -53,7 +53,6 @@ body {
   padding: 6px 6px 6px 22px;
   position: relative;
   z-index: 5;   /* le menu des moteurs doit passer au-dessus des raccourcis */
-  backdrop-filter: blur(12px);
   transition: border-color 0.15s, background 0.15s;
 }
 .recherche:focus-within { border-color: rgba(255, 255, 255, 0.45); background: rgba(255, 255, 255, 0.1); }
@@ -105,7 +104,6 @@ body {
   border: 1px solid var(--bordure);
   border-radius: var(--rayon);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(16px);
   outline: 0;
   animation: apparition 0.12s ease-out;
 }

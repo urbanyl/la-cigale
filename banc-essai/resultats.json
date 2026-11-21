@@ -1,30 +1,30 @@
 {
   "La Cigale": {
-    "demarrage_ms": 2222,
-    "javascript_ms": 211,
-    "dom_ms": 454,
-    "canvas_ms": 314,
-    "memoire_mo": 961
+    "demarrage_ms": 1930,
+    "javascript_ms": 168,
+    "dom_ms": 370,
+    "canvas_ms": 245,
+    "memoire_mo": 916
   },
   "Firefox ESR": {
-    "demarrage_ms": 2244,
-    "javascript_ms": 220,
-    "dom_ms": 474,
-    "canvas_ms": 275,
-    "memoire_mo": 928
+    "demarrage_ms": 1742,
+    "javascript_ms": 199,
+    "dom_ms": 438,
+    "canvas_ms": 233,
+    "memoire_mo": 909
   },
   "Chrome": {
-    "demarrage_ms": 820,
-    "javascript_ms": 201,
-    "dom_ms": 490,
-    "canvas_ms": 212,
-    "memoire_mo": 717
+    "demarrage_ms": 752,
+    "javascript_ms": 178,
+    "dom_ms": 425,
+    "canvas_ms": 200,
+    "memoire_mo": 626
   },
   "Edge": {
-    "demarrage_ms": 971,
-    "javascript_ms": 192,
-    "dom_ms": 483,
-    "canvas_ms": 213,
-    "memoire_mo": 737
+    "demarrage_ms": 999,
+    "javascript_ms": 185,
+    "dom_ms": 453,
+    "canvas_ms": 212,
+    "memoire_mo": 736
   }
 }

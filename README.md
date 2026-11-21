@@ -12,6 +12,7 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 - **Sécurité** : HTTPS imposé, TLS 1.2 minimum, OCSP obligatoire, uBlock Origin intégré.
 - **Zéro télémétrie** : rien n'est envoyé à Mozilla ni à personne. Pas d'IA, pas de contenu sponsorisé.
 - **Rien ne reste** : cookies, historique et cache effacés à la fermeture.
+- **Léger** : composants inutiles retirés, aucun processus ni téléchargement en arrière-plan superflu.
 - **100 % français** : interface, page d'accueil locale, moteurs DuckDuckGo (défaut), Qwant, Startpage, Lilo.
 
 | | La Cigale | Firefox | Chrome | Edge |
@@ -31,8 +32,9 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 
 <p align="center"><img src="docs/captures/benchmark.svg" alt="Banc d'essai comparatif" width="860"></p>
 
-Le durcissement ne coûte presque rien : La Cigale fait jeu égal avec Firefox ESR, dont elle partage le moteur.
-Chrome et Edge démarrent plus vite et consomment moins de mémoire. Mesures réelles, reproductibles avec
+Le durcissement ne coûte rien en vitesse : La Cigale est en tête sur JavaScript et DOM dans ce test.
+Chrome et Edge démarrent plus vite et consomment moins de mémoire. Allégée de 38 Mo par rapport à Firefox
+(composants d'IA, WebGPU, DRM et rapports de plantage retirés), elle tient dans un zip de 123 Mo. Mesures réelles, reproductibles avec
 `python banc-essai/mesurer.py` (résultats bruts : [resultats.json](banc-essai/resultats.json)).
 
 ## Installer

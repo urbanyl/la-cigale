@@ -6,7 +6,8 @@ page locale. Le serveur mesure :
   * trois épreuves (JavaScript, DOM, Canvas 2D), médiane de 5 tours, chronométrées côté serveur ;
   * la mémoire : somme des processus du navigateur une fois les épreuves terminées.
 
-Usage : python banc-essai/mesurer.py   (résultats dans banc-essai/resultats.json)
+Usage : python banc-essai/mesurer.py [navigateur ...] [--sortie fichier.json]
+        (par défaut : tous, résultats dans banc-essai/resultats.json)
 """
 import http.server
 import json
@@ -112,8 +113,15 @@ def main():
     serveur = http.server.ThreadingHTTPServer(("127.0.0.1", PORT), Gestionnaire)
     threading.Thread(target=serveur.serve_forever, daemon=True).start()
     url = f"http://127.0.0.1:{PORT}/page.html"
+    args = sys.argv[1:]
+    sortie = ICI / "resultats.json"
+    if "--sortie" in args:
+        i = args.index("--sortie")
+        sortie = Path(args[i + 1])
+        del args[i:i + 2]
+    choisis = {n: v for n, v in NAVIGATEURS.items() if not args or n in args}
     resultats = {}
-    for nom, (exe, moteur) in NAVIGATEURS.items():
+    for nom, (exe, moteur) in choisis.items():
         if not exe.exists():
             print(f"{nom} : absent, ignoré")
             continue
@@ -121,7 +129,7 @@ def main():
         resultats[nom] = {k: round(statistics.median(e[k] for e in essais)) for k in essais[0]}
         print(nom, resultats[nom], flush=True)
     serveur.shutdown()
-    (ICI / "resultats.json").write_text(json.dumps(resultats, indent=2, ensure_ascii=False), encoding="utf-8")
+    sortie.write_text(json.dumps(resultats, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 if __name__ == "__main__":

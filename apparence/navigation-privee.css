@@ -85,7 +85,6 @@ html.private .info {
   padding: 18px 22px 20px !important;
   color: var(--cigale-texte-doux);
   font-size: 14px;
-  backdrop-filter: blur(12px);
 }
 html.private #info-title {
   color: var(--cigale-texte);

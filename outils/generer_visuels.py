@@ -8,7 +8,7 @@ Produit :
   branding/logo.svg                                       icône : cigale noire sur carré blanc arrondi
   branding/wordmark.svg                                   icône + « La Cigale »
   branding/png/logo-<taille>.png, branding/png/symbole-*.png, branding/lacigale.ico
-  accueil/img/symbole-blanc.svg, accueil/img/fond.jpg
+  accueil/img/symbole-blanc.webp, accueil/img/fond.jpg
 
 Le rendu SVG → PNG passe par Edge ou Chrome en mode headless (aucune dépendance native).
 Usage : python outils/generer_visuels.py   (nécessite Pillow)
@@ -221,7 +221,11 @@ def main():
                      sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
 
     # 4. Page d'accueil
-    shutil.copy(BRANDING / "symbole-blanc.svg", ACCUEIL_IMG / "symbole-blanc.svg")
+    # Logo en WebP sans perte, à 3x sa taille d'affichage (6 Ko au lieu d'un SVG de 160 Ko).
+    # Le fond reste en JPEG : sur ce dégradé très sombre, le WebP crée des aplats visibles.
+    for ancien in ("symbole-blanc.svg", "fond.webp"):
+        (ACCUEIL_IMG / ancien).unlink(missing_ok=True)
+    blanc.resize((168, 168), Image.LANCZOS).save(ACCUEIL_IMG / "symbole-blanc.webp", lossless=True, method=6)
     rendus[64].save(ACCUEIL_IMG / "favicon.png", optimize=True)
     fond_accueil(blanc).save(ACCUEIL_IMG / "fond.jpg", quality=88, optimize=True, progressive=True)
     print("Visuels générés dans", BRANDING, "et", ACCUEIL_IMG)

@@ -98,6 +98,25 @@ foreach ($inutile in @('default-browser-agent.exe', 'updater.exe', 'updater.ini'
   $f = Join-Path $Dist $inutile
   if (Test-Path $f) { Remove-Item $f -Force }
 }
+# Allègement : composants chargés uniquement par des fonctions que La Cigale désactive.
+# (xul.dll ne les importe pas : ils ne sont chargés qu'à la demande de la fonction concernée.)
+$allegement = @(
+  'onnxruntime.dll', 'mozinference.dll',     # moteur d'IA locale (browser.ml.enable = false)
+  'dxcompiler.dll',                          # compilateur de shaders WebGPU (dom.webgpu.enabled = false)
+  'wmfclearkey.dll', 'gmp-clearkey',         # système DRM de test (media.eme.enabled = false)
+  'crashhelper.exe', 'mozwer.dll',           # rapports de plantage (supprimés)
+  'nmhproxy.exe',                            # relais de messagerie native pour la version MSIX du Store
+  'uninstall', 'desktop-launcher',           # désinstalleur et lanceur de l'installeur Mozilla
+  'precomplete', 'removed-files',            # inventaires du programme de mise à jour
+  'firefox.exe.sig', 'xul.dll.sig', 'plugin-container.exe.sig'
+)
+$avant = (Get-ChildItem $Dist -Recurse -File | Measure-Object Length -Sum).Sum
+foreach ($inutile in $allegement) {
+  $f = Join-Path $Dist $inutile
+  if (Test-Path $f) { Remove-Item $f -Recurse -Force }
+}
+$apres = (Get-ChildItem $Dist -Recurse -File | Measure-Object Length -Sum).Sum
+Write-Host ("Allègement : {0:N1} Mo retirés" -f (($avant - $apres) / 1MB))
 $reglages = Join-Path $Racine 'reglages'
 Copy-Item (Join-Path $reglages 'cigale.cfg') $Dist
 New-Item -ItemType Directory -Force (Join-Path $Dist 'defaults\pref'), (Join-Path $Dist 'distribution'), (Join-Path $Dist 'cigale') | Out-Null
