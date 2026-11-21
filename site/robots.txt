@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://urbanyl.github.io/la-cigale/sitemap.xml
