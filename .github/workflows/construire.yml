@@ -150,3 +150,34 @@ jobs:
             --title "La Cigale $VERSION_CIGALE" \
             --notes-file notes.md \
             --latest
+
+  apt:
+    needs: [verifier, linux, publier]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: la-cigale-linux
+          path: paquets
+      - name: Dépôt APT
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLE_PRIVEE: ${{ secrets.APT_CLE_PRIVEE }}
+        run: |
+          set -euo pipefail
+          if [ -z "$CLE_PRIVEE" ]; then echo "Pas de clé APT_CLE_PRIVEE : dépôt non mis à jour."; exit 0; fi
+          sudo apt-get install -y -qq apt-utils gpg
+          export GNUPGHOME="$(mktemp -d)"
+          printf '%s\n' "$CLE_PRIVEE" | gpg --batch --import
+          export CLE_APT="$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr/ {print $10; exit}')"
+          bash installeur/depot-apt.sh paquets/la-cigale_*_amd64.deb depot
+          gh release view apt --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || \
+            gh release create apt --repo "$GITHUB_REPOSITORY" --prerelease --latest=false \
+              --title "Dépôt APT" \
+              --notes "Fichiers du dépôt APT de La Cigale (Ubuntu, Debian). Rien à télécharger ici à la main : voir le README."
+          # on ne garde que le dernier paquet
+          for ancien in $(gh release view apt --repo "$GITHUB_REPOSITORY" --json assets -q '.assets[].name' | grep '\.deb$' || true); do
+            [ -e "depot/$ancien" ] || gh release delete-asset apt "$ancien" --repo "$GITHUB_REPOSITORY" --yes
+          done
+          gh release upload apt depot/* --repo "$GITHUB_REPOSITORY" --clobber

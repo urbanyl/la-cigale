@@ -33,6 +33,13 @@ Résultats dans `dist/` :
 - `LaCigale-<version>-linux-x86_64.tar.gz` : après extraction, `./installer.sh` installe dans
   `~/.local`, sans root.
 
+### Dépôt APT
+
+Le dépôt est un dépôt « plat » servi par la release GitHub `apt` (marquée préversion, elle ne devient
+jamais « Latest »). À chaque version, le job `apt` du workflow le signe avec la clé du secret
+`APT_CLE_PRIVEE` (`installeur/depot-apt.sh`) et remplace les fichiers. La clé publique est dans
+`installeur/la-cigale.gpg` ; si ce fichier existe, le `.deb` l'installe et ajoute le dépôt.
+
 ## Options
 
 | Windows | Linux | Effet |
@@ -53,7 +60,9 @@ branding/                     logo source, SVG, PNG, ICO générés
 outils/
   generer_visuels.py          régénère toute l'identité visuelle depuis le logo source
   rebrander_omni.py           renomme « Firefox » en « La Cigale » dans l'interface
-installeur/                   installeur Windows (C#, interface maison) et installation Linux
+apparence/protection/         page about:cigale et cigale.sys.mjs (Oublier ce site, fenêtre Tor, verrou)
+installeur/                   installeur Windows (C#, interface maison), paquet .deb et dépôt APT
+fonds-ecran/                  fonds d'écran 4K (outils/generer_fonds_ecran.py)
 docs/securite.md              modèle de menace, compromis, chaîne de confiance
 ```
 

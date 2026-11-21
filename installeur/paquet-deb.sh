@@ -36,6 +36,12 @@ for t in 16 22 24 32 48 64 128 256 512; do
 done
 install -Dm644 "$RACINE/branding/logo.svg" "$PAQ/usr/share/icons/hicolor/scalable/apps/la-cigale.svg"
 install -m644 "$RACINE/LICENCE.txt" "$PAQ/usr/share/doc/la-cigale/copyright"
+# clé publique du dépôt APT : le postinst ajoute le dépôt, comme le font Chrome ou VS Code
+DEPOT=0
+if [ -f "$RACINE/installeur/la-cigale.gpg" ]; then
+  install -Dm644 "$RACINE/installeur/la-cigale.gpg" "$PAQ/usr/share/keyrings/la-cigale.gpg"
+  DEPOT=1
+fi
 find "$PAQ/usr" -type f -exec chmod 644 {} +
 
 taille="$(du -sk --apparent-size "$PAQ/opt" "$PAQ/usr" | awk '{s+=$1} END {print s}')"
@@ -66,6 +72,25 @@ if [ "$1" = configure ]; then
   update-alternatives --install /usr/bin/gnome-www-browser gnome-www-browser /usr/bin/la-cigale 40
 fi
 EOF
+
+if [ "$DEPOT" = 1 ]; then
+  cat >> "$PAQ/DEBIAN/postinst" <<'EOF'
+# Dépôt APT, pour recevoir les mises à jour avec le reste du système.
+# Pour ne pas l'avoir : créer un fichier vide /etc/apt/sources.list.d/la-cigale.list
+LISTE=/etc/apt/sources.list.d/la-cigale.list
+if [ "$1" = configure ] && [ ! -e "$LISTE" ]; then
+  echo "deb [arch=amd64 signed-by=/usr/share/keyrings/la-cigale.gpg] https://github.com/urbanyl/la-cigale/releases/download/apt ./" > "$LISTE"
+fi
+EOF
+  cat > "$PAQ/DEBIAN/postrm" <<'EOF'
+#!/bin/sh
+set -e
+if [ "$1" = purge ]; then
+  rm -f /etc/apt/sources.list.d/la-cigale.list
+fi
+EOF
+  chmod 755 "$PAQ/DEBIAN/postrm"
+fi
 
 cat > "$PAQ/DEBIAN/prerm" <<'EOF'
 #!/bin/sh

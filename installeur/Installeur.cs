@@ -63,6 +63,11 @@ namespace LaCigale
         const string ProgIdPage = "LaCigaleHTML";
         const string ProgIdLien = "LaCigaleURL";
         const string Manifeste = "installation.lst";
+        // Firefox lit ici l'identifiant de barre des tâches de chaque dossier d'installation.
+        // Les raccourcis portent le même : Windows affiche alors « La Cigale » et, si on épingle
+        // la fenêtre, reprend le raccourci (et donc le bon profil) au lieu de lacigale.exe nu.
+        const string CleTaskBarIDs = @"Software\Mozilla\Firefox\TaskBarIDs";
+        const string IdBarreDesTaches = "LaCigale.Navigateur";
         static readonly string[] Extensions = { ".htm", ".html", ".shtml", ".xht", ".xhtml", ".svg", ".webp", ".pdf" };
 
         public static string VersionCigale;
@@ -162,6 +167,8 @@ namespace LaCigale
             Directory.CreateDirectory(Profil);
 
             progres(0.98, "Raccourcis");
+            using (var cle = Registry.CurrentUser.CreateSubKey(CleTaskBarIDs))
+                cle.SetValue(Path.GetFullPath(dossier).TrimEnd('\\'), IdBarreDesTaches);
             string exe = Path.Combine(dossier, "lacigale.exe");
             string icone = File.Exists(Path.Combine(dossier, "lacigale.ico")) ? Path.Combine(dossier, "lacigale.ico") : exe;
             var raccourcis = new List<string>
@@ -169,12 +176,14 @@ namespace LaCigale
                 Path.Combine(MenuDemarrer, "La Cigale.lnk"),
                 Path.Combine(MenuDemarrer, "La Cigale (navigation privée).lnk"),
             };
-            Raccourci(raccourcis[0], exe, Arguments(""), icone, "Naviguer avec La Cigale");
-            Raccourci(raccourcis[1], exe, Arguments("-private-window"), icone, "Ouvrir une fenêtre de navigation privée");
+            Raccourci(raccourcis[0], exe, Arguments(""), icone, "Naviguer avec La Cigale", IdBarreDesTaches);
+            // Firefox donne aux fenêtres privées l'identifiant suivi de ";PrivateBrowsingAUMID"
+            Raccourci(raccourcis[1], exe, Arguments("-private-window"), icone, "Ouvrir une fenêtre de navigation privée",
+                IdBarreDesTaches + ";PrivateBrowsingAUMID");
             if (raccourciBureau)
             {
                 raccourcis.Add(Path.Combine(Bureau, "La Cigale.lnk"));
-                Raccourci(raccourcis[2], exe, Arguments(""), icone, "Naviguer avec La Cigale");
+                Raccourci(raccourcis[2], exe, Arguments(""), icone, "Naviguer avec La Cigale", IdBarreDesTaches);
             }
 
             progres(0.99, "Inscription auprès de Windows");
@@ -200,22 +209,74 @@ namespace LaCigale
             progres(1, "");
         }
 
-        static void Raccourci(string lien, string cible, string arguments, string icone, string description)
+        [ComImport, Guid("00021401-0000-0000-C000-000000000046")]
+        class ShellLink { }
+
+        [ComImport, Guid("000214F9-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        interface IShellLinkW
         {
-            Type type = Type.GetTypeFromProgID("WScript.Shell");
-            dynamic shell = Activator.CreateInstance(type);
+            void GetPath(IntPtr a, int b, IntPtr c, int d);
+            void GetIDList(out IntPtr a);
+            void SetIDList(IntPtr a);
+            void GetDescription(IntPtr a, int b);
+            void SetDescription([MarshalAs(UnmanagedType.LPWStr)] string a);
+            void GetWorkingDirectory(IntPtr a, int b);
+            void SetWorkingDirectory([MarshalAs(UnmanagedType.LPWStr)] string a);
+            void GetArguments(IntPtr a, int b);
+            void SetArguments([MarshalAs(UnmanagedType.LPWStr)] string a);
+            void GetHotkey(out short a);
+            void SetHotkey(short a);
+            void GetShowCmd(out int a);
+            void SetShowCmd(int a);
+            void GetIconLocation(IntPtr a, int b, out int c);
+            void SetIconLocation([MarshalAs(UnmanagedType.LPWStr)] string a, int b);
+            void SetRelativePath([MarshalAs(UnmanagedType.LPWStr)] string a, int b);
+            void Resolve(IntPtr a, int b);
+            void SetPath([MarshalAs(UnmanagedType.LPWStr)] string a);
+        }
+
+        [ComImport, Guid("886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        interface IPropertyStore
+        {
+            void GetCount(out uint a);
+            void GetAt(uint a, out ClePropriete b);
+            void GetValue(ref ClePropriete a, IntPtr b);
+            void SetValue(ref ClePropriete a, ref ValeurPropriete b);
+            void Commit();
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        struct ClePropriete { public Guid Format; public uint Id; }
+
+        // PROPVARIANT réduit au cas VT_LPWSTR
+        [StructLayout(LayoutKind.Sequential)]
+        struct ValeurPropriete { public ushort Type; ushort r1, r2, r3; public IntPtr Texte; IntPtr r4; }
+
+        static void Raccourci(string lien, string cible, string arguments, string icone, string description, string idBarre)
+        {
+            var raccourci = (IShellLinkW)new ShellLink();
             try
             {
-                dynamic raccourci = shell.CreateShortcut(lien);
-                raccourci.TargetPath = cible;
-                raccourci.Arguments = arguments;
-                raccourci.WorkingDirectory = Path.GetDirectoryName(cible);
-                raccourci.IconLocation = icone + ",0";
-                raccourci.Description = description;
-                raccourci.Save();
-                Marshal.FinalReleaseComObject(raccourci);
+                raccourci.SetPath(cible);
+                raccourci.SetArguments(arguments);
+                raccourci.SetWorkingDirectory(Path.GetDirectoryName(cible));
+                raccourci.SetIconLocation(icone, 0);
+                raccourci.SetDescription(description);
+
+                // System.AppUserModel.ID
+                var cle = new ClePropriete { Format = new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), Id = 5 };
+                var valeur = new ValeurPropriete { Type = 31, Texte = Marshal.StringToCoTaskMemUni(idBarre) };
+                try
+                {
+                    var proprietes = (IPropertyStore)raccourci;
+                    proprietes.SetValue(ref cle, ref valeur);
+                    proprietes.Commit();
+                }
+                finally { Marshal.FreeCoTaskMem(valeur.Texte); }
+
+                ((System.Runtime.InteropServices.ComTypes.IPersistFile)raccourci).Save(lien, true);
             }
-            finally { Marshal.FinalReleaseComObject(shell); }
+            finally { Marshal.FinalReleaseComObject(raccourci); }
         }
 
         // Windows ne laisse plus un programme se mettre navigateur par défaut tout seul :
@@ -305,6 +366,8 @@ namespace LaCigale
             catch (Exception) { }
 
             progres(0.92, "Inscription auprès de Windows");
+            using (var cle = Registry.CurrentUser.OpenSubKey(CleTaskBarIDs, true))
+                if (cle != null) cle.DeleteValue(dossier, false);
             Registry.CurrentUser.DeleteSubKeyTree(CleClient, false);
             Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\" + ProgIdPage, false);
             Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\" + ProgIdLien, false);

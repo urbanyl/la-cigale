@@ -36,7 +36,7 @@ AJOUTS_BROWSER = {
 }
 # Page about:cigale (protection et profils) et icône du bouton de la barre d'outils
 CIGALE = "chrome/browser/content/browser/cigale/"
-for _f in ("protection.html", "protection.css", "protection.js"):
+for _f in ("protection.html", "protection.css", "protection.js", "cigale.sys.mjs", "tor.svg"):
     AJOUTS_BROWSER[CIGALE + _f] = (RACINE / "apparence" / "protection" / _f).read_bytes()
 AJOUTS_BROWSER[CIGALE + "bouton.png"] = (BRANDING / "png" / "logo-128.png").read_bytes()
 

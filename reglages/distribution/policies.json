@@ -63,7 +63,7 @@
         {
           "Name": "Qwant",
           "Description": "Moteur de recherche français respectueux de la vie privée",
-          "Alias": "@qwant",
+          "Alias": "q",
           "Method": "GET",
           "URLTemplate": "https://www.qwant.com/?q={searchTerms}",
           "SuggestURLTemplate": "https://api.qwant.com/v3/suggest?q={searchTerms}&client=opensearch",
@@ -72,7 +72,7 @@
         {
           "Name": "Startpage",
           "Description": "Résultats Google sans pistage",
-          "Alias": "@startpage",
+          "Alias": "s",
           "Method": "GET",
           "URLTemplate": "https://www.startpage.com/sp/search?query={searchTerms}&language=francais",
           "IconURL": "https://www.startpage.com/favicon.ico"
@@ -80,27 +80,90 @@
         {
           "Name": "Lilo",
           "Description": "Moteur de recherche solidaire français",
-          "Alias": "@lilo",
+          "Alias": "l",
           "Method": "GET",
           "URLTemplate": "https://search.lilo.org/?q={searchTerms}",
           "IconURL": "https://search.lilo.org/favicon.ico"
+        },
+        {
+          "Name": "Wikipédia",
+          "Description": "L'encyclopédie libre",
+          "Alias": "w",
+          "Method": "GET",
+          "URLTemplate": "https://fr.wikipedia.org/w/index.php?search={searchTerms}",
+          "SuggestURLTemplate": "https://fr.wikipedia.org/w/api.php?action=opensearch&search={searchTerms}",
+          "IconURL": "https://fr.wikipedia.org/static/favicon/wikipedia.ico"
+        },
+        {
+          "Name": "Wiktionnaire",
+          "Description": "Dictionnaire libre",
+          "Alias": "dico",
+          "Method": "GET",
+          "URLTemplate": "https://fr.wiktionary.org/w/index.php?search={searchTerms}",
+          "IconURL": "https://fr.wiktionary.org/static/favicon/wiktionary/fr.ico"
+        },
+        {
+          "Name": "OpenStreetMap",
+          "Description": "Cartes libres",
+          "Alias": "osm",
+          "Method": "GET",
+          "URLTemplate": "https://www.openstreetmap.org/search?query={searchTerms}",
+          "IconURL": "https://www.openstreetmap.org/favicon.ico"
+        },
+        {
+          "Name": "Service-Public",
+          "Description": "Démarches administratives",
+          "Alias": "sp",
+          "Method": "GET",
+          "URLTemplate": "https://www.service-public.fr/particuliers/recherche?keyword={searchTerms}",
+          "IconURL": "https://www.service-public.fr/favicon.ico"
+        },
+        {
+          "Name": "Légifrance",
+          "Description": "Textes de loi",
+          "Alias": "loi",
+          "Method": "GET",
+          "URLTemplate": "https://www.legifrance.gouv.fr/search/all?query={searchTerms}",
+          "IconURL": "https://www.legifrance.gouv.fr/favicon.ico"
         }
       ],
       "Default": "DuckDuckGo",
       "PreventInstalls": false,
-      "Remove": ["Google", "Bing", "Amazon.fr", "eBay", "Perplexity", "Ecosia"]
+      "Remove": [
+        "Google",
+        "Bing",
+        "Amazon.fr",
+        "eBay",
+        "Perplexity",
+        "Ecosia",
+        "Wikipédia (fr)",
+        "Wikipedia (en)"
+      ]
     },
     "ExtensionSettings": {
       "uBlock0@raymondhill.net": {
         "installation_mode": "force_installed",
         "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi",
         "private_browsing": true
+      },
+      "@testpilot-containers": {
+        "installation_mode": "normal_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/multi-account-containers/latest.xpi"
       }
     },
     "Permissions": {
-      "Notifications": { "BlockNewRequests": false, "Locked": false },
-      "Autoplay": { "Default": "block-audio-video", "Locked": false }
+      "Notifications": {
+        "BlockNewRequests": false,
+        "Locked": false
+      },
+      "Autoplay": {
+        "Default": "block-audio-video",
+        "Locked": false
+      }
     },
-    "EncryptedMediaExtensions": { "Enabled": false, "Locked": false }
+    "EncryptedMediaExtensions": {
+      "Enabled": false,
+      "Locked": false
+    }
   }
 }

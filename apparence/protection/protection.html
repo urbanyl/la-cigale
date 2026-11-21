@@ -12,6 +12,29 @@
   <h1><img src="chrome://browser/content/cigale/bouton.png" alt="" width="28" height="28"> Protection</h1>
   <p id="resume" class="discret"></p>
 
+  <section id="nouveautes" hidden>
+    <h2>Quoi de neuf dans La Cigale 1.2</h2>
+    <ul class="nouveautes">
+      <li><b>Oublier ce site.</b> Un bouton dans la barre d'outils efface tout ce que La Cigale garde
+        sur le site ouvert : cookies, cache, historique, autorisations.</li>
+      <li><b>Fenêtre Tor.</b> Le bouton « Fenêtre Tor » (menu » au bout de la barre d'outils, ou plus bas sur
+        cette page) ouvre une fenêtre dont tout le trafic passe par le réseau Tor. Il faut que Tor tourne déjà (Tor Browser ouvert, ou le service tor sous Linux).</li>
+      <li><b>Cette page.</b> Plus bas, la liste de ce qui a été bloqué sur l'onglet de votre choix.</li>
+      <li><b>Conteneurs.</b> L'extension Multi-Account Containers est installée : clic droit sur
+        un onglet, « Rouvrir dans un conteneur », ou toujours ouvrir un site dans le même conteneur.</li>
+      <li><b>Liens nettoyés.</b> Les paramètres de pistage (utm_, fbclid, gclid…) sont retirés des liens.
+        Clic droit sur un lien : « Copier le lien nettoyé ».</li>
+      <li><b>Sauvegarde chiffrée.</b> Marque-pages, raccourcis de la page d'accueil et réglages dans un
+        seul fichier protégé par mot de passe, à remettre sur un autre ordinateur.</li>
+      <li><b>Mode lecture</b> aux couleurs de La Cigale (touche F9).</li>
+      <li><b>Verrou au démarrage.</b> Un mot de passe demandé à l'ouverture de La Cigale.</li>
+      <li><b>Mots-clés de recherche.</b> Tapez <kbd>w cigale</kbd> dans la barre d'adresse pour chercher
+        sur Wikipédia, <kbd>osm Avignon</kbd> pour la carte… La liste est plus bas.</li>
+      <li><b>Dépôt APT</b> pour Ubuntu et Debian : La Cigale se met à jour avec le reste du système.</li>
+    </ul>
+    <p><button id="fermer-nouveautes">J'ai vu</button></p>
+  </section>
+
   <h2>Profil</h2>
   <form id="profils">
     <label>
@@ -36,7 +59,20 @@
   <table>
     <tbody id="etats"></tbody>
   </table>
-  <p class="discret">Pour voir ce qui a été bloqué sur une page précise, ouvrez uBlock Origin (le bouton rouge).</p>
+
+  <h2>Cette page</h2>
+  <p class="ligne">
+    <select id="rapport-onglet" aria-label="Onglet à examiner"></select>
+    <button id="rapport-actualiser">Actualiser</button>
+  </p>
+  <table>
+    <tbody id="rapport"></tbody>
+  </table>
+  <details id="rapport-details" hidden>
+    <summary>Adresses bloquées</summary>
+    <ul id="rapport-liste" class="liste"></ul>
+  </details>
+  <p class="ligne"><button id="rapport-oublier">Oublier ce site</button></p>
 
   <h2>Sites où rester connecté</h2>
   <p>Ces sites gardent leurs cookies à la fermeture. Les autres sont effacés.</p>
@@ -47,12 +83,54 @@
   <p id="erreur-exception" class="erreur" role="alert" hidden></p>
   <ul id="exceptions"></ul>
 
+  <h2>Fenêtre Tor</h2>
+  <p>Une fenêtre à part dont tout le trafic passe par le réseau Tor, avec un profil séparé effacé à la
+    fermeture. Tor doit déjà tourner : Tor Browser ouvert, ou sous Linux <code>sudo apt install tor</code>.</p>
+  <p class="ligne">
+    <button id="tor-ouvrir">Ouvrir une fenêtre Tor</button>
+    <span id="tor-etat" class="discret"></span>
+  </p>
+  <p class="discret">Pour un anonymat fort, Tor Browser reste le meilleur choix : il rend tous ses
+    utilisateurs identiques, ce qu'une fenêtre d'un autre navigateur ne peut pas garantir.</p>
+
+  <h2>Mots-clés de recherche</h2>
+  <p>Dans la barre d'adresse, tapez le mot-clé, une espace, puis votre recherche.</p>
+  <table>
+    <tbody id="mots-cles"></tbody>
+  </table>
+
+  <h2>Sauvegarde chiffrée</h2>
+  <p>Marque-pages, raccourcis de la page d'accueil, sites où rester connecté et profil de protection,
+    dans un fichier chiffré (AES-256). Rangez-le où vous voulez : clé USB, cloud…
+    Sans le mot de passe, personne ne peut le lire, vous non plus.</p>
+  <form id="sauvegarde">
+    <input type="password" id="sauvegarde-mdp" placeholder="Mot de passe de la sauvegarde" autocomplete="new-password" aria-label="Mot de passe de la sauvegarde" required minlength="8">
+    <button type="submit" name="action" value="exporter">Enregistrer…</button>
+    <button type="submit" name="action" value="importer">Restaurer…</button>
+  </form>
+  <p id="sauvegarde-etat" class="discret" role="status"></p>
+
+  <h2>Verrou au démarrage</h2>
+  <p>La Cigale demande ce mot de passe à chaque ouverture. C'est un verrou contre les curieux,
+    pas un chiffrement : vos fichiers restent lisibles par quelqu'un qui a accès à votre session.</p>
+  <form id="verrou">
+    <input type="password" id="verrou-actuel" placeholder="Mot de passe actuel" autocomplete="current-password" aria-label="Mot de passe actuel">
+    <input type="password" id="verrou-nouveau" placeholder="Nouveau mot de passe" autocomplete="new-password" aria-label="Nouveau mot de passe">
+    <input type="password" id="verrou-confirmation" placeholder="Encore une fois" autocomplete="new-password" aria-label="Confirmer le mot de passe">
+    <p class="ligne">
+      <button type="submit" id="verrou-valider">Activer</button>
+      <button type="button" id="verrou-retirer">Retirer le verrou</button>
+    </p>
+  </form>
+  <p id="verrou-etat" class="discret" role="status"></p>
+
   <h2>Mises à jour</h2>
   <label class="case">
     <input type="checkbox" id="maj-verifier">
     Prévenir quand une nouvelle version sort (une vérification par jour sur GitHub)
   </label>
   <p id="maj-etat" class="discret"></p>
+  <p><a href="#nouveautes" id="voir-nouveautes">Voir les nouveautés de cette version</a></p>
 </main>
 <script src="chrome://browser/content/cigale/protection.js"></script>
 </body>
