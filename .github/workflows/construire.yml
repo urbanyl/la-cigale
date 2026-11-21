@@ -1,4 +1,4 @@
-# Construit et publie La Cigale pour Windows à chaque nouvelle version de Firefox ESR.
+# Construit et publie La Cigale (Windows, Linux) à chaque nouvelle version de Firefox ESR.
 # Vérification quotidienne ; lancement manuel possible depuis l'onglet « Actions ».
 name: Construction
 
@@ -77,30 +77,53 @@ jobs:
         run: |
           Set-Content VERSION $env:VERSION_CIGALE -NoNewline
           ./construire-windows.ps1 -Version $env:ESR
-      - name: Empreintes
-        shell: pwsh
-        run: |
-          Get-ChildItem dist -File | Where-Object Extension -in '.zip', '.exe' | ForEach-Object {
-            "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)"
-          } | Set-Content dist\SHA256SUMS.txt -Encoding ascii
-          Get-Content dist\SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
           name: la-cigale-windows
           path: |
             dist/*.zip
             dist/*.exe
-            dist/SHA256SUMS.txt
+          if-no-files-found: error
+
+  linux:
+    needs: verifier
+    if: needs.verifier.outputs.construire == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Outils
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq python3-pil gpg
+      - name: Construction
+        env:
+          VERSION_CIGALE: ${{ needs.verifier.outputs.version }}
+          ESR: ${{ needs.verifier.outputs.esr }}
+        run: |
+          printf '%s' "$VERSION_CIGALE" > VERSION
+          bash construire-linux.sh --version "$ESR"
+      - name: Test du paquet
+        run: |
+          sudo apt-get install -y -qq ./dist/la-cigale_*_amd64.deb
+          test -x /usr/bin/la-cigale
+          dpkg -s la-cigale | grep -q 'install ok installed'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: la-cigale-linux
+          path: |
+            dist/*.tar.gz
+            dist/*.deb
           if-no-files-found: error
 
   publier:
-    needs: [verifier, windows]
+    needs: [verifier, windows, linux]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: la-cigale-windows
           path: paquets
+          merge-multiple: true
+      - name: Empreintes
+        working-directory: paquets
+        run: sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
       - name: Version
         env:
           GH_TOKEN: ${{ github.token }}
@@ -115,6 +138,10 @@ jobs:
           ### Installation (Windows 10/11, 64 bits)
           - **Installeur** : lancer \`LaCigale-$VERSION_CIGALE-windows-x64-installeur.exe\` (sans droits administrateur).
           - **Portable** : extraire \`LaCigale-$VERSION_CIGALE-windows-x64-portable.zip\` puis lancer \`La Cigale (portable).cmd\`.
+
+          ### Installation (Ubuntu, Debian, 64 bits)
+          - **Paquet** : \`sudo apt install ./la-cigale_${VERSION_CIGALE}_amd64.deb\`
+          - **Archive** : extraire \`LaCigale-$VERSION_CIGALE-linux-x86_64.tar.gz\` puis lancer \`la-cigale/installer.sh\` (sans root).
 
           Empreintes SHA-256 : voir \`SHA256SUMS.txt\`.
           EOF

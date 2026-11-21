@@ -52,6 +52,15 @@ Chrome et Edge démarrent plus vite et consomment moins de mémoire. Allégée d
 - `LaCigale-…-portable.zip` : extraire et lancer `La Cigale (portable).cmd`.
 
 Windows peut afficher un avertissement SmartScreen (installeur non signé) : « Informations complémentaires » puis « Exécuter quand même ».
+
+**Ubuntu, Debian** (et dérivées : Linux Mint, Pop!_OS, elementary…) : télécharger le paquet `.deb` puis
+
+```sh
+sudo apt install ./la-cigale_*_amd64.deb
+```
+
+La Cigale apparaît dans le menu des applications et peut être choisie comme navigateur par défaut.
+Sans droits root : l'archive `.tar.gz` contient un `installer.sh` qui installe dans votre dossier personnel.
 Une nouvelle version est construite automatiquement à chaque mise à jour de Firefox ESR.
 
 Ou construire soi-même depuis les binaires officiels de Mozilla :

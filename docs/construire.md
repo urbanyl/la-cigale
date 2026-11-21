@@ -26,8 +26,12 @@ Prérequis : `curl`, `tar`, `xz`, `python3` avec Pillow ; `gpg` fortement recomm
 ./construire-linux.sh
 ```
 
-Résultat : `dist/LaCigale-<version>-linux-x86_64.tar.gz`. Après extraction, lancer
-`./installer.sh` (installation dans `~/.local`, sans root).
+Résultats dans `dist/` :
+- `la-cigale_<version>_amd64.deb` (si `dpkg-deb` est présent, donc sur Ubuntu et Debian) :
+  `sudo apt install ./la-cigale_<version>_amd64.deb`. Installé dans `/opt/la-cigale`, commande
+  `la-cigale`, inscrit comme `x-www-browser`. Profil dans `~/.local/share/la-cigale`.
+- `LaCigale-<version>-linux-x86_64.tar.gz` : après extraction, `./installer.sh` installe dans
+  `~/.local`, sans root.
 
 ## Options
 

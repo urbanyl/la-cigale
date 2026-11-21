@@ -7,6 +7,8 @@
 Usage : python outils/rebrander_omni.py <dossier_installation>
 """
 import io
+import zlib
+import struct
 import os
 import re
 import shutil
@@ -419,6 +421,34 @@ def transformer_identite(nom: str, donnees: bytes):
     return None
 
 
+def lire_jar_optimise(octets: bytes):
+    # Lecture directe : les offsets du répertoire central sont absolus dans ces jars,
+    # alors que zipfile les recalcule à partir de la fin du fichier.
+    fin = octets.rfind(b"PK\x05\x06")
+    if fin < 0:
+        raise ValueError("pas de fin de répertoire central")
+    nombre, taille_cd, debut_cd = struct.unpack_from("<HII", octets, fin + 10)
+    entrees, pos = [], debut_cd
+    for _ in range(nombre):
+        if octets[pos:pos + 4] != b"PK\x01\x02":
+            raise ValueError("répertoire central illisible")
+        methode, = struct.unpack_from("<H", octets, pos + 10)
+        taille_c, taille_n, l_nom, l_extra, l_com = struct.unpack_from("<IIHHH", octets, pos + 20)
+        local, = struct.unpack_from("<I", octets, pos + 42)
+        nom = octets[pos + 46:pos + 46 + l_nom].decode("utf-8")
+        pos += 46 + l_nom + l_extra + l_com
+        if nom.endswith("/"):
+            continue
+        l_nom_local, l_extra_local = struct.unpack_from("<HH", octets, local + 26)
+        debut = local + 30 + l_nom_local + l_extra_local
+        brut = octets[debut:debut + taille_c]
+        donnees = zlib.decompress(brut, -15) if methode == 8 else brut
+        if len(donnees) != taille_n:
+            raise ValueError(f"taille inattendue pour {nom}")
+        entrees.append((nom, donnees))
+    return entrees
+
+
 def lire_entrees(omni: Path):
     # Mozilla livre des jars « optimisés » (répertoire central au début) que zipfile
     # ne sait pas toujours lire, d'où le repli sur 7-Zip ou unzip.
@@ -426,6 +456,12 @@ def lire_entrees(omni: Path):
         with zipfile.ZipFile(omni) as z:
             return [(i.filename, z.read(i)) for i in z.infolist() if not i.is_dir()]
     except zipfile.BadZipFile:
+        pass
+    try:
+        entrees = lire_jar_optimise(omni.read_bytes())
+        if len(entrees) >= 100:
+            return entrees
+    except (ValueError, struct.error, zlib.error):
         pass
     with tempfile.TemporaryDirectory() as tmp:
         if shutil.which("7z") or Path(SEPT_ZIP).exists():

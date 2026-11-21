@@ -138,6 +138,13 @@ echo "La Cigale $VERSION_CIGALE (Firefox ESR $VERSION)" > "$DIST/VERSION.txt"
 
 etape "Création de l'archive"
 SORTIE="$RACINE/dist/LaCigale-$VERSION_CIGALE-linux-x86_64.tar.gz"
-tar -C "$RACINE/dist" -czf "$SORTIE" la-cigale
+tar -C "$RACINE/dist" --owner=0 --group=0 --mode='go-w' -czf "$SORTIE" la-cigale
 echo "-> $SORTIE"
+
+if command -v dpkg-deb >/dev/null; then
+  etape "Création du paquet .deb (Ubuntu, Debian)"
+  bash "$RACINE/installeur/paquet-deb.sh" "$VERSION_CIGALE" "$VERSION"
+else
+  echo "dpkg-deb absent : pas de paquet .deb."
+fi
 etape "Terminé. Tester : $DIST/la-cigale   |   Installer : $DIST/installer.sh"
