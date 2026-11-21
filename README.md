@@ -14,6 +14,7 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 - **Rien ne reste** : cookies, historique et cache effacés à la fermeture.
 - **Léger** : composants inutiles retirés, aucun processus ni téléchargement en arrière-plan superflu.
 - **100 % français** : interface, page d'accueil locale, moteurs DuckDuckGo (défaut), Qwant, Startpage, Lilo.
+- **Trois profils en un clic** : Confort, Standard ou Renforcé (JavaScript coupé), depuis le bouton cigale.
 
 | | La Cigale | Firefox | Chrome | Edge |
 |---|:---:|:---:|:---:|:---:|
@@ -28,6 +29,13 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
   <img src="docs/captures/site.png" alt="Un site ouvert dans La Cigale" width="49%">
 </p>
 
+## Protection
+
+Le bouton cigale de la barre d'outils ouvre `about:cigale` : l'état réel des protections, le choix du
+profil, les sites où rester connecté et la vérification des mises à jour.
+
+<p align="center"><img src="docs/captures/protection.png" alt="Page Protection de La Cigale" width="760"></p>
+
 ## Performances
 
 <p align="center"><img src="docs/captures/benchmark.svg" alt="Banc d'essai comparatif" width="860"></p>
@@ -39,7 +47,12 @@ Chrome et Edge démarrent plus vite et consomment moins de mémoire. Allégée d
 
 ## Installer
 
-**Windows : [télécharger la dernière version](https://github.com/urbanyl/la-cigale/releases/latest)**, extraire le zip, lancer `La Cigale (portable).cmd`.
+**Windows : [télécharger la dernière version](https://github.com/urbanyl/la-cigale/releases/latest)**, puis au choix :
+- `LaCigale-…-installeur.exe` : installation sans droits administrateur, raccourcis, désinstallation propre ;
+- `LaCigale-…-portable.zip` : extraire et lancer `La Cigale (portable).cmd`.
+
+Windows peut afficher un avertissement SmartScreen (installeur non signé) : « Informations complémentaires » puis « Exécuter quand même ».
+Une nouvelle version est construite automatiquement à chaque mise à jour de Firefox ESR.
 
 Ou construire soi-même depuis les binaires officiels de Mozilla :
 

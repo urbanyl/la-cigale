@@ -32,7 +32,7 @@ const stockage = {
   },
 };
 
-// Horloge et salutation ---------------------------------------------------
+// Horloge et salutation
 const $ = (id) => document.getElementById(id);
 
 function rafraichirHeure() {
@@ -46,7 +46,7 @@ function rafraichirHeure() {
 rafraichirHeure();
 setInterval(rafraichirHeure, 10_000);
 
-// Recherche ---------------------------------------------------------------
+// Recherche
 const champ = $("q");
 
 // Sélecteur de moteur sur mesure (motif « listbox » accessible au clavier)
@@ -132,7 +132,7 @@ $("recherche").addEventListener("submit", (e) => {
   location.href = versAdresse(texte) ?? MOTEURS[moteur.valeur] + encodeURIComponent(texte);
 });
 
-// Raccourcis --------------------------------------------------------------
+// Raccourcis
 let raccourcis = stockage.lire("raccourcis", RACCOURCIS_DEFAUT);
 const liste = $("raccourcis");
 
@@ -140,6 +140,25 @@ function afficherRaccourcis() {
   liste.replaceChildren(
     ...raccourcis.map((r, i) => {
       const li = document.createElement("li");
+      li.draggable = true;
+      li.dataset.index = i;
+      li.addEventListener("dragstart", (e) => {
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/x-cigale-index", String(i));
+        li.classList.add("glisse");
+      });
+      li.addEventListener("dragend", () => li.classList.remove("glisse"));
+      li.addEventListener("dragover", (e) => {
+        if (!e.dataTransfer.types.includes("text/x-cigale-index")) return;
+        e.preventDefault();
+        li.classList.add("cible");
+      });
+      li.addEventListener("dragleave", () => li.classList.remove("cible"));
+      li.addEventListener("drop", (e) => {
+        e.preventDefault();
+        li.classList.remove("cible");
+        deplacer(Number(e.dataTransfer.getData("text/x-cigale-index")), i);
+      });
       const a = document.createElement("a");
       a.href = r.url;
       const pastille = document.createElement("span");
@@ -160,11 +179,34 @@ function afficherRaccourcis() {
         stockage.ecrire("raccourcis", raccourcis);
         afficherRaccourcis();
       });
-      li.append(a, suppr);
+      // Au clavier : flèches gauche/droite en mode édition
+      const gauche = boutonDeplacement("←", `Déplacer ${r.nom} vers la gauche`, () => deplacer(i, i - 1));
+      const droite = boutonDeplacement("→", `Déplacer ${r.nom} vers la droite`, () => deplacer(i, i + 1));
+      const fleches = document.createElement("div");
+      fleches.className = "fleches";
+      fleches.append(gauche, droite);
+      li.append(a, suppr, fleches);
       return li;
     })
   );
 }
+function boutonDeplacement(texte, libelle, action) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.textContent = texte;
+  b.setAttribute("aria-label", libelle);
+  b.addEventListener("click", action);
+  return b;
+}
+
+function deplacer(de, vers) {
+  if (vers < 0 || vers >= raccourcis.length || de === vers || Number.isNaN(de)) return;
+  const [element] = raccourcis.splice(de, 1);
+  raccourcis.splice(vers, 0, element);
+  stockage.ecrire("raccourcis", raccourcis);
+  afficherRaccourcis();
+}
+
 afficherRaccourcis();
 
 $("modifier").addEventListener("click", () => {
@@ -188,3 +230,48 @@ $("reinitialiser").addEventListener("click", () => {
   stockage.ecrire("raccourcis", raccourcis);
   afficherRaccourcis();
 });
+
+// Personnalisation
+const REGLAGES_DEFAUT = { mode: "sombre", fond: "cigale", citation: true, horloge: true };
+const reglages = { ...REGLAGES_DEFAUT, ...stockage.lire("reglages", {}) };
+const sombreSysteme = matchMedia("(prefers-color-scheme: dark)");
+
+function appliquerReglages() {
+  const clair = reglages.mode === "clair" || (reglages.mode === "auto" && !sombreSysteme.matches);
+  document.body.dataset.mode = clair ? "clair" : "sombre";
+  document.body.dataset.fond = reglages.fond;
+  $("symbole").src = clair ? "img/symbole-noir.webp" : "img/symbole-blanc.webp";
+  $("citation").hidden = !reglages.citation;
+  $("heure").hidden = !reglages.horloge;
+  document.querySelectorAll(".choix input").forEach((entree) => {
+    entree.checked = reglages[entree.name] === entree.value;
+  });
+  $("reglage-citation").checked = reglages.citation;
+  $("reglage-horloge").checked = reglages.horloge;
+}
+
+function modifierReglage(cle, valeur) {
+  reglages[cle] = valeur;
+  stockage.ecrire("reglages", reglages);
+  appliquerReglages();
+}
+
+document.querySelectorAll(".choix input").forEach((entree) =>
+  entree.addEventListener("change", () => modifierReglage(entree.name, entree.value))
+);
+$("reglage-citation").addEventListener("change", (e) => modifierReglage("citation", e.target.checked));
+$("reglage-horloge").addEventListener("change", (e) => modifierReglage("horloge", e.target.checked));
+sombreSysteme.addEventListener("change", appliquerReglages);
+
+const panneau = $("panneau");
+$("personnaliser").addEventListener("click", () => panneau.showModal());
+$("panneau-fermer").addEventListener("click", () => panneau.close());
+panneau.addEventListener("click", (e) => { if (e.target === panneau) panneau.close(); });
+panneau.addEventListener("close", () => $("personnaliser").focus());
+
+// Citation du jour (liste locale, aucune requête réseau)
+const [texteCitation, auteurCitation] = citationDuJour();
+$("citation-texte").textContent = texteCitation;
+$("citation-auteur").textContent = auteurCitation;
+
+appliquerReglages();

@@ -7,10 +7,10 @@
   <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-mode="sombre" data-fond="cigale">
   <main class="scene">
     <header class="entete">
-      <img class="symbole" src="img/symbole-blanc.webp" alt="" width="44" height="44">
+      <img class="symbole" id="symbole" src="img/symbole-blanc.webp" alt="" width="44" height="44">
       <div>
         <p class="salut" id="salut">Bonjour</p>
         <p class="date" id="date"></p>
@@ -53,14 +53,50 @@
         <input id="ajout-url" placeholder="https://…" required type="url">
         <button type="submit">Ajouter</button>
         <button type="button" class="lien" id="reinitialiser">Réinitialiser</button>
-        <p class="note">Par souci d'anonymat, vos raccourcis sont effacés à la fermeture du navigateur.</p>
+        <p class="note">Astuce : faites glisser une tuile pour réordonner vos raccourcis.</p>
       </form>
     </section>
 
+    <figure class="citation" id="citation">
+      <blockquote id="citation-texte"></blockquote>
+      <figcaption id="citation-auteur"></figcaption>
+    </figure>
+
     <footer class="pied">
-      <a href="apropos.html">À propos</a>
+      <button type="button" class="lien-pied" id="personnaliser" aria-haspopup="dialog" aria-controls="panneau">Personnaliser</button>
+      <a class="lien-pied" href="apropos.html">À propos</a>
     </footer>
+
+    <dialog class="panneau" id="panneau" aria-labelledby="panneau-titre">
+      <div class="panneau-entete">
+        <h2 id="panneau-titre">Personnaliser</h2>
+        <button type="button" class="fermer" id="panneau-fermer" aria-label="Fermer">×</button>
+      </div>
+      <fieldset class="choix" data-reglage="mode">
+        <legend>Apparence</legend>
+        <label><input type="radio" name="mode" value="sombre"><span>Sombre</span></label>
+        <label><input type="radio" name="mode" value="clair"><span>Clair</span></label>
+        <label><input type="radio" name="mode" value="auto"><span>Système</span></label>
+      </fieldset>
+      <fieldset class="choix" data-reglage="fond">
+        <legend>Fond</legend>
+        <label><input type="radio" name="fond" value="cigale"><span>Cigale</span></label>
+        <label><input type="radio" name="fond" value="grain"><span>Grain</span></label>
+        <label><input type="radio" name="fond" value="uni"><span>Uni</span></label>
+      </fieldset>
+      <label class="interrupteur">
+        <span>Citation du jour</span>
+        <input type="checkbox" id="reglage-citation" role="switch">
+      </label>
+      <label class="interrupteur">
+        <span>Horloge</span>
+        <input type="checkbox" id="reglage-horloge" role="switch">
+      </label>
+      <p class="panneau-note">Protection et profils de sécurité : bouton <b>cigale</b> de la barre d'outils,
+        ou <kbd>about:cigale</kbd> dans la barre d'adresse.</p>
+    </dialog>
   </main>
+  <script src="citations.js"></script>
   <script src="accueil.js"></script>
 </body>
 </html>

@@ -38,9 +38,8 @@ NAVIGATEURS = [
 ]
 
 
-# ------------------------------------------------------------ SVG source --
 def formes_source() -> str:
-    """Contenu dessiné du SVG source, sans le texte de crédit."""
+    # contenu dessiné du SVG source, sans le texte de crédit
     svg = SOURCE.read_text(encoding="utf-8")
     corps = re.search(r"<svg[^>]*>(.*)</svg>", svg, re.S).group(1)
     return re.sub(r"<text\b.*?</text>", "", corps, flags=re.S).strip()
@@ -51,7 +50,6 @@ def svg_symbole(formes: str, couleur: str, vue: str = "0 0 100 100") -> str:
             f'role="img" aria-label="La Cigale">{formes}</svg>\n')
 
 
-# ------------------------------------------------------------- rendu PNG --
 def trouver_navigateur() -> str:
     for chemin in NAVIGATEURS:
         if os.path.exists(chemin):
@@ -60,7 +58,7 @@ def trouver_navigateur() -> str:
 
 
 def rendre_svg(svg: str, taille: int = 1024) -> Image.Image:
-    """Rend un SVG en PNG transparent via le navigateur headless."""
+    # rend un SVG en PNG transparent via le navigateur headless
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         (tmp / "image.svg").write_text(svg, encoding="utf-8")
@@ -79,7 +77,7 @@ def rendre_svg(svg: str, taille: int = 1024) -> Image.Image:
 
 
 def recadrage(rendu: Image.Image):
-    """Boîte englobante carrée du dessin, en unités du viewBox d'origine (0..100)."""
+    # boîte englobante carrée du dessin, en unités du viewBox d'origine (0..100)
     x0, y0, x1, y1 = rendu.getchannel("A").getbbox()
     cote = max(x1 - x0, y1 - y0)
     cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
@@ -94,7 +92,7 @@ def teinter(img: Image.Image, rgb) -> Image.Image:
 
 
 def icone(symbole_blanc: Image.Image, taille: int) -> Image.Image:
-    """Carré noir arrondi, halo discret et grain (comme le fond d'accueil), cigale blanche."""
+    # carré noir arrondi, halo discret et grain (comme le fond d'accueil), cigale blanche
     ss = 4
     t = taille * ss
     # Fond : dégradé vertical graphite -> noir, halo clair en haut
@@ -128,24 +126,25 @@ def icone(symbole_blanc: Image.Image, taille: int) -> Image.Image:
     return fond
 
 
-def fond_accueil(symbole_blanc: Image.Image, l=1920, h=1080) -> Image.Image:
-    """Fond de la page d'accueil : nuit graphite, cigale fantôme, grain."""
-    base = Image.new("RGBA", (l, h), (10, 10, 11, 255))
+def fond_accueil(symbole_blanc: Image.Image, l=1920, h=1080, clair=False, cigale=True) -> Image.Image:
+    # fond de la page d'accueil : grain, halo et cigale fantôme, en version nuit ou claire
+    base = Image.new("RGBA", (l, h), (238, 237, 233, 255) if clair else (10, 10, 11, 255))
     halo = Image.new("L", (l, h), 0)
     ImageDraw.Draw(halo).ellipse((l * 0.25, -h * 0.6, l * 0.75, h * 0.5), fill=40)
     halo = halo.filter(ImageFilter.GaussianBlur(240))
-    base.paste(Image.new("RGBA", (l, h), (255, 255, 255, 255)), (0, 0), halo.point(lambda v: v // 3))
+    base.paste(Image.new("RGBA", (l, h), (255, 255, 255, 255)), (0, 0), halo.point(lambda v: v // 3 * (3 if clair else 1)))
 
-    fantome = symbole_blanc.resize((1000, 1000), Image.LANCZOS).rotate(-14, resample=Image.BICUBIC)
-    fantome.putalpha(fantome.getchannel("A").point(lambda v: v * 9 // 255))
-    base.alpha_composite(fantome, (l - 760, h - 720))
+    if cigale:
+        teinte = teinter(symbole_blanc, (0, 0, 0)) if clair else symbole_blanc
+        fantome = teinte.resize((1000, 1000), Image.LANCZOS).rotate(-14, resample=Image.BICUBIC)
+        fantome.putalpha(fantome.getchannel("A").point(lambda v: v * (7 if clair else 9) // 255))
+        base.alpha_composite(fantome, (l - 760, h - 720))
 
     grain = Image.effect_noise((l, h), 24).convert("RGBA")
-    grain.putalpha(9)
+    grain.putalpha(11 if clair else 9)
     return Image.alpha_composite(base, grain).convert("RGB")
 
 
-# ------------------------------------------------------------------ main --
 def main():
     png = BRANDING / "png"
     png.mkdir(parents=True, exist_ok=True)
@@ -156,11 +155,11 @@ def main():
 
     formes = formes_source()
 
-    # 1. Rendu brut pour mesurer le dessin, puis recadrage carré serré.
+    # rendu brut pour mesurer le dessin, puis recadrage carré serré
     x, y, c = recadrage(rendre_svg(svg_symbole(formes, "#000")))
     vue = f"{x:.2f} {y:.2f} {c:.2f} {c:.2f}"
 
-    # 2. SVG finaux
+    # sVG finaux
     (BRANDING / "symbole-noir.svg").write_text(svg_symbole(formes, "#000", vue), encoding="utf-8")
     (BRANDING / "symbole-blanc.svg").write_text(svg_symbole(formes, "#fff", vue), encoding="utf-8")
     marge = 1024 * (1 - REMPLISSAGE_ICONE) / 2
@@ -197,7 +196,7 @@ def main():
         'font-weight="600" letter-spacing="-3" fill="currentColor">La Cigale</text></svg>\n',
         encoding="utf-8")
 
-    # 3. PNG et ICO
+    # pNG et ICO
     symbole = rendre_svg((BRANDING / "symbole-noir.svg").read_text(encoding="utf-8"), 1024)
     symbole.save(png / "symbole-noir-1024.png", optimize=True)
     blanc = teinter(symbole, (255, 255, 255))
@@ -220,14 +219,20 @@ def main():
     rendus[256].save(BRANDING / "lacigale.ico",
                      sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
 
-    # 4. Page d'accueil
+    # page d'accueil
     # Logo en WebP sans perte, à 3x sa taille d'affichage (6 Ko au lieu d'un SVG de 160 Ko).
     # Le fond reste en JPEG : sur ce dégradé très sombre, le WebP crée des aplats visibles.
     for ancien in ("symbole-blanc.svg", "fond.webp"):
         (ACCUEIL_IMG / ancien).unlink(missing_ok=True)
     blanc.resize((168, 168), Image.LANCZOS).save(ACCUEIL_IMG / "symbole-blanc.webp", lossless=True, method=6)
     rendus[64].save(ACCUEIL_IMG / "favicon.png", optimize=True)
-    fond_accueil(blanc).save(ACCUEIL_IMG / "fond.jpg", quality=88, optimize=True, progressive=True)
+    jpeg = dict(quality=88, optimize=True, progressive=True)
+    fond_accueil(blanc).save(ACCUEIL_IMG / "fond.jpg", **jpeg)                       # Cigale, nuit
+    fond_accueil(blanc, clair=True).save(ACCUEIL_IMG / "fond-clair.jpg", **jpeg)     # Cigale, clair
+    fond_accueil(blanc, cigale=False).save(ACCUEIL_IMG / "grain.jpg", **jpeg)        # Grain seul, nuit
+    fond_accueil(blanc, clair=True, cigale=False).save(ACCUEIL_IMG / "grain-clair.jpg", **jpeg)
+    teinter(blanc, (14, 14, 15)).resize((168, 168), Image.LANCZOS).save(
+        ACCUEIL_IMG / "symbole-noir.webp", lossless=True, method=6)
     print("Visuels générés dans", BRANDING, "et", ACCUEIL_IMG)
 
 

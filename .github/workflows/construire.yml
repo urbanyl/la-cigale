@@ -1,0 +1,125 @@
+# Construit et publie La Cigale pour Windows à chaque nouvelle version de Firefox ESR.
+# Vérification quotidienne ; lancement manuel possible depuis l'onglet « Actions ».
+name: Construction
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+    inputs:
+      forcer:
+        description: "Construire même si cette version ESR est déjà publiée"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: construction
+  cancel-in-progress: false
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    outputs:
+      esr: ${{ steps.esr.outputs.esr }}
+      construire: ${{ steps.esr.outputs.construire }}
+      version: ${{ steps.esr.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: esr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCER: ${{ inputs.forcer }}
+        run: |
+          set -euo pipefail
+          esr="$(curl -fsSL https://product-details.mozilla.org/1.0/firefox_versions.json | jq -r .FIREFOX_ESR)"
+          [[ "$esr" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?esr$ ]] || { echo "Version ESR invalide : $esr"; exit 1; }
+          echo "esr=$esr" >> "$GITHUB_OUTPUT"
+
+          # Déjà publiée ? Le corps de chaque version mentionne « Firefox ESR x.y.z ».
+          corps="$(gh release view --repo "$GITHUB_REPOSITORY" --json body -q .body 2>/dev/null || true)"
+          if [[ "$FORCER" != "true" ]] && grep -qF "Firefox ESR ${esr%esr}" <<< "$corps"; then
+            echo "Firefox ESR $esr est déjà publié."
+            echo "construire=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Numéro de version : celui du fichier VERSION, suivi de la date s'il est déjà pris.
+          version="$(tr -d '[:space:]' < VERSION)"
+          if gh release view "v$version" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            version="$version.$(date -u +%Y%m%d)"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "construire=true" >> "$GITHUB_OUTPUT"
+          echo "À construire : La Cigale $version (Firefox ESR $esr)"
+
+  windows:
+    needs: verifier
+    if: needs.verifier.outputs.construire == 'true'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Outils
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check Pillow
+          Invoke-WebRequest https://github.com/electron/rcedit/releases/download/v2.0.0/rcedit-x64.exe -OutFile outils\rcedit-x64.exe
+      - name: Construction
+        shell: pwsh
+        env:
+          VERSION_CIGALE: ${{ needs.verifier.outputs.version }}
+          ESR: ${{ needs.verifier.outputs.esr }}
+        run: |
+          Set-Content VERSION $env:VERSION_CIGALE -NoNewline
+          ./construire-windows.ps1 -Version $env:ESR
+      - name: Empreintes
+        shell: pwsh
+        run: |
+          Get-ChildItem dist -File | Where-Object Extension -in '.zip', '.exe' | ForEach-Object {
+            "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)"
+          } | Set-Content dist\SHA256SUMS.txt -Encoding ascii
+          Get-Content dist\SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: la-cigale-windows
+          path: |
+            dist/*.zip
+            dist/*.exe
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+
+  publier:
+    needs: [verifier, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: la-cigale-windows
+          path: paquets
+      - name: Version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION_CIGALE: ${{ needs.verifier.outputs.version }}
+          ESR: ${{ needs.verifier.outputs.esr }}
+        run: |
+          set -euo pipefail
+          esr="${ESR%esr}"
+          cat > notes.md <<EOF
+          Version construite automatiquement, basée sur **Firefox ESR $esr** (correctifs de sécurité de Mozilla).
+
+          ### Installation (Windows 10/11, 64 bits)
+          - **Installeur** : lancer \`LaCigale-$VERSION_CIGALE-windows-x64-installeur.exe\` (sans droits administrateur).
+          - **Portable** : extraire \`LaCigale-$VERSION_CIGALE-windows-x64-portable.zip\` puis lancer \`La Cigale (portable).cmd\`.
+
+          Empreintes SHA-256 : voir \`SHA256SUMS.txt\`.
+          EOF
+          gh release create "v$VERSION_CIGALE" paquets/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "La Cigale $VERSION_CIGALE" \
+            --notes-file notes.md \
+            --latest

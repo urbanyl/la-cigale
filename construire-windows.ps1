@@ -7,7 +7,7 @@
   2. Télécharge l'installeur officiel français depuis archive.mozilla.org.
   3. Vérifie la somme SHA-512 publiée par Mozilla ET la signature Authenticode.
   4. Extrait, applique réglages durcis, page d'accueil et identité La Cigale.
-  5. Produit une version portable (.zip) et, si Inno Setup est installé, un installeur.
+  5. Produit une version portable (.zip) et l'installeur La Cigale (.exe, interface maison).
 
 .EXAMPLE
   .\construire-windows.ps1
@@ -36,7 +36,7 @@ function Find-Outil($noms, $chemins) {
   return $null
 }
 
-# ------------------------------------------------------------------ Outils
+# Outils
 Write-Etape 'Vérification des outils'
 $python = Find-Outil @('python', 'py') @()
 if (-not $python) { throw 'Python 3 est requis (https://www.python.org).' }
@@ -45,9 +45,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Pillow est requis : python -m pip install Pill
 $7z = Find-Outil @('7z') @("$env:ProgramFiles\7-Zip\7z.exe", "${env:ProgramFiles(x86)}\7-Zip\7z.exe")
 if (-not $7z) { throw '7-Zip est requis pour extraire l''installeur Firefox (https://www.7-zip.org).' }
 $rcedit = Find-Outil @('rcedit-x64', 'rcedit') @((Join-Path $Racine 'outils\rcedit-x64.exe'))
-$iscc   = Find-Outil @('iscc') @("${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe", "$env:ProgramFiles\Inno Setup 6\ISCC.exe", "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe")
 
-# ---------------------------------------------------------------- Version
+# Version
 if (-not $Version) {
   Write-Etape 'Recherche de la dernière version de Firefox ESR'
   $Version = (Invoke-RestMethod 'https://product-details.mozilla.org/1.0/firefox_versions.json').FIREFOX_ESR
@@ -55,7 +54,7 @@ if (-not $Version) {
 if ($Version -notmatch '^\d+\.\d+(\.\d+)?esr$') { throw "Version ESR invalide : $Version" }
 Write-Host "Firefox ESR $Version  ->  La Cigale $VersionCigale"
 
-# ----------------------------------------------------------- Téléchargement
+# Téléchargement
 Write-Etape 'Téléchargement depuis archive.mozilla.org'
 New-Item -ItemType Directory -Force $Cache | Out-Null
 $base     = "https://archive.mozilla.org/pub/firefox/releases/$Version"
@@ -81,14 +80,14 @@ if ($sig.Status -ne 'Valid' -or $sig.SignerCertificate.Subject -notmatch 'O="?Mo
 }
 Write-Host 'Signature Mozilla Corporation valide.'
 
-# ---------------------------------------------------------------- Extraction
+# Extraction
 Write-Etape 'Extraction'
 foreach ($d in @($Extrait, $Dist)) { if (Test-Path $d) { Remove-Item $d -Recurse -Force } }
 & $7z x $setup "-o$Extrait" -y | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'Échec de l''extraction 7-Zip.' }
 Copy-Item (Join-Path $Extrait 'core') $Dist -Recurse
 
-# --------------------------------------------------------------- Identité
+# Identité
 Write-Etape 'Application de la configuration La Cigale'
 Rename-Item (Join-Path $Dist 'firefox.exe') 'lacigale.exe'
 # Mise à jour automatique, rapports de plantage et agent « navigateur par défaut » : retirés.
@@ -119,6 +118,7 @@ $apres = (Get-ChildItem $Dist -Recurse -File | Measure-Object Length -Sum).Sum
 Write-Host ("Allègement : {0:N1} Mo retirés" -f (($avant - $apres) / 1MB))
 $reglages = Join-Path $Racine 'reglages'
 Copy-Item (Join-Path $reglages 'cigale.cfg') $Dist
+Add-Content (Join-Path $Dist 'cigale.cfg') "`nlockPref(`"cigale.version`", `"$VersionCigale`");" -Encoding utf8
 New-Item -ItemType Directory -Force (Join-Path $Dist 'defaults\pref'), (Join-Path $Dist 'distribution'), (Join-Path $Dist 'cigale') | Out-Null
 Copy-Item (Join-Path $reglages 'defaults\pref\autoconfig.js') (Join-Path $Dist 'defaults\pref')
 Copy-Item (Join-Path $reglages 'distribution\policies.json') (Join-Path $Dist 'distribution')
@@ -169,7 +169,7 @@ start "" "%~dp0lacigale.exe" -profile "%~dp0Profil" %*
 '@ | Set-Content (Join-Path $Dist 'La Cigale (portable).cmd') -Encoding ascii
 Set-Content (Join-Path $Dist 'VERSION.txt') "La Cigale $VersionCigale (Firefox ESR $Version)" -Encoding utf8
 
-# -------------------------------------------------------------- Paquets
+# Paquets
 Write-Etape 'Création de la version portable'
 $zip = Join-Path $Sorties "LaCigale-$VersionCigale-windows-x64-portable.zip"
 if (Test-Path $zip) { Remove-Item $zip }
@@ -177,13 +177,9 @@ Compress-Archive -Path $Dist -DestinationPath $zip -CompressionLevel Optimal
 Write-Host "-> $zip"
 
 if (-not $SansInstalleur) {
-  if ($iscc) {
-    Write-Etape 'Création de l''installeur (Inno Setup)'
-    & $iscc "/DVersionCigale=$VersionCigale" "/DVersionFirefox=$Version" "/O$Sorties" (Join-Path $Racine 'installeur\lacigale.iss')
-    if ($LASTEXITCODE -ne 0) { throw 'Échec d''Inno Setup.' }
-  } else {
-    Write-Warning 'Inno Setup 6 absent : pas d''installeur .exe (https://jrsoftware.org/isdl.php).'
-  }
+  Write-Etape 'Création de l''installeur'
+  & (Join-Path $Racine 'installeur\compiler.ps1') -Charge $zip -VersionCigale $VersionCigale -VersionFirefox $Version `
+    -Sortie (Join-Path $Sorties "LaCigale-$VersionCigale-windows-x64-installeur.exe")
 }
 
 Write-Etape "Terminé. Pour tester : & '$Dist\La Cigale (portable).cmd'"

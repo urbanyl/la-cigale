@@ -4,9 +4,9 @@
 ## Windows
 
 Prérequis : [Python 3](https://www.python.org) avec Pillow (`python -m pip install Pillow`)
-et [7-Zip](https://www.7-zip.org). En option : [Inno Setup 6](https://jrsoftware.org/isdl.php)
-pour l'installeur, et [rcedit](https://github.com/electron/rcedit/releases) (`rcedit-x64.exe`
-dans `outils\`) pour l'icône de l'exécutable.
+et [7-Zip](https://www.7-zip.org). En option : [rcedit](https://github.com/electron/rcedit/releases)
+(`rcedit-x64.exe` dans `outils\`) pour l'icône de l'exécutable. L'installeur est compilé avec le
+compilateur C# de .NET Framework 4, déjà présent sur Windows.
 
 ```powershell
 .\construire-windows.ps1
@@ -14,7 +14,9 @@ dans `outils\`) pour l'icône de l'exécutable.
 
 Résultats dans `dist\` :
 - `LaCigale-<version>-windows-x64-portable.zip` : lancer `La Cigale (portable).cmd` ;
-- `LaCigale-<version>-windows-x64-installeur.exe` (si Inno Setup est présent).
+- `LaCigale-<version>-windows-x64-installeur.exe` : installeur à l'interface La Cigale, sans droits
+  administrateur (raccourcis du menu Démarrer, inscription comme navigateur, désinstalleur).
+  Options : `/silencieux`, `/dossier "chemin"`, `/sansbureau`.
 
 ## Linux
 
@@ -47,7 +49,7 @@ branding/                     logo source, SVG, PNG, ICO générés
 outils/
   generer_visuels.py          régénère toute l'identité visuelle depuis le logo source
   rebrander_omni.py           renomme « Firefox » en « La Cigale » dans l'interface
-installeur/                   installeur Windows (Inno Setup) et installation Linux
+installeur/                   installeur Windows (C#, interface maison) et installation Linux
 docs/securite.md              modèle de menace, compromis, chaîne de confiance
 ```
 

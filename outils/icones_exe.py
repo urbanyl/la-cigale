@@ -47,7 +47,7 @@ k32.EnumResourceLanguagesW.argtypes = [wintypes.HMODULE, ctypes.c_void_p, ctypes
 
 
 def _nom(valeur):
-    """Identifiant de ressource : entier (MAKEINTRESOURCE) ou chaîne."""
+    # identifiant de ressource : entier (MAKEINTRESOURCE) ou chaîne
     return valeur if valeur < 0x10000 else ctypes.wstring_at(valeur)
 
 
@@ -62,7 +62,7 @@ def lire_ressource(module, type_, nom) -> bytes:
 
 
 def groupes(exe: Path):
-    """[(nom, langue, [(largeur, id_icone)])] pour chaque groupe d'icônes."""
+    # [(nom, langue, [(largeur, id_icone)])] pour chaque groupe d'icônes
     module = k32.LoadLibraryExW(str(exe), None, LOAD_LIBRARY_AS_DATAFILE)
     noms = []
     rappel = ENUM(lambda m, t, n, p: noms.append(_nom(n)) or True)
@@ -93,7 +93,6 @@ def apercu(module, entrees) -> Image.Image:
     return Image.open(io.BytesIO(ico))
 
 
-# ---------------------------------------------------------------- dessins --
 # Tracé du masque (repère 32 x 32), identique à MASQUE_SVG dans outils/rebrander_omni.py.
 MASQUE_TRACE = """
 M16 10.6 C12 8.9 5.2 8.4 2.6 10 C0.9 11.1 1.1 16 3 19.2 C5 22.6 10.2 23.1 12.6 20.6
@@ -105,7 +104,7 @@ M26.6 15.3 C25 12.7 20.8 12.6 19.2 15.4 C20.8 17.4 25 17.4 26.6 15.3 Z
 
 
 def contours_masque(pas=24):
-    """Aplatit le tracé (M, C, Z uniquement) en polygones."""
+    # aplatit le tracé (M, C, Z uniquement) en polygones
     import re as _re
     jetons = _re.findall(r"[MCZ]|-?[\d.]+", MASQUE_TRACE)
     contours, courant, i = [], [], 0
@@ -129,12 +128,12 @@ def contours_masque(pas=24):
 
 
 def _fond(t):
-    """Base commune : l'icône principale de La Cigale."""
+    # base commune : l'icône principale de La Cigale
     return Image.open(PNG / "logo-256.png").convert("RGBA").resize((t, t), Image.LANCZOS)
 
 
 def _carre(t):
-    """Fond de l'icône La Cigale (dégradé, halo, grain), sans la cigale."""
+    # fond de l'icône La Cigale (dégradé, halo, grain), sans la cigale
     return Image.open(PNG / "fond-icone-256.png").convert("RGBA").resize((t, t), Image.LANCZOS)
 
 
@@ -194,7 +193,7 @@ TAILLES = [16, 20, 24, 32, 40, 48, 64, 256]
 
 
 def icone_ico(image256: Image.Image) -> list:
-    """Liste de (taille, octets) au format attendu dans RT_ICON (PNG, accepté depuis Vista)."""
+    # liste de (taille, octets) au format attendu dans RT_ICON (PNG, accepté depuis Vista)
     sortie = []
     for t in TAILLES:
         img = image256 if t == 256 else image256.resize((t, t), Image.LANCZOS)

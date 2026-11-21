@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src chrome:; img-src chrome: data:; object-src 'none'">
+<title>Protection</title>
+<link rel="icon" href="chrome://browser/content/cigale/bouton.png">
+<link rel="stylesheet" href="chrome://browser/content/cigale/protection.css">
+</head>
+<body>
+<main>
+  <h1><img src="chrome://browser/content/cigale/bouton.png" alt="" width="28" height="28"> Protection</h1>
+  <p id="resume" class="discret"></p>
+
+  <h2>Profil</h2>
+  <form id="profils">
+    <label>
+      <input type="radio" name="profil" value="confort">
+      <b>Confort</b>
+      <span>Les sites s'affichent en français et vous restez connecté d'une fois sur l'autre.</span>
+    </label>
+    <label>
+      <input type="radio" name="profil" value="standard">
+      <b>Standard</b>
+      <span>Le réglage d'origine. Tout est effacé quand vous fermez La Cigale.</span>
+    </label>
+    <label>
+      <input type="radio" name="profil" value="renforce">
+      <b>Renforcé</b>
+      <span>JavaScript coupé et marges autour des pages. Beaucoup de sites ne marcheront plus.</span>
+    </label>
+  </form>
+  <p id="note-profil" class="discret" hidden>Vous avez modifié des réglages à la main, aucun profil ne correspond.</p>
+
+  <h2>En ce moment</h2>
+  <table>
+    <tbody id="etats"></tbody>
+  </table>
+  <p class="discret">Pour voir ce qui a été bloqué sur une page précise, ouvrez uBlock Origin (le bouton rouge).</p>
+
+  <h2>Sites où rester connecté</h2>
+  <p>Ces sites gardent leurs cookies à la fermeture. Les autres sont effacés.</p>
+  <form id="ajout-exception">
+    <input id="exception" placeholder="exemple.fr" autocomplete="off" aria-label="Adresse du site" required>
+    <button>Ajouter</button>
+  </form>
+  <p id="erreur-exception" class="erreur" role="alert" hidden></p>
+  <ul id="exceptions"></ul>
+
+  <h2>Mises à jour</h2>
+  <label class="case">
+    <input type="checkbox" id="maj-verifier">
+    Prévenir quand une nouvelle version sort (une vérification par jour sur GitHub)
+  </label>
+  <p id="maj-etat" class="discret"></p>
+</main>
+<script src="chrome://browser/content/cigale/protection.js"></script>
+</body>
+</html>

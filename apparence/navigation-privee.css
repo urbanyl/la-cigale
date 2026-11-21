@@ -30,7 +30,7 @@ html.private .container {
   padding-top: 4vh;
 }
 
-/* Un seul emblème : le masque La Cigale, puis le titre --------------------- */
+/* Un seul emblème : le masque La Cigale, puis le titre */
 html.private .logo-and-wordmark {
   flex-direction: column;
   gap: 18px;
@@ -52,7 +52,7 @@ html.private .logo-and-wordmark::after {
   color: var(--cigale-texte);
 }
 
-/* Recherche : même pilule que la page d'accueil ---------------------------- */
+/* Recherche : même pilule que la page d'accueil */
 html.private .search-inner-wrapper {
   min-width: 0 !important;
   width: 100%;
@@ -70,7 +70,7 @@ html.private content-search-handoff-ui {
   width: 100%;
 }
 
-/* Encadré d'information : discret, sans violet ----------------------------- */
+/* Encadré d'information : discret, sans violet */
 html.private .info-border {
   background: none !important;
   box-shadow: none !important;
@@ -102,6 +102,6 @@ html.private .text-link {
 }
 html.private a:hover { color: var(--cigale-texte) !important; }
 
-/* Aucune promotion (VPN Mozilla, etc.) ------------------------------------- */
+/* Aucune promotion (VPN Mozilla, etc.) */
 html.private .promo,
 html.private .search-banner { display: none !important; }

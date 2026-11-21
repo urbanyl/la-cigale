@@ -32,10 +32,31 @@ AJOUTS_BROWSER = {
     PRIVE + "cigale-fond.jpg": (RACINE / "accueil" / "img" / "fond.jpg").read_bytes(),
     PRIVE + "cigale-prive.png": (BRANDING / "png" / "prive-256.png").read_bytes(),
 }
+# Page about:cigale (protection et profils) et icône du bouton de la barre d'outils
+CIGALE = "chrome/browser/content/browser/cigale/"
+for _f in ("protection.html", "protection.css", "protection.js"):
+    AJOUTS_BROWSER[CIGALE + _f] = (RACINE / "apparence" / "protection" / _f).read_bytes()
+AJOUTS_BROWSER[CIGALE + "bouton.png"] = (BRANDING / "png" / "logo-128.png").read_bytes()
+
+
+def _bouton_barre() -> bytes:
+    # symbole blanc 32 px pour la barre d'outils (toujours sombre dans La Cigale)
+    import io
+    symbole = Image.open(BRANDING / "png" / "symbole-blanc-1024.png").convert("RGBA")
+    symbole = symbole.crop(symbole.getbbox())
+    symbole.thumbnail((32, 32), Image.LANCZOS)
+    image = Image.new("RGBA", (32, 32))
+    image.alpha_composite(symbole, ((32 - symbole.width) // 2, (32 - symbole.height) // 2))
+    sortie = io.BytesIO()
+    image.save(sortie, "PNG", optimize=True)
+    return sortie.getvalue()
+
+
+AJOUTS_BROWSER[CIGALE + "bouton-barre.png"] = _bouton_barre()
 
 
 def svg_image(png: bytes, taille: int) -> bytes:
-    """SVG autonome contenant un PNG (les SVG utilisés comme images ne chargent rien d'externe)."""
+    # SVG autonome contenant un PNG (les SVG utilisés comme images ne chargent rien d'externe)
     import base64
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {taille} {taille}">'
             f'<image width="{taille}" height="{taille}" href="data:image/png;base64,'
@@ -69,9 +90,19 @@ CSS_INDICATEUR = b"""
   fill: currentColor;
   fill-opacity: 0.9;
 }
+
+/* pas de bleu Firefox : focus et boutons principaux en gris clair */
+:root {
+  --focus-outline-color: #8c8c90 !important;
+  --toolbar-field-border-color-focus: #6b6b70 !important;
+  --color-accent-primary: #ededed !important;
+  --color-accent-primary-hover: #ffffff !important;
+  --color-accent-primary-active: #c8c8cc !important;
+  --button-text-color-primary: #0a0a0b !important;
+}
 """
 
-# ------------------------------------------------------------------ Couleurs
+# Couleurs
 # Le violet « navigation privée » de Mozilla est converti en gris de même luminosité.
 # Hors champ : outils de développement, couleurs de conteneurs choisies par l'utilisateur,
 # logos de tiers, sélecteur de couleur, thèmes intégrés optionnels (Alpenglow).
@@ -87,7 +118,7 @@ COULEUR_RGB = re.compile(r"(rgba?\(\s*)(\d{1,3})(\s*,?\s*)(\d{1,3})(\s*,?\s*)(\d
 
 
 def _gris_si_violet(r: int, g: int, b: int):
-    """Niveau de gris de même luminosité si la couleur est violette, sinon None."""
+    # niveau de gris de même luminosité si la couleur est violette, sinon None
     import colorsys
     teinte, lum, sat = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
     if sat > 0.25 and 0.68 <= teinte <= 0.90 and 0.08 < lum < 0.92:
@@ -121,7 +152,7 @@ def neutraliser_violet(nom: str, donnees: bytes):
     return nouveau.encode("utf-8") if nouveau != texte else None
 
 
-# --------------------------------------------------------------- Letterboxing
+# Letterboxing
 # resistFingerprinting arrondit la zone de contenu (letterboxing) : la page d'accueil locale
 # de La Cigale (aucune donnée envoyée au réseau) en est exemptée pour occuper toute la fenêtre,
 # et les marges des sites prennent la couleur de nuit du thème au lieu du gris Firefox.
@@ -133,8 +164,74 @@ LETTERBOX_ANCRE = b"--letterboxing-bgcolor: var(--tabpanel-background-color);"
 LETTERBOX_NUIT = b"--letterboxing-bgcolor: #0a0a0b;"
 
 
+# Thème
+# Le thème sombre intégré (actif par défaut) devient le thème « La Cigale » : même identifiant,
+# palette complète. La version est relevée (ici et dans BuiltInThemeConfig) pour que les
+# profils existants le réinstallent.
+THEME_DOSSIER = "chrome/browser/content/builtin-themes/dark/"
+THEME_VERSION = b"1.3.4"
+THEME_VERSION_CIGALE = b"2.0.0"
+THEME_MANIFEST = b"""{
+  "manifest_version": 2,
+  "browser_specific_settings": { "gecko": { "id": "firefox-compact-dark@mozilla.org" } },
+  "name": "La Cigale",
+  "description": "Nuit graphite, monochrome : le th\\u00e8me de La Cigale.",
+  "author": "Projet La Cigale",
+  "version": "2.0.0",
+  "icons": { "32": "icon.svg" },
+  "theme": {
+    "colors": {
+      "frame": "#0a0a0b",
+      "frame_inactive": "#0a0a0b",
+      "tab_background_text": "#8c8c90",
+      "tab_selected": "#1c1c1f",
+      "tab_text": "#ededed",
+      "tab_line": "#ededed",
+      "tab_loading": "#ededed",
+      "tab_background_separator": "#26262a",
+      "toolbar": "#141416",
+      "toolbar_text": "#ededed",
+      "toolbar_top_separator": "#141416",
+      "toolbar_bottom_separator": "#1f1f22",
+      "toolbar_vertical_separator": "#26262a",
+      "toolbar_field": "#0c0c0d",
+      "toolbar_field_text": "#ededed",
+      "toolbar_field_border": "#26262a",
+      "toolbar_field_focus": "#0c0c0d",
+      "toolbar_field_text_focus": "#ffffff",
+      "toolbar_field_border_focus": "#6b6b70",
+      "toolbar_field_highlight": "#3a3a3f",
+      "toolbar_field_highlight_text": "#ffffff",
+      "button_background_hover": "rgba(255, 255, 255, 0.08)",
+      "button_background_active": "rgba(255, 255, 255, 0.14)",
+      "icons": "#d6d6da",
+      "icons_attention": "#ffffff",
+      "focus_outline": "#8c8c90",
+      "popup": "#141416",
+      "popup_text": "#ededed",
+      "popup_border": "#26262a",
+      "popup_highlight": "#26262a",
+      "popup_highlight_text": "#ffffff",
+      "sidebar": "#0f0f10",
+      "sidebar_text": "#ededed",
+      "sidebar_border": "#1f1f22",
+      "sidebar_highlight": "#26262a",
+      "sidebar_highlight_text": "#ffffff",
+      "ntp_background": "#0a0a0b",
+      "ntp_text": "#ededed"
+    },
+    "properties": { "color_scheme": "dark", "content_color_scheme": "dark" }
+  }
+}
+"""
+THEME_ICONE = b"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<rect width="32" height="32" rx="7" fill="#0a0a0b"/><rect x="4" y="6" width="24" height="5" rx="2" fill="#1c1c1f"/>
+<rect x="4" y="13" width="24" height="13" rx="2" fill="#141416"/><circle cx="16" cy="19.5" r="3" fill="#ededed"/></svg>
+"""
+
+
 def correctif(donnees: bytes, ancre: bytes, remplacement: bytes, nom: str) -> bytes:
-    """Remplace une ancre attendue ; échoue bruyamment si Firefox a changé le fichier."""
+    # remplace une ancre attendue ; échoue bruyamment si Firefox a changé le fichier
     if ancre not in donnees:
         sys.exit(f"Correctif impossible : ancre introuvable dans {nom} (version de Firefox différente ?)")
     return donnees.replace(ancre, remplacement, 1)
@@ -209,7 +306,7 @@ ENTITE_DTD = re.compile(r'(<!ENTITY\s+\S+\s+")([^"]*)(")')
 
 
 def _remplacer_texte(valeur: str) -> str:
-    """Remplace « Firefox » dans un texte affiché, en épargnant URL et identifiants entre accolades."""
+    # remplace « Firefox » dans un texte affiché, en épargnant URL et identifiants entre accolades
     morceaux = re.split(r"(\{[^}]*\}|https?://\S+|\S+\.(?:com|org|net)\S*)", valeur)
     for i in range(0, len(morceaux), 2):
         for avant, apres in TEXTES:
@@ -252,7 +349,7 @@ MOTS_MASCOTTE = {"fox", "foxy", "kit", "mascot", "firefox"}
 
 
 def evoque_mascotte(racine: str) -> bool:
-    """Vrai si un des mots du nom de fichier (séparés par - _ . @) désigne la mascotte ou Firefox."""
+    # vrai si un des mots du nom de fichier (séparés par - _ . @) désigne la mascotte ou Firefox
     return any(mot in MOTS_MASCOTTE for mot in re.split(r"[-_.@]", racine.lower()))
 # Illustrations des pages d'erreur qui contiennent la mascotte.
 ILLUSTRATIONS_ERREUR = {"error-malformed-url.svg", "no-connection.svg", "security-error.svg"}
@@ -267,7 +364,7 @@ def remplacer_image(base: str, donnees: bytes):
 
 
 def transformer(nom: str, donnees: bytes):
-    """Renvoie le nouveau contenu, ou None si l'entrée reste inchangée."""
+    # renvoie le nouveau contenu, ou None si l'entrée reste inchangée
     nouveau = transformer_identite(nom, donnees)
     if nouveau is not None:
         donnees = nouveau
@@ -276,6 +373,13 @@ def transformer(nom: str, donnees: bytes):
 
 
 def transformer_identite(nom: str, donnees: bytes):
+    if nom == THEME_DOSSIER + "manifest.json":
+        return THEME_MANIFEST
+    if nom in (THEME_DOSSIER + "icon.svg", THEME_DOSSIER + "preview.svg"):
+        return THEME_ICONE
+    if nom == "modules/BuiltInThemeConfig.sys.mjs":
+        ancre = b'"firefox-compact-dark@mozilla.org",\n    {\n      version: "' + THEME_VERSION + b'"'
+        return correctif(donnees, ancre, ancre.replace(THEME_VERSION, THEME_VERSION_CIGALE), nom)
     if nom in ICONES_MASQUE:
         return MASQUE_SVG
     if nom == "modules/RFPHelper.sys.mjs":
@@ -316,11 +420,8 @@ def transformer_identite(nom: str, donnees: bytes):
 
 
 def lire_entrees(omni: Path):
-    """Renvoie [(nom, données)] de omni.ja.
-
-    Mozilla publie des « jars optimisés » (répertoire central en tête de fichier) que le
-    module zipfile ne sait pas lire : on passe alors par 7-Zip ou unzip.
-    """
+    # Mozilla livre des jars « optimisés » (répertoire central au début) que zipfile
+    # ne sait pas toujours lire, d'où le repli sur 7-Zip ou unzip.
     try:
         with zipfile.ZipFile(omni) as z:
             return [(i.filename, z.read(i)) for i in z.infolist() if not i.is_dir()]

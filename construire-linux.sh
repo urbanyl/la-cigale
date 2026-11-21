@@ -89,6 +89,7 @@ etape "Application de la configuration La Cigale"
 # Mise à jour automatique et rapports de plantage : retirés.
 rm -f "$DIST"/{updater,updater.ini,update-settings.ini,crashreporter,crashreporter.ini,pingsender,minidump-analyzer}
 cp "$RACINE/reglages/cigale.cfg" "$DIST/"
+echo "lockPref(\"cigale.version\", \"$VERSION_CIGALE\");" >> "$DIST/cigale.cfg"
 mkdir -p "$DIST/defaults/pref" "$DIST/distribution" "$DIST/cigale" "$DIST/icones"
 cp "$RACINE/reglages/defaults/pref/autoconfig.js" "$DIST/defaults/pref/"
 cp "$RACINE/reglages/distribution/policies.json" "$DIST/distribution/"
