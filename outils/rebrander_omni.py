@@ -38,6 +38,10 @@ AJOUTS_BROWSER = {
 CIGALE = "chrome/browser/content/browser/cigale/"
 for _f in ("protection.html", "protection.css", "protection.js", "cigale.sys.mjs", "tor.svg"):
     AJOUTS_BROWSER[CIGALE + _f] = (RACINE / "apparence" / "protection" / _f).read_bytes()
+# copie de la page d'accueil servie par about:apropos (adresse lisible, retour arrière normal)
+for _f in (RACINE / "accueil").rglob("*"):
+    if _f.is_file():
+        AJOUTS_BROWSER[CIGALE + "accueil/" + _f.relative_to(RACINE / "accueil").as_posix()] = _f.read_bytes()
 AJOUTS_BROWSER[CIGALE + "bouton.png"] = (BRANDING / "png" / "logo-128.png").read_bytes()
 
 

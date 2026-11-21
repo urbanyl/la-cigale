@@ -161,6 +161,11 @@
         "Locked": false
       }
     },
+    "SupportMenu": {
+      "Title": "Assistance La Cigale (Discord)",
+      "URL": "https://discord.gg/YFrPQEaQEK",
+      "AccessKey": "C"
+    },
     "EncryptedMediaExtensions": {
       "Enabled": false,
       "Locked": false
