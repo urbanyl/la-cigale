@@ -39,6 +39,10 @@ Chrome et Edge démarrent plus vite et consomment moins de mémoire. Allégée d
 
 ## Installer
 
+**Windows : [télécharger la dernière version](https://github.com/urbanyl/la-cigale/releases/latest)**, extraire le zip, lancer `La Cigale (portable).cmd`.
+
+Ou construire soi-même depuis les binaires officiels de Mozilla :
+
 ```powershell
 .\construire-windows.ps1     # Windows : télécharge Firefox ESR, vérifie SHA-512 + signature Mozilla
 ```
