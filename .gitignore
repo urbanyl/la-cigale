@@ -1,0 +1,4 @@
+construction/
+dist/
+outils/rcedit*.exe
+__pycache__/

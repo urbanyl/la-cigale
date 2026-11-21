@@ -1,0 +1,108 @@
+/* ==========================================================================
+   La Cigale : habillage de la page de navigation privée (about:privatebrowsing)
+   Ajouté à la fin de la feuille de style de Firefox par outils/rebrander_omni.py.
+   Même langage visuel que la page d'accueil : nuit graphite, grain, monochrome.
+   ========================================================================== */
+
+html.private {
+  --cigale-texte: #ededed;
+  --cigale-texte-doux: #8c8c90;
+  --cigale-surface: rgba(255, 255, 255, 0.04);
+  --cigale-surface-forte: rgba(255, 255, 255, 0.08);
+  --cigale-bordure: rgba(255, 255, 255, 0.10);
+  --background-color-canvas: #0a0a0b !important;
+  --link-color: var(--cigale-texte-doux) !important;
+  --link-color-hover: var(--cigale-texte) !important;
+  --link-color-active: var(--cigale-texte) !important;
+  background: #0a0a0b url("chrome://browser/skin/privatebrowsing/cigale-fond.jpg") center / cover fixed no-repeat !important;
+  color: var(--cigale-texte) !important;
+  color-scheme: dark;
+}
+html.private body::before { display: none !important; }
+
+html.private body {
+  font-family: Inter, "Segoe UI Variable", "Segoe UI", Cantarell, system-ui, sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html.private .container {
+  max-width: 640px;
+  padding-top: 4vh;
+}
+
+/* Un seul emblème : le masque La Cigale, puis le titre --------------------- */
+html.private .logo-and-wordmark {
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 40px;
+}
+html.private .logo {
+  background: url("chrome://browser/skin/privatebrowsing/cigale-prive.png") no-repeat center / contain !important;
+  width: 72px !important;
+  height: 72px !important;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+html.private .wordmark { display: none !important; }
+html.private .logo-and-wordmark::after {
+  content: "Navigation privée";
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--cigale-texte);
+}
+
+/* Recherche : même pilule que la page d'accueil ---------------------------- */
+html.private .search-inner-wrapper {
+  min-width: 0 !important;
+  width: 100%;
+}
+html.private content-search-handoff-ui {
+  --content-search-handoff-ui-background-color: rgba(255, 255, 255, 0.08);
+  --content-search-handoff-ui-color: var(--cigale-texte);
+  --content-search-handoff-ui-fill: var(--cigale-texte-doux);
+  --content-search-handoff-ui-caret-color: var(--cigale-texte);
+  --content-search-handoff-ui-border-width: 1px;
+  --content-search-handoff-ui-unfocused-border-color: var(--cigale-bordure);
+  --content-search-handoff-ui-fakefocus-border-color: rgba(255, 255, 255, 0.45);
+  --content-search-handoff-ui-fakefocus-box-shadow-inner: transparent;
+  --content-search-handoff-ui-fakefocus-box-shadow-outer: transparent;
+  width: 100%;
+}
+
+/* Encadré d'information : discret, sans violet ----------------------------- */
+html.private .info-border {
+  background: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin-top: 40px;
+}
+html.private .info {
+  background: var(--cigale-surface) !important;
+  border: 1px solid var(--cigale-bordure) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  padding: 18px 22px 20px !important;
+  color: var(--cigale-texte-doux);
+  font-size: 14px;
+  backdrop-filter: blur(12px);
+}
+html.private #info-title {
+  color: var(--cigale-texte);
+  font-size: 12px !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 8px !important;
+}
+html.private #info-body { margin-bottom: 10px !important; }
+html.private a:link,
+html.private .text-link {
+  color: var(--cigale-texte-doux) !important;
+  text-underline-offset: 3px;
+}
+html.private a:hover { color: var(--cigale-texte) !important; }
+
+/* Aucune promotion (VPN Mozilla, etc.) ------------------------------------- */
+html.private .promo,
+html.private .search-banner { display: none !important; }

@@ -1,0 +1,30 @@
+{
+  "La Cigale": {
+    "demarrage_ms": 2222,
+    "javascript_ms": 211,
+    "dom_ms": 454,
+    "canvas_ms": 314,
+    "memoire_mo": 961
+  },
+  "Firefox ESR": {
+    "demarrage_ms": 2244,
+    "javascript_ms": 220,
+    "dom_ms": 474,
+    "canvas_ms": 275,
+    "memoire_mo": 928
+  },
+  "Chrome": {
+    "demarrage_ms": 820,
+    "javascript_ms": 201,
+    "dom_ms": 490,
+    "canvas_ms": 212,
+    "memoire_mo": 717
+  },
+  "Edge": {
+    "demarrage_ms": 971,
+    "javascript_ms": 192,
+    "dom_ms": 483,
+    "canvas_ms": 213,
+    "memoire_mo": 737
+  }
+}

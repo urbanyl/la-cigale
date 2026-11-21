@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>À propos — La Cigale</title>
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .texte { color: var(--texte-doux); }
+    .texte h1 { color: var(--texte); font-size: 32px; letter-spacing: -0.02em; margin: 0 0 8px; }
+    .texte h2 { margin-top: 28px; }
+    .texte a { color: var(--texte); }
+    .texte code { background: var(--surface-forte); padding: 2px 6px; border-radius: 6px; color: var(--texte); }
+  </style>
+</head>
+<body>
+  <main class="scene texte">
+    <header class="entete">
+      <img class="symbole" src="img/symbole-blanc.svg" alt="" width="56" height="56">
+      <div>
+        <h1>La Cigale</h1>
+        <p class="date">Le navigateur libre, sobre et respectueux, conçu en France.</p>
+      </div>
+    </header>
+
+    <section>
+      <h2>Notre démarche</h2>
+      <p>La Cigale reprend Firefox ESR, la version à support étendu de Mozilla, et la règle
+        pour l'anonymat et la sécurité : empreinte uniformisée façon Tor Browser, aucune
+        télémétrie, DNS chiffré, HTTPS imposé, tout effacé à la fermeture. Interface en français.</p>
+      <p>La Cigale réduit fortement le pistage, mais ne masque pas votre adresse IP. Pour cela,
+        utilisez un VPN de confiance ou Tor Browser.</p>
+    </section>
+
+    <section>
+      <h2>Réglages avancés</h2>
+      <p>Chaque réglage reste modifiable dans <code>about:config</code>. La liste complète des choix
+        par défaut se trouve dans le fichier <code>cigale.cfg</code> livré avec le navigateur.</p>
+      <p>Pour retrouver le nouvel onglet natif de Firefox, passez <code>cigale.nouvelOnglet.natif</code> à <code>true</code>.</p>
+    </section>
+
+    <section>
+      <h2>Licences</h2>
+      <p>La Cigale est distribuée sous licence publique Mozilla 2.0 (MPL-2.0). Firefox et ses logos
+        sont des marques déposées de la Mozilla Foundation. La Cigale n'est ni affiliée à Mozilla
+        ni approuvée par elle.</p>
+      <p>Logo : « Cicada » par Alex Muravev, The Noun Project, licence
+        <a href="https://creativecommons.org/licenses/by/3.0/deed.fr">CC BY 3.0</a>.</p>
+    </section>
+
+    <footer class="pied"><a href="index.html">← Retour à l'accueil</a></footer>
+  </main>
+</body>
+</html>

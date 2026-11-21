@@ -1,0 +1,106 @@
+{
+  "policies": {
+    "DisableAppUpdate": true,
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true,
+    "DisableFeedbackCommands": true,
+    "DisableDefaultBrowserAgent": true,
+    "DontCheckDefaultBrowser": true,
+    "NoDefaultBookmarks": true,
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": "",
+    "CaptivePortal": false,
+    "NetworkPrediction": false,
+    "DisableFirefoxAccounts": true,
+    "DisableFormHistory": true,
+    "DisableProfileImport": true,
+    "PasswordManagerEnabled": false,
+    "OfferToSaveLogins": false,
+    "HttpsOnlyMode": "force_enabled",
+    "PostQuantumKeyAgreementEnabled": true,
+    "PrimaryPassword": false,
+    "EnableTrackingProtection": {
+      "Value": true,
+      "Locked": true,
+      "Cryptomining": true,
+      "Fingerprinting": true,
+      "EmailTracking": true
+    },
+    "DNSOverHTTPS": {
+      "Enabled": true,
+      "ProviderURL": "https://dns.quad9.net/dns-query",
+      "Fallback": false,
+      "Locked": false
+    },
+    "FirefoxHome": {
+      "Search": true,
+      "TopSites": true,
+      "SponsoredTopSites": false,
+      "Highlights": false,
+      "Pocket": false,
+      "SponsoredPocket": false,
+      "Snippets": false,
+      "Locked": false
+    },
+    "FirefoxSuggest": {
+      "WebSuggestions": false,
+      "SponsoredSuggestions": false,
+      "ImproveSuggest": false,
+      "Locked": false
+    },
+    "UserMessaging": {
+      "ExtensionRecommendations": false,
+      "FeatureRecommendations": false,
+      "UrlbarInterventions": false,
+      "SkipOnboarding": true,
+      "MoreFromMozilla": false,
+      "FirefoxLabs": false,
+      "Locked": false
+    },
+    "SearchEngines": {
+      "Add": [
+        {
+          "Name": "Qwant",
+          "Description": "Moteur de recherche français respectueux de la vie privée",
+          "Alias": "@qwant",
+          "Method": "GET",
+          "URLTemplate": "https://www.qwant.com/?q={searchTerms}",
+          "SuggestURLTemplate": "https://api.qwant.com/v3/suggest?q={searchTerms}&client=opensearch",
+          "IconURL": "https://www.qwant.com/favicon.ico"
+        },
+        {
+          "Name": "Startpage",
+          "Description": "Résultats Google sans pistage",
+          "Alias": "@startpage",
+          "Method": "GET",
+          "URLTemplate": "https://www.startpage.com/sp/search?query={searchTerms}&language=francais",
+          "IconURL": "https://www.startpage.com/favicon.ico"
+        },
+        {
+          "Name": "Lilo",
+          "Description": "Moteur de recherche solidaire français",
+          "Alias": "@lilo",
+          "Method": "GET",
+          "URLTemplate": "https://search.lilo.org/?q={searchTerms}",
+          "IconURL": "https://search.lilo.org/favicon.ico"
+        }
+      ],
+      "Default": "DuckDuckGo",
+      "PreventInstalls": false,
+      "Remove": ["Google", "Bing", "Amazon.fr", "eBay", "Perplexity", "Ecosia"]
+    },
+    "ExtensionSettings": {
+      "uBlock0@raymondhill.net": {
+        "installation_mode": "force_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi",
+        "private_browsing": true
+      }
+    },
+    "Permissions": {
+      "Notifications": { "BlockNewRequests": false, "Locked": false },
+      "Autoplay": { "Default": "block-audio-video", "Locked": false }
+    },
+    "EncryptedMediaExtensions": { "Enabled": false, "Locked": false }
+  }
+}

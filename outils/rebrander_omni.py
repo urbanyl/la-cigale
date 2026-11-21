@@ -1,0 +1,398 @@
+"""Applique l'identité La Cigale à l'intérieur d'une installation Firefox extraite.
+
+  * browser/omni.ja : noms de marque (brand.ftl / brand.properties) et logos internes
+    (à propos, onglets, page de démarrage) ;
+  * browser/chrome/icons/default : icônes des fenêtres (Linux).
+
+Usage : python outils/rebrander_omni.py <dossier_installation>
+"""
+import io
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import zipfile
+from pathlib import Path
+
+from PIL import Image
+
+SEPT_ZIP = os.path.join(os.environ.get("ProgramFiles", r"C:\Program Files"), "7-Zip", "7z.exe")
+RACINE = Path(__file__).resolve().parent.parent
+BRANDING = RACINE / "branding"
+LOGO_1024 = Image.open(BRANDING / "png" / "logo-1024.png").convert("RGBA")
+LOGO_SVG = (BRANDING / "logo.svg").read_bytes()
+WORDMARK_SVG = (BRANDING / "wordmark.svg").read_bytes()
+
+# Page de navigation privée : feuille de style La Cigale et ressources ajoutées à browser/omni.ja
+PRIVE = "chrome/browser/skin/classic/browser/privatebrowsing/"
+CSS_PRIVE = (RACINE / "apparence" / "navigation-privee.css").read_bytes()
+AJOUTS_BROWSER = {
+    PRIVE + "cigale-fond.jpg": (RACINE / "accueil" / "img" / "fond.jpg").read_bytes(),
+    PRIVE + "cigale-prive.png": (BRANDING / "png" / "prive-256.png").read_bytes(),
+}
+
+
+def svg_image(png: bytes, taille: int) -> bytes:
+    """SVG autonome contenant un PNG (les SVG utilisés comme images ne chargent rien d'externe)."""
+    import base64
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {taille} {taille}">'
+            f'<image width="{taille}" height="{taille}" href="data:image/png;base64,'
+            f'{base64.b64encode(png).decode()}"/></svg>').encode()
+
+
+ICONE_PRIVE_SVG = svg_image((BRANDING / "png" / "prive-64.png").read_bytes(), 64)
+
+# Masque La Cigale vectoriel, monochrome (couleur du thème via context-fill) :
+# indicateur « Navigation privée » de la barre d'onglets et bouton « Nouvelle fenêtre privée ».
+# Même géométrie que le glyphe « prive » d'outils/icones_exe.py (coordonnées normalisées).
+MASQUE_SVG = b"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16">
+  <path fill="context-fill" fill-opacity="context-fill-opacity" fill-rule="evenodd" d="
+    M16 10.6 C12 8.9 5.2 8.4 2.6 10 C0.9 11.1 1.1 16 3 19.2 C5 22.6 10.2 23.1 12.6 20.6
+    C14 19.1 15 18.3 16 18.3 C17 18.3 18 19.1 19.4 20.6 C21.8 23.1 27 22.6 29 19.2
+    C30.9 16 31.1 11.1 29.4 10 C26.8 8.4 20 8.9 16 10.6 Z
+    M5.4 15.3 C7 12.7 11.2 12.6 12.8 15.4 C11.2 17.4 7 17.4 5.4 15.3 Z
+    M26.6 15.3 C25 12.7 20.8 12.6 19.2 15.4 C20.8 17.4 25 17.4 26.6 15.3 Z"/>
+</svg>
+"""
+ICONES_MASQUE = {
+    "chrome/toolkit/skin/classic/global/icons/indicator-private-browsing.svg",
+    "chrome/browser/skin/classic/browser/privateBrowsing.svg",
+}
+# L'indicateur n'active pas context-fill par défaut : on le rend blanc cassé, comme le texte.
+CSS_INDICATEUR = b"""
+
+/* La Cigale : indicateur de navigation privee monochrome */
+.private-browsing-indicator-icon {
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  fill-opacity: 0.9;
+}
+"""
+
+# ------------------------------------------------------------------ Couleurs
+# Le violet « navigation privée » de Mozilla est converti en gris de même luminosité.
+# Hors champ : outils de développement, couleurs de conteneurs choisies par l'utilisateur,
+# logos de tiers, sélecteur de couleur, thèmes intégrés optionnels (Alpenglow).
+COULEUR_HEX = re.compile(r"#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b")
+EXCLUS_COULEURS = ("devtools", "/usercontext/", "/genai/assets/brands/", "thunderbird",
+                   "/webcompat/shims/", "colorpicker", "/builtin-themes/", "/pdfjs/")
+# Fond de la zone de contenu en fenêtre privée : dégradé violet -> nuit La Cigale.
+FOND_PRIVE = (b"--tabpanel-background-color: linear-gradient(45deg, #722291 0%, #45278d 50%, #393473 100%) !important;",
+              b"--tabpanel-background-color: #0a0a0b !important;")
+
+
+COULEUR_RGB = re.compile(r"(rgba?\(\s*)(\d{1,3})(\s*,?\s*)(\d{1,3})(\s*,?\s*)(\d{1,3})\b")
+
+
+def _gris_si_violet(r: int, g: int, b: int):
+    """Niveau de gris de même luminosité si la couleur est violette, sinon None."""
+    import colorsys
+    teinte, lum, sat = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
+    if sat > 0.25 and 0.68 <= teinte <= 0.90 and 0.08 < lum < 0.92:
+        return round(lum * 255)
+    return None
+
+
+def _violet_en_gris(m):
+    h = m.group(1)
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    v = _gris_si_violet(*(int(h[i:i + 2], 16) for i in (0, 2, 4)))
+    return m.group(0) if v is None else f"#{v:02x}{v:02x}{v:02x}"
+
+
+def _violet_rgb_en_gris(m):
+    debut, r, s1, g, s2, b = m.groups()
+    if max(int(r), int(g), int(b)) > 255:
+        return m.group(0)
+    v = _gris_si_violet(int(r), int(g), int(b))
+    return m.group(0) if v is None else f"{debut}{v}{s1}{v}{s2}{v}"
+
+
+def neutraliser_violet(nom: str, donnees: bytes):
+    if not nom.startswith("chrome/") or not nom.endswith((".css", ".svg")):
+        return None
+    if any(x in nom for x in EXCLUS_COULEURS):
+        return None
+    texte = donnees.decode("utf-8", "replace")
+    nouveau = COULEUR_RGB.sub(_violet_rgb_en_gris, COULEUR_HEX.sub(_violet_en_gris, texte))
+    return nouveau.encode("utf-8") if nouveau != texte else None
+
+
+# --------------------------------------------------------------- Letterboxing
+# resistFingerprinting arrondit la zone de contenu (letterboxing) : la page d'accueil locale
+# de La Cigale (aucune donnée envoyée au réseau) en est exemptée pour occuper toute la fenêtre,
+# et les marges des sites prennent la couleur de nuit du thème au lieu du gris Firefox.
+RFP_ANCRE = b"      // ... source code\n"
+RFP_AJOUT = (b"      // ... la page d'accueil locale de La Cigale\n"
+             b"      (currentURI.schemeIs(\"file\") &&\n"
+             b"        currentURI.filePath.includes(\"/cigale/accueil/\")) ||\n")
+LETTERBOX_ANCRE = b"--letterboxing-bgcolor: var(--tabpanel-background-color);"
+LETTERBOX_NUIT = b"--letterboxing-bgcolor: #0a0a0b;"
+
+
+def correctif(donnees: bytes, ancre: bytes, remplacement: bytes, nom: str) -> bytes:
+    """Remplace une ancre attendue ; échoue bruyamment si Firefox a changé le fichier."""
+    if ancre not in donnees:
+        sys.exit(f"Correctif impossible : ancre introuvable dans {nom} (version de Firefox différente ?)")
+    return donnees.replace(ancre, remplacement, 1)
+
+NOMS = {
+    "-brand-shorter-name": "Cigale",
+    "-brand-short-name": "La Cigale",
+    "-brand-shortcut-name": "La Cigale",
+    "-brand-full-name": "La Cigale",
+    "-brand-product-name": "La Cigale",
+    "-vendor-short-name": "Projet La Cigale",
+}
+MARQUE = (
+    "trademarkInfo = La Cigale est un logiciel libre dérivé de Mozilla Firefox. "
+    "Firefox et les logos Firefox sont des marques déposées de la Mozilla Foundation."
+)
+
+
+def rebrander_ftl(texte: str) -> str:
+    for cle, valeur in NOMS.items():
+        texte = re.sub(rf"^({re.escape(cle)}\s*=).*$", rf"\1 {valeur}", texte, flags=re.M)
+    texte = re.sub(r"^trademarkInfo\s*=.*$", MARQUE, texte, flags=re.M)
+    return texte
+
+
+def rebrander_properties(texte: str) -> str:
+    remplacements = {
+        "brandShorterName": "Cigale",
+        "brandShortName": "La Cigale",
+        "brandFullName": "La Cigale",
+        "vendorShortName": "Projet La Cigale",
+    }
+    for cle, valeur in remplacements.items():
+        texte = re.sub(rf"^({cle}\s*=).*$", rf"\1{valeur}", texte, flags=re.M)
+    return texte
+
+
+def png_meme_taille(donnees: bytes) -> bytes:
+    with Image.open(io.BytesIO(donnees)) as orig:
+        taille = orig.size
+    img = LOGO_1024.copy()
+    img.thumbnail(taille, Image.LANCZOS)
+    toile = Image.new("RGBA", taille, (0, 0, 0, 0))
+    toile.paste(img, ((taille[0] - img.width) // 2, (taille[1] - img.height) // 2))
+    sortie = io.BytesIO()
+    toile.save(sortie, "PNG", optimize=True)
+    return sortie.getvalue()
+
+
+# Noms de services Mozilla (brandings.ftl) : remplacés par des noms neutres en français.
+SERVICES = {
+    "-firefox-home-brand-name": "Page d'accueil de La Cigale",
+    "-firefoxview-brand-name": "Vue d'ensemble",
+    "-firefoxlabs-brand-name": "Labos",
+    "-firefox-suggest-brand-name": "Suggestions",
+    "-screenshots-brand-name": "Captures d'écran",
+    "-profiler-brand-name": "Profileur",
+    "-translations-brand-name": "Traductions",
+    "-monitor-brand-name": "Mozilla Monitor",
+    "-send-brand-name": "Mozilla Send",
+    "-focus-brand-name": "Mozilla Focus",
+    "-relay-brand-name": "Mozilla Relay",
+}
+# Ordre important : les formes longues d'abord.
+TEXTES = [
+    ("Mozilla Firefox", "La Cigale"),
+    ("Firefox", "La Cigale"),
+]
+LIGNE_FTL = re.compile(r"^(\s*(?:-?[\w-]+|\.[\w-]+)\s*=)(.*)$")
+LIGNE_PROPS = re.compile(r"^(\s*[^#!\s][^=:]*?\s*[=:])(.*)$")
+ENTITE_DTD = re.compile(r'(<!ENTITY\s+\S+\s+")([^"]*)(")')
+
+
+def _remplacer_texte(valeur: str) -> str:
+    """Remplace « Firefox » dans un texte affiché, en épargnant URL et identifiants entre accolades."""
+    morceaux = re.split(r"(\{[^}]*\}|https?://\S+|\S+\.(?:com|org|net)\S*)", valeur)
+    for i in range(0, len(morceaux), 2):
+        for avant, apres in TEXTES:
+            morceaux[i] = morceaux[i].replace(avant, apres)
+    return "".join(morceaux)
+
+
+def rebrander_traductions(nom: str, texte: str) -> str:
+    lignes = []
+    for ligne in texte.splitlines(keepends=True):
+        brut = ligne.rstrip("\r\n")
+        fin = ligne[len(brut):]
+        if "Firefox" not in brut or brut.lstrip().startswith("#"):
+            lignes.append(ligne)
+            continue
+        if nom.endswith(".ftl"):
+            m = LIGNE_FTL.match(brut)
+            if m and m.group(1).strip().rstrip("=").strip() in SERVICES:
+                brut = f"{m.group(1)} {SERVICES[m.group(1).strip().rstrip('=').strip()]}"
+            elif m:
+                brut = m.group(1) + _remplacer_texte(m.group(2))
+            elif brut.startswith((" ", "\t")):  # suite d'un message multiligne
+                brut = _remplacer_texte(brut)
+        elif nom.endswith(".properties"):
+            m = LIGNE_PROPS.match(brut)
+            if m:
+                brut = m.group(1) + _remplacer_texte(m.group(2))
+        elif nom.endswith(".dtd"):
+            brut = ENTITE_DTD.sub(lambda m: m.group(1) + _remplacer_texte(m.group(2)) + m.group(3), brut)
+        lignes.append(brut + fin)
+    return "".join(lignes)
+
+
+def est_traduction(nom: str) -> bool:
+    return (nom.startswith("localization/") or "/locale/" in nom) and nom.endswith((".ftl", ".properties", ".dtd"))
+
+
+# Images de la mascotte « Kit » (renard) et logos Firefox, partout dans l'interface.
+MOTS_MASCOTTE = {"fox", "foxy", "kit", "mascot", "firefox"}
+
+
+def evoque_mascotte(racine: str) -> bool:
+    """Vrai si un des mots du nom de fichier (séparés par - _ . @) désigne la mascotte ou Firefox."""
+    return any(mot in MOTS_MASCOTTE for mot in re.split(r"[-_.@]", racine.lower()))
+# Illustrations des pages d'erreur qui contiennent la mascotte.
+ILLUSTRATIONS_ERREUR = {"error-malformed-url.svg", "no-connection.svg", "security-error.svg"}
+
+
+def remplacer_image(base: str, donnees: bytes):
+    if base.endswith(".svg"):
+        return LOGO_SVG
+    if base.endswith(".png"):
+        return png_meme_taille(donnees)
+    return None  # webp/avif : laissés tels quels
+
+
+def transformer(nom: str, donnees: bytes):
+    """Renvoie le nouveau contenu, ou None si l'entrée reste inchangée."""
+    nouveau = transformer_identite(nom, donnees)
+    if nouveau is not None:
+        donnees = nouveau
+    couleurs = neutraliser_violet(nom, donnees)
+    return couleurs if couleurs is not None else nouveau
+
+
+def transformer_identite(nom: str, donnees: bytes):
+    if nom in ICONES_MASQUE:
+        return MASQUE_SVG
+    if nom == "modules/RFPHelper.sys.mjs":
+        return correctif(donnees, RFP_ANCRE, RFP_AJOUT + RFP_ANCRE, nom)
+    if nom == "chrome/toolkit/content/global/resistfingerprinting/letterboxing.css":
+        return correctif(donnees, LETTERBOX_ANCRE, LETTERBOX_NUIT, nom)
+    if nom == "chrome/browser/skin/classic/browser/tabbrowser/content-area.css":
+        return correctif(donnees, *FOND_PRIVE, nom)
+    if nom == "chrome/browser/skin/classic/browser/browser-shared.css":
+        return donnees + CSS_INDICATEUR
+    base = nom.rsplit("/", 1)[-1]
+    racine = base.rsplit(".", 1)[0]
+    if nom == PRIVE + "aboutPrivateBrowsing.css":
+        return donnees + b"\n\n" + CSS_PRIVE
+    if nom in (PRIVE + "favicon.svg", PRIVE + "pbm-logo.svg"):
+        return ICONE_PRIVE_SVG
+    if base.endswith((".svg", ".png")) and "/branding/" not in nom and (
+        evoque_mascotte(racine) or base in ILLUSTRATIONS_ERREUR
+    ):
+        return remplacer_image(base, donnees)
+    if est_traduction(nom) and base not in ("brand.ftl", "brand.properties"):
+        texte = donnees.decode("utf-8")
+        nouveau = rebrander_traductions(nom, texte)
+        return nouveau.encode("utf-8") if nouveau != texte else None
+    if "/branding/" not in nom and not nom.startswith("branding/"):
+        return None
+    if base == "brand.ftl":
+        return rebrander_ftl(donnees.decode("utf-8")).encode("utf-8")
+    if base == "brand.properties":
+        return rebrander_properties(donnees.decode("utf-8")).encode("utf-8")
+    if base.endswith(".png") and ("icon" in base or "logo" in base):
+        return png_meme_taille(donnees)
+    if base.endswith(".svg") and "wordmark" in base:
+        return WORDMARK_SVG
+    if base.endswith(".svg") and ("logo" in base or "icon" in base):
+        return LOGO_SVG
+    return None
+
+
+def lire_entrees(omni: Path):
+    """Renvoie [(nom, données)] de omni.ja.
+
+    Mozilla publie des « jars optimisés » (répertoire central en tête de fichier) que le
+    module zipfile ne sait pas lire : on passe alors par 7-Zip ou unzip.
+    """
+    try:
+        with zipfile.ZipFile(omni) as z:
+            return [(i.filename, z.read(i)) for i in z.infolist() if not i.is_dir()]
+    except zipfile.BadZipFile:
+        pass
+    with tempfile.TemporaryDirectory() as tmp:
+        if shutil.which("7z") or Path(SEPT_ZIP).exists():
+            cmd = [shutil.which("7z") or SEPT_ZIP, "x", str(omni), f"-o{tmp}", "-y"]
+        elif shutil.which("unzip"):
+            cmd = ["unzip", "-q", "-o", str(omni), "-d", tmp]
+        else:
+            sys.exit("omni.ja est un jar optimisé : 7-Zip ou unzip est nécessaire pour le lire.")
+        resultat = subprocess.run(cmd, capture_output=True)
+        # unzip et 7z signalent le format optimisé par un avertissement (codes 1 ou 2) : non bloquant.
+        if resultat.returncode not in (0, 1, 2):
+            sys.exit(f"Échec de l'extraction d'omni.ja : {resultat.stderr.decode(errors='replace')}")
+        base = Path(tmp)
+        entrees = [(p.relative_to(base).as_posix(), p.read_bytes()) for p in base.rglob("*") if p.is_file()]
+    if len(entrees) < 100:
+        sys.exit(f"omni.ja semble incomplet après extraction ({len(entrees)} fichiers).")
+    return entrees
+
+
+def rebrander_omni(omni: Path, ajouts: dict = None) -> int:
+    entrees = lire_entrees(omni)
+    noms = {nom for nom, _ in entrees}
+    entrees += [(nom, octets) for nom, octets in (ajouts or {}).items() if nom not in noms]
+    temporaire = omni.with_suffix(".ja.nouveau")
+    modifies = 0
+    with zipfile.ZipFile(temporaire, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as cible:
+        for nom, donnees in entrees:
+            nouveau = transformer(nom, donnees)
+            if nouveau is not None:
+                donnees = nouveau
+                modifies += 1
+            cible.writestr(zipfile.ZipInfo(nom, date_time=(2010, 1, 1, 0, 0, 0)), donnees,
+                           compress_type=zipfile.ZIP_DEFLATED)
+    temporaire.replace(omni)
+    return modifies
+
+
+def icones_fenetres(installation: Path) -> int:
+    dossier = installation / "browser" / "chrome" / "icons" / "default"
+    if not dossier.is_dir():
+        return 0
+    n = 0
+    for png in dossier.glob("default*.png"):
+        png.write_bytes(png_meme_taille(png.read_bytes()))
+        n += 1
+    return n
+
+
+def main():
+    if len(sys.argv) != 2:
+        sys.exit(__doc__)
+    installation = Path(sys.argv[1])
+    total = 0
+    # browser/omni.ja : interface du navigateur ; omni.ja : boîte à outils (erreurs réseau, etc.)
+    for omni in (installation / "browser" / "omni.ja", installation / "omni.ja"):
+        if not omni.is_file():
+            sys.exit(f"Introuvable : {omni}")
+    for omni in (installation / "browser" / "omni.ja", installation / "omni.ja"):
+        if not omni.is_file():
+            sys.exit(f"Introuvable : {omni}")
+        n = rebrander_omni(omni, AJOUTS_BROWSER if omni.parent.name == "browser" else None)
+        total += n
+        print(f"{omni.relative_to(installation)} : {n} fichiers modifiés")
+    i = icones_fenetres(installation)
+    print(f"Icônes de fenêtres : {i}")
+    if total == 0:
+        sys.exit("Aucun fichier de marque trouvé : la structure d'omni.ja a peut-être changé.")
+
+
+if __name__ == "__main__":
+    main()

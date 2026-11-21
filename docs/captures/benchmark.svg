@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 398" width="920" height="398" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="920" height="398" rx="18" fill="#0d0d0e"/>
+<text x="40" y="50" fill="#ededed" font-size="22" font-weight="600">Banc d'essai</text>
+<text x="40" y="74" fill="#8c8c90" font-size="13">Plus court = meilleur · médiane de 3 lancements × 5 tours · Windows 11, profil vierge, sans interface</text>
+<text x="40" y="110" fill="#ededed" font-size="14" font-weight="600">Démarrage</text>
+<text x="40" y="141" fill="#ededed" font-size="12" font-weight="600">La Cigale</text>
+<rect x="126" y="129" width="103" height="16" rx="4" fill="#f2f2f2"/>
+<text x="235" y="141" fill="#ededed" font-size="12">2 222 ms</text>
+<text x="40" y="169" fill="#9a9aa0" font-size="12">Firefox ESR</text>
+<rect x="126" y="157" width="104" height="16" rx="4" fill="#4a4a50"/>
+<text x="236" y="169" fill="#9a9aa0" font-size="12">2 244 ms</text>
+<text x="40" y="197" fill="#9a9aa0" font-size="12">Chrome</text>
+<rect x="126" y="185" width="38" height="16" rx="4" fill="#4a4a50"/>
+<text x="170" y="197" fill="#9a9aa0" font-size="12">820 ms ★</text>
+<text x="40" y="225" fill="#9a9aa0" font-size="12">Edge</text>
+<rect x="126" y="213" width="45" height="16" rx="4" fill="#4a4a50"/>
+<text x="177" y="225" fill="#9a9aa0" font-size="12">971 ms</text>
+<text x="328" y="110" fill="#ededed" font-size="14" font-weight="600">JavaScript</text>
+<text x="328" y="141" fill="#ededed" font-size="12" font-weight="600">La Cigale</text>
+<rect x="414" y="129" width="100" height="16" rx="4" fill="#f2f2f2"/>
+<text x="520" y="141" fill="#ededed" font-size="12">211 ms</text>
+<text x="328" y="169" fill="#9a9aa0" font-size="12">Firefox ESR</text>
+<rect x="414" y="157" width="104" height="16" rx="4" fill="#4a4a50"/>
+<text x="524" y="169" fill="#9a9aa0" font-size="12">220 ms</text>
+<text x="328" y="197" fill="#9a9aa0" font-size="12">Chrome</text>
+<rect x="414" y="185" width="95" height="16" rx="4" fill="#4a4a50"/>
+<text x="515" y="197" fill="#9a9aa0" font-size="12">201 ms</text>
+<text x="328" y="225" fill="#9a9aa0" font-size="12">Edge</text>
+<rect x="414" y="213" width="91" height="16" rx="4" fill="#4a4a50"/>
+<text x="511" y="225" fill="#9a9aa0" font-size="12">192 ms ★</text>
+<text x="616" y="110" fill="#ededed" font-size="14" font-weight="600">DOM</text>
+<text x="616" y="141" fill="#ededed" font-size="12" font-weight="600">La Cigale</text>
+<rect x="702" y="129" width="96" height="16" rx="4" fill="#f2f2f2"/>
+<text x="804" y="141" fill="#ededed" font-size="12">454 ms ★</text>
+<text x="616" y="169" fill="#9a9aa0" font-size="12">Firefox ESR</text>
+<rect x="702" y="157" width="101" height="16" rx="4" fill="#4a4a50"/>
+<text x="809" y="169" fill="#9a9aa0" font-size="12">474 ms</text>
+<text x="616" y="197" fill="#9a9aa0" font-size="12">Chrome</text>
+<rect x="702" y="185" width="104" height="16" rx="4" fill="#4a4a50"/>
+<text x="812" y="197" fill="#9a9aa0" font-size="12">490 ms</text>
+<text x="616" y="225" fill="#9a9aa0" font-size="12">Edge</text>
+<rect x="702" y="213" width="103" height="16" rx="4" fill="#4a4a50"/>
+<text x="811" y="225" fill="#9a9aa0" font-size="12">483 ms</text>
+<text x="40" y="266" fill="#ededed" font-size="14" font-weight="600">Canvas 2D</text>
+<text x="40" y="297" fill="#ededed" font-size="12" font-weight="600">La Cigale</text>
+<rect x="126" y="285" width="104" height="16" rx="4" fill="#f2f2f2"/>
+<text x="236" y="297" fill="#ededed" font-size="12">314 ms</text>
+<text x="40" y="325" fill="#9a9aa0" font-size="12">Firefox ESR</text>
+<rect x="126" y="313" width="91" height="16" rx="4" fill="#4a4a50"/>
+<text x="223" y="325" fill="#9a9aa0" font-size="12">275 ms</text>
+<text x="40" y="353" fill="#9a9aa0" font-size="12">Chrome</text>
+<rect x="126" y="341" width="70" height="16" rx="4" fill="#4a4a50"/>
+<text x="202" y="353" fill="#9a9aa0" font-size="12">212 ms ★</text>
+<text x="40" y="381" fill="#9a9aa0" font-size="12">Edge</text>
+<rect x="126" y="369" width="71" height="16" rx="4" fill="#4a4a50"/>
+<text x="203" y="381" fill="#9a9aa0" font-size="12">213 ms</text>
+<text x="328" y="266" fill="#ededed" font-size="14" font-weight="600">Mémoire</text>
+<text x="328" y="297" fill="#ededed" font-size="12" font-weight="600">La Cigale</text>
+<rect x="414" y="285" width="104" height="16" rx="4" fill="#f2f2f2"/>
+<text x="524" y="297" fill="#ededed" font-size="12">961 Mo</text>
+<text x="328" y="325" fill="#9a9aa0" font-size="12">Firefox ESR</text>
+<rect x="414" y="313" width="100" height="16" rx="4" fill="#4a4a50"/>
+<text x="520" y="325" fill="#9a9aa0" font-size="12">928 Mo</text>
+<text x="328" y="353" fill="#9a9aa0" font-size="12">Chrome</text>
+<rect x="414" y="341" width="78" height="16" rx="4" fill="#4a4a50"/>
+<text x="498" y="353" fill="#9a9aa0" font-size="12">717 Mo ★</text>
+<text x="328" y="381" fill="#9a9aa0" font-size="12">Edge</text>
+<rect x="414" y="369" width="80" height="16" rx="4" fill="#4a4a50"/>
+<text x="500" y="381" fill="#9a9aa0" font-size="12">737 Mo</text>
+</svg>

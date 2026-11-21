@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>Banc d'essai La Cigale</title>
+<body>
+<div id="zone"></div>
+<canvas id="toile" width="800" height="600"></canvas>
+<script>
+// Le chronométrage est fait côté serveur (resistFingerprinting arrondit performance.now()) :
+// la page signale le début et la fin de chaque épreuve.
+const signal = (etape, nom) => fetch(`/${etape}?t=${nom}`, { cache: "no-store" });
+
+const EPREUVES = {
+  // Calcul JavaScript pur : crible, tri, JSON, expressions régulières
+  javascript() {
+    const n = 2_000_000, crible = new Uint8Array(n);
+    for (let i = 2; i * i < n; i++) if (!crible[i]) for (let j = i * i; j < n; j += i) crible[j] = 1;
+    const t = Array.from({ length: 300_000 }, (_, i) => (i * 7919) % 100_003);
+    t.sort((a, b) => a - b);
+    const o = { liste: t.slice(0, 50_000).map(v => ({ v, s: "cigale" + v })) };
+    for (let k = 0; k < 5; k++) JSON.parse(JSON.stringify(o));
+    const texte = "la cigale ayant chanté tout l'été ".repeat(20_000);
+    for (let k = 0; k < 5; k++) texte.replace(/c(i|h)(\w+)/g, "$2");
+  },
+  // DOM : création, mise en page forcée, suppression
+  dom() {
+    const zone = document.getElementById("zone");
+    for (let r = 0; r < 4; r++) {
+      const frag = document.createDocumentFragment();
+      for (let i = 0; i < 15_000; i++) {
+        const d = document.createElement("div");
+        d.className = "c" + (i % 10);
+        d.textContent = "élément " + i;
+        frag.appendChild(d);
+      }
+      zone.appendChild(frag);
+      void zone.offsetHeight;
+      zone.querySelectorAll(".c3").forEach(e => e.style.color = "red");
+      void zone.offsetHeight;
+      zone.textContent = "";
+    }
+  },
+  // Canvas 2D : formes et texte
+  canvas() {
+    const c = document.getElementById("toile").getContext("2d");
+    for (let i = 0; i < 60_000; i++) {
+      c.fillStyle = `hsl(${i % 360} 60% 50%)`;
+      c.beginPath();
+      c.arc((i * 37) % 800, (i * 91) % 600, 3 + (i % 9), 0, Math.PI * 2);
+      c.fill();
+      if (i % 50 === 0) c.fillText("cigale", (i * 13) % 800, (i * 17) % 600);
+    }
+    c.getImageData(0, 0, 1, 1);
+  },
+};
+
+(async () => {
+  await signal("pret", "page");
+  for (let tour = 0; tour < 5; tour++) {
+    for (const [nom, fn] of Object.entries(EPREUVES)) {
+      await signal("debut", nom);
+      fn();
+      await signal("fin", nom);
+    }
+  }
+  await signal("termine", "tout");
+})();
+</script>
+</body>
+</html>
