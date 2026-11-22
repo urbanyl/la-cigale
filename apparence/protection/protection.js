@@ -10,18 +10,21 @@ const fenetre = window.browsingContext.topChromeWindow;
 const PROFILS = {
   confort: {
     "javascript.enabled": true,
+    "javascript.options.wasm": true,
     "privacy.resistFingerprinting.letterboxing": false,
     "privacy.spoof_english": 1,
     "privacy.clearOnShutdown_v2.cookiesAndStorage": false,
   },
   standard: {
     "javascript.enabled": true,
+    "javascript.options.wasm": true,
     "privacy.resistFingerprinting.letterboxing": false,
     "privacy.spoof_english": 2,
     "privacy.clearOnShutdown_v2.cookiesAndStorage": true,
   },
   renforce: {
     "javascript.enabled": false,
+    "javascript.options.wasm": false,
     "privacy.resistFingerprinting.letterboxing": true,
     "privacy.spoof_english": 2,
     "privacy.clearOnShutdown_v2.cookiesAndStorage": true,
@@ -485,7 +488,8 @@ $("sauvegarde").addEventListener("submit", async (e) => {
       etat.textContent = "Déchiffrement…";
       let contenu;
       try {
-        const cle = await cleDe(motDePasse, depuisBase64(fichier.sel), fichier.iterations || 600000);
+        const iterations = Math.min(2_000_000, Math.max(100_000, Number(fichier.iterations) || 600000));
+        const cle = await cleDe(motDePasse, depuisBase64(fichier.sel), iterations);
         const clair = await crypto.subtle.decrypt({ name: "AES-GCM", iv: depuisBase64(fichier.iv) }, cle, depuisBase64(fichier.donnees));
         contenu = JSON.parse(new TextDecoder().decode(clair));
       } catch {

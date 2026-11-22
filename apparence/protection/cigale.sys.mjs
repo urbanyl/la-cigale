@@ -132,16 +132,72 @@ function hex(octets) {
   return Array.from(octets, (o) => o.toString(16).padStart(2, "0")).join("");
 }
 
-export function empreinte(motDePasse, sel) {
+const ITERATIONS_VERROU = 60000;
+const VERSION_VERROU = 2;
+const hacheSha256 = Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash);
+
+function sha256(octets) {
+  hacheSha256.init(Ci.nsICryptoHash.SHA256);
+  hacheSha256.update(octets, octets.length);
+  return Uint8Array.from(hacheSha256.finish(false), (c) => c.charCodeAt(0));
+}
+
+function concatener(a, b) {
+  const sortie = new Uint8Array(a.length + b.length);
+  sortie.set(a);
+  sortie.set(b, a.length);
+  return sortie;
+}
+
+// HMAC-SHA256 (RFC 2104).
+function hmacSha256(cle, donnees) {
+  const tailleBloc = 64;
+  const k = cle.length > tailleBloc ? sha256(cle) : cle;
+  const rembourrage = new Uint8Array(tailleBloc);
+  rembourrage.set(k);
+  const interieur = new Uint8Array(tailleBloc);
+  const exterieur = new Uint8Array(tailleBloc);
+  for (let i = 0; i < tailleBloc; i++) {
+    interieur[i] = rembourrage[i] ^ 0x36;
+    exterieur[i] = rembourrage[i] ^ 0x5c;
+  }
+  return sha256(concatener(exterieur, sha256(concatener(interieur, donnees))));
+}
+
+// PBKDF2-HMAC-SHA256, une sortie de 32 octets (RFC 8018).
+function pbkdf2(motDePasse, sel, iterations) {
+  const encodeur = new TextEncoder();
+  const m = encodeur.encode(motDePasse);
+  const s = encodeur.encode(sel);
+  const bloc = new Uint8Array(s.length + 4);
+  bloc.set(s);
+  bloc[s.length + 3] = 1;
+  let u = hmacSha256(m, bloc);
+  const t = u.slice();
+  for (let i = 1; i < iterations; i++) {
+    u = hmacSha256(m, u);
+    for (let j = 0; j < t.length; j++) t[j] ^= u[j];
+  }
+  return hex(t);
+}
+
+// Ancienne dérivation (1.3.2 et avant), conservée pour migrer les verrous existants.
+function empreinteLegacy(motDePasse, sel) {
   const encodeur = new TextEncoder();
   let bloc = encodeur.encode(sel + ":" + motDePasse);
-  const hache = Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash);
   for (let i = 0; i < 60000; i++) {
-    hache.init(Ci.nsICryptoHash.SHA256);
-    hache.update(bloc, bloc.length);
-    bloc = Uint8Array.from(hache.finish(false), (c) => c.charCodeAt(0));
+    hacheSha256.init(Ci.nsICryptoHash.SHA256);
+    hacheSha256.update(bloc, bloc.length);
+    bloc = Uint8Array.from(hacheSha256.finish(false), (c) => c.charCodeAt(0));
   }
   return hex(bloc);
+}
+
+function egalConstant(a, b) {
+  if (typeof a != "string" || typeof b != "string" || a.length != b.length) return false;
+  let difference = 0;
+  for (let i = 0; i < a.length; i++) difference |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return difference === 0;
 }
 
 export function verrouActif() {
@@ -150,19 +206,31 @@ export function verrouActif() {
 
 export function verifierMotDePasse(motDePasse) {
   const sel = prefs.getStringPref("cigale.verrou.sel", "");
-  return verrouActif() && empreinte(motDePasse, sel) == prefs.getStringPref("cigale.verrou.empreinte");
+  const stocke = prefs.getStringPref("cigale.verrou.empreinte", "");
+  if (!stocke) return false;
+  const version = prefs.getIntPref("cigale.verrou.version", 1);
+  if (version >= VERSION_VERROU) {
+    return egalConstant(pbkdf2(motDePasse, sel, ITERATIONS_VERROU), stocke);
+  }
+  if (egalConstant(empreinteLegacy(motDePasse, sel), stocke)) {
+    definirMotDePasse(motDePasse);
+    return true;
+  }
+  return false;
 }
 
 export function definirMotDePasse(motDePasse) {
   if (!motDePasse) {
     prefs.clearUserPref("cigale.verrou.sel");
     prefs.clearUserPref("cigale.verrou.empreinte");
+    prefs.clearUserPref("cigale.verrou.version");
     return;
   }
   const alea = Cc["@mozilla.org/security/random-generator;1"].getService(Ci.nsIRandomGenerator);
   const sel = hex(alea.generateRandomBytes(16));
   prefs.setStringPref("cigale.verrou.sel", sel);
-  prefs.setStringPref("cigale.verrou.empreinte", empreinte(motDePasse, sel));
+  prefs.setStringPref("cigale.verrou.empreinte", pbkdf2(motDePasse, sel, ITERATIONS_VERROU));
+  prefs.setIntPref("cigale.verrou.version", VERSION_VERROU);
   Services.prefs.savePrefFile(null);
 }
 
