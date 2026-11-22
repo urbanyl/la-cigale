@@ -20,7 +20,7 @@ FAQ_FR = [
     ("Mes extensions Firefox fonctionnent-elles ?",
      "Oui. La Cigale accepte les extensions du site officiel de Mozilla, comme Firefox."),
     ("Est-ce que La Cigale me rend anonyme ?",
-     "Elle rend le pistage beaucoup plus difficile, mais votre adresse IP reste visible des sites. Pour la cacher, utilisez la fenêtre Tor (Tor doit tourner sur l'ordinateur) ou un VPN de confiance. Pour un anonymat fort, Tor Browser reste la référence."),
+     "Elle rend le pistage beaucoup plus difficile, mais sans réglage votre adresse IP reste visible des sites. Pour la cacher, choisissez un proxy dans Protection, Adresse IP (votre propre liste, par exemple Webshare), ouvrez la fenêtre Tor, ou utilisez un VPN de confiance. Pour un anonymat fort, Tor Browser reste la référence."),
     ("Qu'est-ce que la fenêtre Tor ?",
      "Une fenêtre à part dont tout le trafic, DNS compris, passe par le réseau Tor, avec un profil séparé effacé à la fermeture. Il faut que Tor soit déjà lancé : Tor Browser ouvert, ou le service tor sous Linux."),
     ("Pourquoi des sites me demandent-ils de me reconnecter ?",
@@ -47,7 +47,7 @@ FAQ_EN = [
     ("Do my Firefox extensions work?",
      "Yes. La Cigale installs extensions from Mozilla's official add-ons site, just like Firefox."),
     ("Does La Cigale make me anonymous?",
-     "It makes tracking much harder, but websites still see your IP address. To hide it, use the Tor window (Tor must be running on the computer) or a VPN you trust. For strong anonymity, Tor Browser remains the reference."),
+     "It makes tracking much harder, but by default websites still see your IP address. To hide it, pick a proxy in Protection, IP address (your own list, for example Webshare), open the Tor window, or use a VPN you trust. For strong anonymity, Tor Browser remains the reference."),
     ("Is the interface available in English?",
      "Not yet: La Cigale is designed in French. Everything else works the same for any website in any language."),
     ("What is the Tor window?",
@@ -185,7 +185,7 @@ SECURITE = {
         ("alerte", "Limites connues", [
             "L'installeur Windows n'est pas signé : SmartScreen affiche un avertissement. Vérifiez l'empreinte SHA-256 avant de l'ouvrir.",
             "La configuration de La Cigale tourne avec les droits du navigateur (bac à sable <code>autoconfig</code> désactivé), parce qu'elle en a besoin. Un site web ne peut pas la modifier.",
-            "La Cigale ne cache pas votre adresse IP. La fenêtre Tor aide, mais pour un anonymat fort, Tor Browser reste la référence.",
+            "Sans réglage, La Cigale ne cache pas votre adresse IP : choisissez un proxy (Protection, Adresse IP) ou la fenêtre Tor. Le fournisseur du proxy voit alors les sites visités. Pour un anonymat fort, Tor Browser reste la référence.",
         ]),
         ("rapport", "Audit", [
             'Un audit statique du code a été mené en novembre 2026 : aucune faille critique, un risque élevé (mise à jour non vérifiée) corrigé depuis. <a href="https://github.com/urbanyl/la-cigale/blob/main/docs/audit-securite-zh.md">Lire le rapport</a>.',
@@ -219,7 +219,7 @@ SECURITE = {
         ("alerte", "Known limits", [
             "The Windows installer is not signed: SmartScreen shows a warning. Check the SHA-256 checksum before running it.",
             "La Cigale's configuration runs with browser privileges (<code>autoconfig</code> sandbox off), because it needs them. Websites cannot change it.",
-            "La Cigale does not hide your IP address. The Tor window helps, but for strong anonymity Tor Browser remains the reference.",
+            "By default, La Cigale does not hide your IP address: pick a proxy (Protection, IP address) or the Tor window. The proxy provider then sees the sites you visit. For strong anonymity Tor Browser remains the reference.",
         ]),
         ("rapport", "Audit", [
             'A static code audit was carried out in November 2026: no critical flaw, one high risk (unverified update) fixed since. <a href="https://github.com/urbanyl/la-cigale/blob/main/docs/audit-securite-zh.md">Read the report</a> (Chinese).',

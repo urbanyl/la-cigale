@@ -262,3 +262,86 @@ export async function adressesPubliques() {
   const [v4, v6] = await Promise.all([lire("https://api.ipify.org?format=json"), lire("https://api64.ipify.org?format=json")]);
   return { v4, v6: v6 && v6.includes(":") ? v6 : null };
 }
+
+// --- Proxy personnel ---
+// La liste vient de l'utilisateur (ip:port:identifiant:mot de passe, une par ligne) et reste
+// dans son profil. Quand un proxy est choisi, tout le trafic du profil passe par lui, sans repli
+// en connexion directe : si le proxy tombe, les pages échouent au lieu de montrer la vraie IP.
+const PREF_LISTE = "cigale.proxy.liste";
+const PREF_ACTIF = "cigale.proxy.actif";
+
+export function listeProxys() {
+  try {
+    const l = JSON.parse(Services.prefs.getStringPref(PREF_LISTE, "[]"));
+    return Array.isArray(l) ? l : [];
+  } catch {
+    return [];
+  }
+}
+
+export function lireListeProxys(texte) {
+  const liste = [];
+  for (const ligne of String(texte).split(/\r?\n/)) {
+    const t = ligne.trim().replace(/^https?:\/\//, "");
+    if (!t || t.startsWith("#")) continue;
+    const [hote, portTexte, utilisateur = "", ...reste] = t.split(":");
+    const port = parseInt(portTexte, 10);
+    if (!hote || !(port > 0 && port < 65536)) continue;
+    liste.push({ hote, port, utilisateur, motDePasse: reste.join(":") });
+  }
+  return liste;
+}
+
+export function proxyActif() {
+  return Services.prefs.getIntPref(PREF_ACTIF, -1);
+}
+
+export function choisirProxy(i) {
+  Services.prefs.setIntPref(PREF_ACTIF, i);
+}
+
+export function enregistrerProxys(liste) {
+  Services.prefs.setStringPref(PREF_LISTE, JSON.stringify(liste));
+  if (proxyActif() >= liste.length) choisirProxy(-1);
+}
+
+function proxyCourant() {
+  const i = proxyActif();
+  return i >= 0 ? listeProxys()[i] || null : null;
+}
+
+const LOCAUX = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
+let filtreProxy = null;
+
+export function installerFiltreProxy() {
+  if (filtreProxy || estFenetreTor()) return;
+  const pps = Cc["@mozilla.org/network/protocol-proxy-service;1"].getService(Ci.nsIProtocolProxyService);
+  let courant = proxyCourant();
+  const recharger = () => {
+    courant = proxyCourant();
+  };
+  Services.prefs.addObserver(PREF_ACTIF, recharger);
+  Services.prefs.addObserver(PREF_LISTE, recharger);
+  filtreProxy = {
+    QueryInterface: ChromeUtils.generateQI(["nsIProtocolProxyChannelFilter"]),
+    applyFilter(canal, defaut, rappel) {
+      const p = courant;
+      let hote = "";
+      try {
+        hote = canal.URI.host;
+      } catch {}
+      if (!p || LOCAUX.has(hote)) {
+        rappel.onProxyFilterResult(defaut);
+        return;
+      }
+      // SOCKS5 avec identifiant (Webshare et la plupart des fournisseurs l'acceptent sur le même port),
+      // DNS résolu par le proxy ; HTTP simple quand il n'y a pas d'identifiant.
+      const info = p.utilisateur
+        ? pps.newProxyInfoWithAuth("socks", p.hote, p.port, p.utilisateur, p.motDePasse, "", "",
+            Ci.nsIProxyInfo.TRANSPARENT_PROXY_RESOLVES_HOST, 0xffffffff, null)
+        : pps.newProxyInfo("http", p.hote, p.port, "", "", 0, 0xffffffff, null);
+      rappel.onProxyFilterResult(info);
+    },
+  };
+  pps.registerChannelFilter(filtreProxy, 0);
+}

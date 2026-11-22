@@ -20,6 +20,9 @@
     <a class="categorie" href="#sites" data-categorie="sites">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/></svg>
       Sites conservés</a>
+    <a class="categorie" href="#proxy" data-categorie="proxy">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01"/></svg>
+      Adresse IP</a>
     <a class="categorie" href="#tor" data-categorie="tor">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/></svg>
       Fenêtre Tor</a>
@@ -145,6 +148,32 @@
         </form>
         <p id="erreur-exception" class="erreur" role="alert" hidden></p>
         <ul id="exceptions"></ul>
+      </div>
+    </section>
+
+    <section data-categorie="proxy" hidden>
+      <h1>Adresse IP</h1>
+      <div class="carte">
+        <h2>Passer par un proxy</h2>
+        <p>Les sites voient l'adresse du proxy au lieu de la vôtre. Si le proxy ne répond plus, les pages
+          ne s'ouvrent pas : La Cigale ne retombe jamais en silence sur la connexion directe.</p>
+        <div id="proxy-choix" class="liste-choix"></div>
+        <p class="ligne">
+          <button id="proxy-verifier">Vérifier mon adresse</button>
+          <span id="proxy-ip" class="discret"></span>
+        </p>
+      </div>
+      <div class="carte">
+        <h2>Ma liste de proxys</h2>
+        <p>Une ligne par proxy : <code>ip:port:identifiant:mot de passe</code> (format Webshare), ou
+          <code>ip:port</code> sans identifiant. La liste reste dans votre profil, sur cet ordinateur.</p>
+        <textarea id="proxy-texte" rows="5" spellcheck="false" placeholder="ip:port:identifiant:mot de passe"></textarea>
+        <p class="ligne">
+          <button id="proxy-importer">Enregistrer la liste</button>
+          <button id="proxy-fichier">Importer un fichier</button>
+          <button id="proxy-vider">Supprimer la liste</button>
+          <span id="proxy-etat" class="discret"></span>
+        </p>
       </div>
     </section>
 

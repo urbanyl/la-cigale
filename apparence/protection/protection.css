@@ -192,3 +192,10 @@ input[type="radio"], input[type="checkbox"] { accent-color: #d8d8dc; }
   .marque { width: 100%; margin-left: 0; }
   .categories hr { display: none; }
 }
+
+/* Adresse IP : choix du proxy */
+.liste-choix { display: grid; gap: 6px; margin: 12px 0; max-height: 320px; overflow: auto; }
+.choix { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); cursor: pointer; }
+.choix:hover { background: rgba(255, 255, 255, 0.07); }
+.choix .discret { margin-left: auto; }
+#proxy-texte { width: 100%; box-sizing: border-box; background: rgba(255, 255, 255, 0.05); color: inherit; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 10px; font: 13px ui-monospace, Consolas, monospace; resize: vertical; }

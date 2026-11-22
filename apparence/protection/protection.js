@@ -660,3 +660,72 @@ function montrerCategorie() {
 }
 window.addEventListener("hashchange", montrerCategorie);
 montrerCategorie();
+
+// --- Adresse IP : proxy personnel ---
+
+function afficherProxys() {
+  const liste = cigale.listeProxys();
+  const actif = cigale.proxyActif();
+  const boite = $("proxy-choix");
+  boite.replaceChildren();
+  const option = (i, titre, detail) => {
+    const l = document.createElement("label");
+    l.className = "choix";
+    const r = document.createElement("input");
+    r.type = "radio";
+    r.name = "proxy";
+    r.checked = i == actif;
+    r.addEventListener("change", () => {
+      cigale.choisirProxy(i);
+      $("proxy-ip").textContent = "";
+    });
+    const t = document.createElement("span");
+    t.textContent = titre;
+    l.append(r, t);
+    if (detail) {
+      const d = document.createElement("span");
+      d.className = "discret";
+      d.textContent = detail;
+      l.append(d);
+    }
+    boite.append(l);
+  };
+  option(-1, "Connexion directe", "votre vraie adresse");
+  liste.forEach((p, i) => option(i, `${p.hote}:${p.port}`, p.utilisateur ? "avec identifiant" : ""));
+  const n = liste.length;
+  $("proxy-etat").textContent = n ? `${n} proxy${n > 1 ? "s" : ""} enregistré${n > 1 ? "s" : ""}.` : "";
+}
+
+function enregistrerTexteProxys(texte) {
+  const liste = cigale.lireListeProxys(texte);
+  if (!liste.length) {
+    $("proxy-etat").textContent = "Aucune ligne valable.";
+    return;
+  }
+  cigale.enregistrerProxys(liste);
+  $("proxy-texte").value = "";
+  afficherProxys();
+}
+
+$("proxy-importer").addEventListener("click", () => enregistrerTexteProxys($("proxy-texte").value));
+$("proxy-fichier").addEventListener("click", () => {
+  const fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+  fp.init(window.browsingContext, "Liste de proxys", Ci.nsIFilePicker.modeOpen);
+  fp.appendFilter("Texte", "*.txt");
+  fp.open(async (r) => {
+    if (r != Ci.nsIFilePicker.returnOK) return;
+    enregistrerTexteProxys(await IOUtils.readUTF8(fp.file.path));
+  });
+});
+$("proxy-vider").addEventListener("click", () => {
+  cigale.choisirProxy(-1);
+  cigale.enregistrerProxys([]);
+  afficherProxys();
+});
+$("proxy-verifier").addEventListener("click", async () => {
+  $("proxy-ip").textContent = "Vérification…";
+  const { v4, v6 } = await cigale.adressesPubliques();
+  $("proxy-ip").textContent =
+    v4 || v6 ? `Les sites voient : ${[v4, v6].filter(Boolean).join(" et ")}` : "Pas de réponse : le proxy ne répond pas.";
+});
+afficherProxys();

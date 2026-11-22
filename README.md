@@ -51,6 +51,7 @@ profil, les sites où rester connecté et la vérification des mises à jour.
 | **Mode lecture** | Touche F9 ou icône de page dans la barre d'adresse : texte seul, aux couleurs de La Cigale, avec lecture à voix haute (bouton casque). |
 | **Bannières cookies** | Refus automatique quand le site le permet ; sinon les listes « cookies » et « nuisances » de uBlock Origin, activées d'office, masquent la bannière. |
 | **Traduction** | Les pages dans une autre langue peuvent être traduites. La traduction tourne sur l'ordinateur, aucun texte n'est envoyé en ligne. |
+| **Adresse IP** | Dans la page Protection : importez votre liste de proxys (format Webshare `ip:port:identifiant:mot de passe`) et choisissez celui à utiliser. Passage en SOCKS5, DNS résolu par le proxy, jamais de repli silencieux sur la connexion directe. |
 | **Vérifier les fuites** | Dans la page Protection : adresse IP vue par les sites, DNS utilisé et adresses exposées par WebRTC. |
 | **Mise à jour en un clic** | Sous Windows, « Mettre à jour » dans la barre d'avis télécharge le nouvel installeur, le lance et ferme La Cigale. |
 | **Verrou au démarrage** | Un mot de passe demandé à l'ouverture. C'est un verrou, pas un chiffrement : il protège des curieux, pas de quelqu'un qui a accès à vos fichiers. |
@@ -134,7 +135,8 @@ et ses limites : [page Sécurité](https://urbanyl.github.io/la-cigale/securite/
   jour pour les mises à jour (désactivable), Mozilla si vous traduisez une page, api.ipify.org si vous
   lancez le test de fuites, et les sites de vos raccourcis pour leur logo. Rien d'autre.
 - **Limites.** L'installeur Windows n'est pas signé ; la configuration tourne sans le bac à sable
-  `autoconfig` parce qu'elle a besoin des droits du navigateur ; La Cigale ne cache pas votre adresse IP.
+  `autoconfig` parce qu'elle a besoin des droits du navigateur ; l'adresse IP n'est cachée que si vous
+  choisissez un proxy (Protection, Adresse IP) ou la fenêtre Tor, et le fournisseur du proxy voit alors les sites visités.
 - **Audit.** Un audit statique du code a été mené en novembre 2026
   ([rapport](docs/audit-securite-zh.md)). Une faille ? Signalez-la dans l'onglet
   [Security](https://github.com/urbanyl/la-cigale/security) du dépôt.
