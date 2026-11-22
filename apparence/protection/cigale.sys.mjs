@@ -180,3 +180,17 @@ export function demanderMotDePasse() {
   }
   Services.startup.quit(Ci.nsIAppStartup.eForceQuit);
 }
+
+// Adresse IP vue par les sites (IPv4 et IPv6), sans cookies ni référent
+export async function adressesPubliques() {
+  const lire = async (url) => {
+    try {
+      const r = await fetch(url, { credentials: "omit", cache: "no-store", referrerPolicy: "no-referrer" });
+      return r.ok ? (await r.json()).ip : null;
+    } catch {
+      return null;
+    }
+  };
+  const [v4, v6] = await Promise.all([lire("https://api.ipify.org?format=json"), lire("https://api64.ipify.org?format=json")]);
+  return { v4, v6: v6 && v6.includes(":") ? v6 : null };
+}

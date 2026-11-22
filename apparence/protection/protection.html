@@ -13,7 +13,18 @@
   <p id="resume" class="discret"></p>
 
   <section id="nouveautes" hidden>
-    <h2>Quoi de neuf dans La Cigale 1.2</h2>
+    <h2>Quoi de neuf dans La Cigale 1.3</h2>
+    <ul class="nouveautes">
+      <li><b>Bannières cookies.</b> Les listes « cookies » et « nuisances » de uBlock sont activées, et La Cigale
+        refuse les cookies toute seule quand le site le permet.</li>
+      <li><b>Traduction des pages.</b> Une page dans une autre langue ? La Cigale propose de la traduire.
+        La traduction se fait sur votre ordinateur, le texte n'est envoyé nulle part.</li>
+      <li><b>Lecture à voix haute.</b> En mode lecture (F9), le bouton casque lit l'article.</li>
+      <li><b>Vérifier les fuites.</b> Plus bas sur cette page : adresse IP, DNS et WebRTC en un clic.</li>
+      <li><b>Mise à jour en un clic</b> sous Windows : « Mettre à jour » télécharge et lance le nouvel installeur.</li>
+      <li><b>Horloge à l'heure.</b> La page d'accueil affiche l'heure de votre fuseau, les sites voient toujours UTC.</li>
+    </ul>
+    <details><summary>Nouveautés de la 1.2</summary>
     <ul class="nouveautes">
       <li><b>Oublier ce site.</b> Un bouton dans la barre d'outils efface tout ce que La Cigale garde
         sur le site ouvert : cookies, cache, historique, autorisations.</li>
@@ -32,6 +43,7 @@
         sur Wikipédia, <kbd>osm Avignon</kbd> pour la carte… La liste est plus bas.</li>
       <li><b>Dépôt APT</b> pour Ubuntu et Debian : La Cigale se met à jour avec le reste du système.</li>
     </ul>
+    </details>
     <p><button id="fermer-nouveautes">J'ai vu</button></p>
   </section>
 
@@ -73,6 +85,14 @@
     <ul id="rapport-liste" class="liste"></ul>
   </details>
   <p class="ligne"><button id="rapport-oublier">Oublier ce site</button></p>
+
+  <h2>Vérifier les fuites</h2>
+  <p>Ce que voient les sites : votre adresse IP, le DNS utilisé et ce que WebRTC laisse passer.
+    Le test interroge api.ipify.org.</p>
+  <p class="ligne"><button id="fuites-tester">Lancer le test</button></p>
+  <table>
+    <tbody id="fuites"></tbody>
+  </table>
 
   <h2>Sites où rester connecté</h2>
   <p>Ces sites gardent leurs cookies à la fermeture. Les autres sont effacés.</p>

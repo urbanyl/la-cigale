@@ -554,6 +554,64 @@ $("verrou-retirer").addEventListener("click", () => {
   });
 });
 
+// --- Vérifier les fuites ---
+
+async function candidatsWebRTC() {
+  if (!prefs.getBoolPref("media.peerconnection.enabled", true)) return null;
+  const pc = new RTCPeerConnection({ iceServers: [] });
+  const ips = new Set();
+  pc.createDataChannel("cigale");
+  pc.onicecandidate = (e) => {
+    const m = e.candidate?.candidate.match(/ ([0-9a-f.:]+|[\w-]+\.local) \d+ typ/i);
+    if (m) ips.add(m[1]);
+  };
+  await pc.setLocalDescription(await pc.createOffer());
+  await new Promise((fin) => setTimeout(fin, 1500));
+  pc.close();
+  return [...ips];
+}
+
+$("fuites-tester").addEventListener("click", async () => {
+  const bouton = $("fuites-tester");
+  bouton.disabled = true;
+  const lignes = [];
+  const ligne = (nom, ok, detail) => lignes.push([nom, ok, detail]);
+  $("fuites").replaceChildren();
+  try {
+    const { v4, v6 } = await cigale.adressesPubliques();
+    if (!v4 && !v6) ligne("Adresse IP", false, "test impossible : pas de réseau ?");
+    else {
+      const tor = prefs.getBoolPref("cigale.tor", false);
+      ligne("Adresse IP", tor, [v4, v6].filter(Boolean).join(" · ") +
+        (tor ? " (sortie Tor)" : " : votre vraie adresse, sauf si vous utilisez un VPN"));
+    }
+    const mode = prefs.getIntPref("network.trr.mode", 0);
+    const fournisseur = (prefs.getStringPref("network.trr.uri", "").match(/\/\/([^/]+)/) || [])[1] || "";
+    ligne("DNS", mode == 3 || mode == 5,
+      mode == 5 ? "par le réseau Tor" : mode == 3 ? `chiffré, uniquement par ${fournisseur}` :
+      mode == 2 ? `chiffré par ${fournisseur}, avec repli sur le DNS du système` : "DNS du système, en clair (fuite possible)");
+    const ips = await candidatsWebRTC().catch(() => []);
+    if (ips === null) ligne("WebRTC", true, "désactivé");
+    else {
+      const visibles = ips.filter((ip) => !ip.endsWith(".local"));
+      ligne("WebRTC", visibles.length == 0,
+        visibles.length ? "adresses exposées : " + visibles.join(", ") : "aucune adresse locale exposée");
+    }
+  } finally {
+    $("fuites").replaceChildren(...lignes.map(([nom, ok, detail]) => {
+      const tr = document.createElement("tr");
+      tr.className = ok ? "oui" : "non";
+      const a = document.createElement("td");
+      a.textContent = nom;
+      const b = document.createElement("td");
+      b.textContent = detail;
+      tr.append(a, b);
+      return tr;
+    }));
+    bouton.disabled = false;
+  }
+});
+
 // --- Nouveautés ---
 
 function afficherNouveautes() {
