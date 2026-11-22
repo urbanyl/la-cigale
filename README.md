@@ -4,10 +4,31 @@
 <p align="center"><b>Le navigateur libre qui ne chante pas vos données.</b><br>
 Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 
+<p align="center">
+<a href="https://github.com/urbanyl/la-cigale/releases/latest"><img src="https://img.shields.io/github/v/release/urbanyl/la-cigale?label=version&color=a9b89a" alt="Version"></a>
+<a href="https://github.com/urbanyl/la-cigale/releases"><img src="https://img.shields.io/github/downloads/urbanyl/la-cigale/total?label=t%C3%A9l%C3%A9chargements&color=85887f" alt="Téléchargements"></a>
+<a href="https://github.com/urbanyl/la-cigale/actions/workflows/construire.yml"><img src="https://img.shields.io/github/actions/workflow/status/urbanyl/la-cigale/construire.yml?label=construction" alt="Construction"></a>
+<a href="LICENSE"><img src="https://img.shields.io/github/license/urbanyl/la-cigale?label=licence&color=85887f" alt="Licence"></a>
+<img src="https://img.shields.io/badge/bas%C3%A9%20sur-Firefox%20ESR%20153-e66000?logo=firefoxbrowser&logoColor=white" alt="Basé sur Firefox ESR 153">
+<img src="https://img.shields.io/badge/Windows-x64-0078d4?logo=windows&logoColor=white" alt="Windows">
+<img src="https://img.shields.io/badge/Linux-x64-333333?logo=linux&logoColor=white" alt="Linux">
+<br>
+<img src="https://img.shields.io/badge/t%C3%A9l%C3%A9m%C3%A9trie-aucune-a9b89a" alt="Télémétrie : aucune">
+<img src="https://img.shields.io/badge/uBlock%20Origin-int%C3%A9gr%C3%A9-800000" alt="uBlock Origin intégré">
+<img src="https://img.shields.io/badge/Tor-fen%C3%AAtre%20d%C3%A9di%C3%A9e-7d4698?logo=torproject&logoColor=white" alt="Fenêtre Tor">
+<img src="https://img.shields.io/badge/DNS-chiffr%C3%A9-a9b89a" alt="DNS chiffré">
+<a href="https://www.kromse.com/scan?code=product_la_cigale"><img src="https://img.shields.io/badge/score%20de%20risque%20Kromse-11%2F100-22c55e" alt="Score de risque Kromse : 11/100"></a>
+<img src="https://img.shields.io/github/last-commit/urbanyl/la-cigale?label=dernier%20commit&color=85887f" alt="Dernier commit">
+<img src="https://img.shields.io/github/stars/urbanyl/la-cigale?color=a9b89a" alt="Étoiles">
+</p>
+
 <p align="center"><img src="docs/captures/accueil.png" alt="Page d'accueil de La Cigale" width="860"></p>
 
 <p align="center"><a href="docs/captures/demo.mp4"><img src="docs/captures/demo-apercu.jpg" alt="Vidéo : La Cigale en 26 secondes" width="640"></a><br>
 <a href="docs/captures/demo.mp4">Voir la démonstration en vidéo (26 s, avec le son)</a></p>
+
+<p align="center"><a href="https://www.kromse.com/scan?code=product_la_cigale"><img src="docs/captures/score-kromse.png" alt="Analyse de sécurité Kromse : risque faible, 11 sur 100" width="860"></a><br>
+<sub>Analyse de sécurité indépendante par <a href="https://www.kromse.com/scan?code=product_la_cigale">Kromse</a> : risque faible, 11/100.</sub></p>
 
 ## Pourquoi La Cigale
 
