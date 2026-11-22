@@ -6,6 +6,9 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 
 <p align="center"><img src="docs/captures/accueil.png" alt="Page d'accueil de La Cigale" width="860"></p>
 
+<p align="center"><a href="docs/captures/demo.mp4"><img src="docs/captures/demo-apercu.jpg" alt="Vidéo : La Cigale en 26 secondes" width="640"></a><br>
+<a href="docs/captures/demo.mp4">Voir la démonstration en vidéo (26 s, avec le son)</a></p>
+
 ## Pourquoi La Cigale
 
 - **Anonymat** : empreinte uniformisée façon Tor Browser, WebRTC coupé, DNS chiffré (Quad9) obligatoire.
