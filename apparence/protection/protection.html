@@ -8,150 +8,218 @@
 <link rel="stylesheet" href="chrome://browser/content/cigale/protection.css">
 </head>
 <body>
-<main>
-  <h1><img src="chrome://browser/content/cigale/bouton.png" alt="" width="28" height="28"> Protection</h1>
-  <p id="resume" class="discret"></p>
+<div class="cadre">
+  <nav class="categories" aria-label="Catégories">
+    <p class="marque"><img src="chrome://browser/content/cigale/bouton.png" alt="" width="24" height="24"> Protection</p>
+    <a class="categorie" href="#general" data-categorie="general">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/></svg>
+      Vue d'ensemble</a>
+    <a class="categorie" href="#page" data-categorie="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
+      Cette page</a>
+    <a class="categorie" href="#sites" data-categorie="sites">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/></svg>
+      Sites conservés</a>
+    <a class="categorie" href="#tor" data-categorie="tor">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/></svg>
+      Fenêtre Tor</a>
+    <a class="categorie" href="#recherche" data-categorie="recherche">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+      Mots-clés</a>
+    <a class="categorie" href="#sauvegarde-verrou" data-categorie="sauvegarde-verrou">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg>
+      Sauvegarde et verrou</a>
+    <a class="categorie" href="#maj" data-categorie="maj">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg>
+      Mises à jour</a>
+    <hr>
+    <a class="categorie" href="about:apropos" target="_blank">
+      <img src="chrome://browser/content/cigale/bouton.png" alt="" width="16" height="16">
+      À propos de La Cigale</a>
+    <a class="categorie" href="https://discord.gg/YFrPQEaQEK" target="_blank">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4v.3M12 16.8v.2"/></svg>
+      Assistance (Discord)</a>
+  </nav>
 
-  <section id="nouveautes" hidden>
-    <h2>Quoi de neuf dans La Cigale 1.3</h2>
-    <ul class="nouveautes">
-      <li><b>Bannières cookies.</b> Les listes « cookies » et « nuisances » de uBlock sont activées, et La Cigale
-        refuse les cookies toute seule quand le site le permet.</li>
-      <li><b>Traduction des pages.</b> Une page dans une autre langue ? La Cigale propose de la traduire.
-        La traduction se fait sur votre ordinateur, le texte n'est envoyé nulle part.</li>
-      <li><b>Lecture à voix haute.</b> En mode lecture (F9), le bouton casque lit l'article.</li>
-      <li><b>Vérifier les fuites.</b> Plus bas sur cette page : adresse IP, DNS et WebRTC en un clic.</li>
-      <li><b>Mise à jour en un clic</b> sous Windows : « Mettre à jour » télécharge et lance le nouvel installeur.</li>
-      <li><b>Horloge à l'heure.</b> La page d'accueil affiche l'heure de votre fuseau, les sites voient toujours UTC.</li>
-    </ul>
-    <details><summary>Nouveautés de la 1.2</summary>
-    <ul class="nouveautes">
-      <li><b>Oublier ce site.</b> Un bouton dans la barre d'outils efface tout ce que La Cigale garde
-        sur le site ouvert : cookies, cache, historique, autorisations.</li>
-      <li><b>Fenêtre Tor.</b> Le bouton « Fenêtre Tor » (menu » au bout de la barre d'outils, ou plus bas sur
-        cette page) ouvre une fenêtre dont tout le trafic passe par le réseau Tor. Il faut que Tor tourne déjà (Tor Browser ouvert, ou le service tor sous Linux).</li>
-      <li><b>Cette page.</b> Plus bas, la liste de ce qui a été bloqué sur l'onglet de votre choix.</li>
-      <li><b>Conteneurs.</b> L'extension Multi-Account Containers est installée : clic droit sur
-        un onglet, « Rouvrir dans un conteneur », ou toujours ouvrir un site dans le même conteneur.</li>
-      <li><b>Liens nettoyés.</b> Les paramètres de pistage (utm_, fbclid, gclid…) sont retirés des liens.
-        Clic droit sur un lien : « Copier le lien nettoyé ».</li>
-      <li><b>Sauvegarde chiffrée.</b> Marque-pages, raccourcis de la page d'accueil et réglages dans un
-        seul fichier protégé par mot de passe, à remettre sur un autre ordinateur.</li>
-      <li><b>Mode lecture</b> aux couleurs de La Cigale (touche F9).</li>
-      <li><b>Verrou au démarrage.</b> Un mot de passe demandé à l'ouverture de La Cigale.</li>
-      <li><b>Mots-clés de recherche.</b> Tapez <kbd>w cigale</kbd> dans la barre d'adresse pour chercher
-        sur Wikipédia, <kbd>osm Avignon</kbd> pour la carte… La liste est plus bas.</li>
-      <li><b>Dépôt APT</b> pour Ubuntu et Debian : La Cigale se met à jour avec le reste du système.</li>
-    </ul>
-    </details>
-    <p><button id="fermer-nouveautes">J'ai vu</button></p>
-  </section>
+  <main>
+    <section data-categorie="general">
+      <h1>Vue d'ensemble</h1>
+      <p id="resume" class="discret"></p>
 
-  <h2>Profil</h2>
-  <form id="profils">
-    <label>
-      <input type="radio" name="profil" value="confort">
-      <b>Confort</b>
-      <span>Les sites s'affichent en français et vous restez connecté d'une fois sur l'autre.</span>
-    </label>
-    <label>
-      <input type="radio" name="profil" value="standard">
-      <b>Standard</b>
-      <span>Le réglage d'origine. Tout est effacé quand vous fermez La Cigale.</span>
-    </label>
-    <label>
-      <input type="radio" name="profil" value="renforce">
-      <b>Renforcé</b>
-      <span>JavaScript coupé et marges autour des pages. Beaucoup de sites ne marcheront plus.</span>
-    </label>
-  </form>
-  <p id="note-profil" class="discret" hidden>Vous avez modifié des réglages à la main, aucun profil ne correspond.</p>
+      <div id="nouveautes" class="carte" hidden>
+        <h2>Quoi de neuf dans La Cigale 1.3</h2>
+        <ul class="nouveautes">
+          <li><b>Bannières cookies.</b> Les listes « cookies » et « nuisances » de uBlock sont activées, et La Cigale
+            refuse les cookies toute seule quand le site le permet.</li>
+          <li><b>Traduction des pages.</b> Une page dans une autre langue ? La Cigale propose de la traduire.
+            La traduction se fait sur votre ordinateur, le texte n'est envoyé nulle part.</li>
+          <li><b>Lecture à voix haute.</b> En mode lecture (F9), le bouton casque lit l'article.</li>
+          <li><b>Vérifier les fuites.</b> Dans « Cette page » : adresse IP, DNS et WebRTC en un clic.</li>
+          <li><b>Mise à jour en un clic</b> sous Windows : « Mettre à jour » télécharge l'installeur, vérifie son empreinte et le lance.</li>
+          <li><b>Logos des raccourcis</b> sur la page d'accueil, demandés aux sites eux-mêmes.</li>
+        </ul>
+        <details><summary>Nouveautés de la 1.2</summary>
+        <ul class="nouveautes">
+          <li><b>Oublier ce site.</b> Un bouton dans la barre d'outils efface tout ce que La Cigale garde
+            sur le site ouvert : cookies, cache, historique, autorisations.</li>
+          <li><b>Fenêtre Tor.</b> Une fenêtre dont tout le trafic passe par le réseau Tor. Il faut que Tor
+            tourne déjà (Tor Browser ouvert, ou le service tor sous Linux).</li>
+          <li><b>Cette page.</b> La liste de ce qui a été bloqué sur l'onglet de votre choix.</li>
+          <li><b>Conteneurs.</b> Clic droit sur un onglet, « Rouvrir dans un conteneur ».</li>
+          <li><b>Liens nettoyés.</b> Les paramètres de pistage (utm_, fbclid, gclid…) sont retirés des liens.</li>
+          <li><b>Sauvegarde chiffrée</b> et <b>verrou au démarrage</b>.</li>
+          <li><b>Mots-clés de recherche.</b> Tapez <kbd>w cigale</kbd> dans la barre d'adresse.</li>
+          <li><b>Dépôt APT</b> pour Ubuntu et Debian.</li>
+        </ul>
+        </details>
+        <p><button id="fermer-nouveautes">J'ai vu</button></p>
+      </div>
 
-  <h2>En ce moment</h2>
-  <table>
-    <tbody id="etats"></tbody>
-  </table>
+      <div class="carte">
+        <h2>Profil</h2>
+        <form id="profils">
+          <label>
+            <input type="radio" name="profil" value="confort">
+            <b>Confort</b>
+            <span>Les sites s'affichent en français et vous restez connecté d'une fois sur l'autre.</span>
+          </label>
+          <label>
+            <input type="radio" name="profil" value="standard">
+            <b>Standard</b>
+            <span>Le réglage d'origine. Tout est effacé quand vous fermez La Cigale.</span>
+          </label>
+          <label>
+            <input type="radio" name="profil" value="renforce">
+            <b>Renforcé</b>
+            <span>JavaScript coupé et marges autour des pages. Beaucoup de sites ne marcheront plus.</span>
+          </label>
+        </form>
+        <p id="note-profil" class="discret" hidden>Vous avez modifié des réglages à la main, aucun profil ne correspond.</p>
+      </div>
 
-  <h2>Cette page</h2>
-  <p class="ligne">
-    <select id="rapport-onglet" aria-label="Onglet à examiner"></select>
-    <button id="rapport-actualiser">Actualiser</button>
-  </p>
-  <table>
-    <tbody id="rapport"></tbody>
-  </table>
-  <details id="rapport-details" hidden>
-    <summary>Adresses bloquées</summary>
-    <ul id="rapport-liste" class="liste"></ul>
-  </details>
-  <p class="ligne"><button id="rapport-oublier">Oublier ce site</button></p>
+      <div class="carte">
+        <h2>En ce moment</h2>
+        <table>
+          <tbody id="etats"></tbody>
+        </table>
+      </div>
+    </section>
 
-  <h2>Vérifier les fuites</h2>
-  <p>Ce que voient les sites : votre adresse IP, le DNS utilisé et ce que WebRTC laisse passer.
-    Le test interroge api.ipify.org.</p>
-  <p class="ligne"><button id="fuites-tester">Lancer le test</button></p>
-  <table>
-    <tbody id="fuites"></tbody>
-  </table>
+    <section data-categorie="page" hidden>
+      <h1>Cette page</h1>
+      <div class="carte">
+        <h2>Ce qui a été bloqué</h2>
+        <p class="ligne">
+          <select id="rapport-onglet" aria-label="Onglet à examiner"></select>
+          <button id="rapport-actualiser">Actualiser</button>
+        </p>
+        <table>
+          <tbody id="rapport"></tbody>
+        </table>
+        <details id="rapport-details" hidden>
+          <summary>Adresses bloquées</summary>
+          <ul id="rapport-liste" class="liste"></ul>
+        </details>
+        <p class="ligne"><button id="rapport-oublier">Oublier ce site</button></p>
+      </div>
 
-  <h2>Sites où rester connecté</h2>
-  <p>Ces sites gardent leurs cookies à la fermeture. Les autres sont effacés.</p>
-  <form id="ajout-exception">
-    <input id="exception" placeholder="exemple.fr" autocomplete="off" aria-label="Adresse du site" required>
-    <button>Ajouter</button>
-  </form>
-  <p id="erreur-exception" class="erreur" role="alert" hidden></p>
-  <ul id="exceptions"></ul>
+      <div class="carte">
+        <h2>Vérifier les fuites</h2>
+        <p>Ce que voient les sites : votre adresse IP, le DNS utilisé et ce que WebRTC laisse passer.
+          Le test interroge api.ipify.org.</p>
+        <p class="ligne"><button id="fuites-tester">Lancer le test</button></p>
+        <table>
+          <tbody id="fuites"></tbody>
+        </table>
+      </div>
+    </section>
 
-  <h2>Fenêtre Tor</h2>
-  <p>Une fenêtre à part dont tout le trafic passe par le réseau Tor, avec un profil séparé effacé à la
-    fermeture. Tor doit déjà tourner : Tor Browser ouvert, ou sous Linux <code>sudo apt install tor</code>.</p>
-  <p class="ligne">
-    <button id="tor-ouvrir"><img src="chrome://browser/content/cigale/tor.svg" width="16" height="16" alt="" style="vertical-align:-3px;margin-right:6px">Ouvrir une fenêtre Tor</button>
-    <span id="tor-etat" class="discret"></span>
-  </p>
-  <p class="discret">Pour un anonymat fort, Tor Browser reste le meilleur choix : il rend tous ses
-    utilisateurs identiques, ce qu'une fenêtre d'un autre navigateur ne peut pas garantir.</p>
+    <section data-categorie="sites" hidden>
+      <h1>Sites conservés</h1>
+      <div class="carte">
+        <h2>Sites où rester connecté</h2>
+        <p>Ces sites gardent leurs cookies à la fermeture. Les autres sont effacés.</p>
+        <form id="ajout-exception">
+          <input id="exception" placeholder="exemple.fr" autocomplete="off" aria-label="Adresse du site" required>
+          <button>Ajouter</button>
+        </form>
+        <p id="erreur-exception" class="erreur" role="alert" hidden></p>
+        <ul id="exceptions"></ul>
+      </div>
+    </section>
 
-  <h2>Mots-clés de recherche</h2>
-  <p>Dans la barre d'adresse, tapez le mot-clé, une espace, puis votre recherche.</p>
-  <table>
-    <tbody id="mots-cles"></tbody>
-  </table>
+    <section data-categorie="tor" hidden>
+      <h1>Fenêtre Tor</h1>
+      <div class="carte">
+        <h2>Naviguer par le réseau Tor</h2>
+        <p>Une fenêtre à part dont tout le trafic passe par le réseau Tor, avec un profil séparé effacé à la
+          fermeture. Tor doit déjà tourner : Tor Browser ouvert, ou sous Linux <code>sudo apt install tor</code>.</p>
+        <p class="ligne">
+          <button id="tor-ouvrir"><img class="icone-tor" src="chrome://browser/content/cigale/tor.svg" width="16" height="16" alt="">Ouvrir une fenêtre Tor</button>
+          <span id="tor-etat" class="discret"></span>
+        </p>
+        <p class="discret">Pour un anonymat fort, Tor Browser reste le meilleur choix : il rend tous ses
+          utilisateurs identiques, ce qu'une fenêtre d'un autre navigateur ne peut pas garantir.</p>
+      </div>
+    </section>
 
-  <h2>Sauvegarde chiffrée</h2>
-  <p>Marque-pages, raccourcis de la page d'accueil, sites où rester connecté et profil de protection,
-    dans un fichier chiffré (AES-256). Rangez-le où vous voulez : clé USB, cloud…
-    Sans le mot de passe, personne ne peut le lire, vous non plus.</p>
-  <form id="sauvegarde">
-    <input type="password" id="sauvegarde-mdp" placeholder="Mot de passe de la sauvegarde" autocomplete="new-password" aria-label="Mot de passe de la sauvegarde" required minlength="8">
-    <button type="submit" name="action" value="exporter">Enregistrer…</button>
-    <button type="submit" name="action" value="importer">Restaurer…</button>
-  </form>
-  <p id="sauvegarde-etat" class="discret" role="status"></p>
+    <section data-categorie="recherche" hidden>
+      <h1>Mots-clés</h1>
+      <div class="carte">
+        <h2>Mots-clés de recherche</h2>
+        <p>Dans la barre d'adresse, tapez le mot-clé, une espace, puis votre recherche.</p>
+        <table>
+          <tbody id="mots-cles"></tbody>
+        </table>
+      </div>
+    </section>
 
-  <h2>Verrou au démarrage</h2>
-  <p>La Cigale demande ce mot de passe à chaque ouverture. C'est un verrou contre les curieux,
-    pas un chiffrement : vos fichiers restent lisibles par quelqu'un qui a accès à votre session.</p>
-  <form id="verrou">
-    <input type="password" id="verrou-actuel" placeholder="Mot de passe actuel" autocomplete="current-password" aria-label="Mot de passe actuel">
-    <input type="password" id="verrou-nouveau" placeholder="Nouveau mot de passe" autocomplete="new-password" aria-label="Nouveau mot de passe">
-    <input type="password" id="verrou-confirmation" placeholder="Encore une fois" autocomplete="new-password" aria-label="Confirmer le mot de passe">
-    <p class="ligne">
-      <button type="submit" id="verrou-valider">Activer</button>
-      <button type="button" id="verrou-retirer">Retirer le verrou</button>
-    </p>
-  </form>
-  <p id="verrou-etat" class="discret" role="status"></p>
+    <section data-categorie="sauvegarde-verrou" hidden>
+      <h1>Sauvegarde et verrou</h1>
+      <div class="carte">
+        <h2>Sauvegarde chiffrée</h2>
+        <p>Marque-pages, raccourcis de la page d'accueil, sites où rester connecté et profil de protection,
+          dans un fichier chiffré (AES-256). Rangez-le où vous voulez : clé USB, cloud…
+          Sans le mot de passe, personne ne peut le lire, vous non plus.</p>
+        <form id="sauvegarde">
+          <input type="password" id="sauvegarde-mdp" placeholder="Mot de passe de la sauvegarde" autocomplete="new-password" aria-label="Mot de passe de la sauvegarde" required minlength="8">
+          <button type="submit" name="action" value="exporter">Enregistrer…</button>
+          <button type="submit" name="action" value="importer">Restaurer…</button>
+        </form>
+        <p id="sauvegarde-etat" class="discret" role="status"></p>
+      </div>
 
-  <h2>Mises à jour</h2>
-  <label class="case">
-    <input type="checkbox" id="maj-verifier">
-    Prévenir quand une nouvelle version sort (une vérification par jour sur GitHub)
-  </label>
-  <p id="maj-etat" class="discret"></p>
-  <p><a href="#nouveautes" id="voir-nouveautes">Voir les nouveautés de cette version</a></p>
-</main>
+      <div class="carte">
+        <h2>Verrou au démarrage</h2>
+        <p>La Cigale demande ce mot de passe à chaque ouverture. C'est un verrou contre les curieux,
+          pas un chiffrement : vos fichiers restent lisibles par quelqu'un qui a accès à votre session.</p>
+        <form id="verrou">
+          <input type="password" id="verrou-actuel" placeholder="Mot de passe actuel" autocomplete="current-password" aria-label="Mot de passe actuel">
+          <input type="password" id="verrou-nouveau" placeholder="Nouveau mot de passe" autocomplete="new-password" aria-label="Nouveau mot de passe">
+          <input type="password" id="verrou-confirmation" placeholder="Encore une fois" autocomplete="new-password" aria-label="Confirmer le mot de passe">
+          <p class="ligne">
+            <button type="submit" id="verrou-valider">Activer</button>
+            <button type="button" id="verrou-retirer">Retirer le verrou</button>
+          </p>
+        </form>
+        <p id="verrou-etat" class="discret" role="status"></p>
+      </div>
+    </section>
+
+    <section data-categorie="maj" hidden>
+      <h1>Mises à jour</h1>
+      <div class="carte">
+        <h2>Nouvelles versions</h2>
+        <label class="case">
+          <input type="checkbox" id="maj-verifier">
+          Prévenir quand une nouvelle version sort (une vérification par jour sur GitHub)
+        </label>
+        <p id="maj-etat" class="discret"></p>
+        <p><a href="#nouveautes" id="voir-nouveautes">Voir les nouveautés de cette version</a></p>
+      </div>
+    </section>
+  </main>
+</div>
 <script src="chrome://browser/content/cigale/protection.js"></script>
 </body>
 </html>

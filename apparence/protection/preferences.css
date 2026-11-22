@@ -1,0 +1,58 @@
+/* about:preferences aux couleurs de about:cigale : fond noir, cartes translucides, accent blanc */
+:root {
+  color-scheme: dark;
+  --background-color-canvas: #0a0a0b;
+  --background-color-box: rgba(18, 18, 20, 0.72);
+  --card-background-color: rgba(18, 18, 20, 0.72);
+  --card-border-color: rgba(255, 255, 255, 0.10);
+  --border-color: rgba(255, 255, 255, 0.10);
+  --border-color-card: rgba(255, 255, 255, 0.10);
+  --text-color: #ededed;
+  --text-color-deemphasized: #8c8c90;
+  --color-accent-primary: #ededed;
+  --color-accent-primary-hover: #ffffff;
+  --color-accent-primary-active: #d6d6d8;
+  --color-accent-primary-selected: #ededed;
+  --button-background-color-primary: #ededed;
+  --button-background-color-primary-hover: #ffffff;
+  --button-background-color-primary-active: #d6d6d8;
+  --button-text-color-primary: #0a0a0b;
+  --button-text-color-primary-hover: #0a0a0b;
+  --button-text-color-primary-active: #0a0a0b;
+  --button-background-color: rgba(255, 255, 255, 0.08);
+  --button-background-color-hover: rgba(255, 255, 255, 0.13);
+  --link-color: #ededed;
+  --link-color-hover: #ffffff;
+  --link-color-active: #d6d6d8;
+  --focus-outline-color: #ededed;
+  --checkbox-checked-bgcolor: #ededed;
+  --checkbox-checked-color: #0a0a0b;
+  --in-content-page-background: #0a0a0b;
+  --in-content-box-background: rgba(18, 18, 20, 0.72);
+  --in-content-primary-button-background: #ededed;
+  --in-content-primary-button-text-color: #0a0a0b;
+  --in-content-accent-color: #ededed;
+  --in-content-link-color: #ededed;
+}
+
+body {
+  background: #0a0a0b url(chrome://browser/content/cigale/accueil/img/fond.jpg) center / cover fixed no-repeat !important;
+  font-family: Inter, "Segoe UI Variable", "Segoe UI", Cantarell, system-ui, sans-serif;
+}
+
+/* catégorie choisie : fond clair discret plutôt que texte en couleur d'accent */
+#categories > richlistitem[selected],
+.category[selected] {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ededed !important;
+  border-radius: 10px;
+}
+#categories > richlistitem:not([selected]):hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* bandeau collant de la recherche : translucide plutôt que noir plein */
+.sticky-container, #searchInput-container, .main-content > .sticky-container {
+  background: rgba(10, 10, 11, 0.55) !important;
+  backdrop-filter: blur(14px);
+}

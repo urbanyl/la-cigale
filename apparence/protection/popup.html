@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src chrome:; img-src chrome: data:; object-src 'none'">
+<link rel="stylesheet" href="chrome://browser/content/cigale/popup.css">
+</head>
+<body>
+  <header>
+    <img src="chrome://browser/content/cigale/bouton.png" alt="" width="20" height="20">
+    <span class="nom">La Cigale</span>
+    <span id="profil" class="etiquette"></span>
+  </header>
+
+  <section class="site">
+    <p id="hote" class="hote"></p>
+    <p id="connexion" class="detail"></p>
+    <p id="bloques" class="detail"></p>
+  </section>
+
+  <nav>
+    <button id="oublier">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+      Oublier ce site</button>
+    <button id="tor">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/></svg>
+      Ouvrir une fenêtre Tor</button>
+    <button id="fuites">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>
+      Vérifier les fuites</button>
+    <hr>
+    <button id="reglages">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/></svg>
+      Protection et réglages</button>
+  </nav>
+<script src="chrome://browser/content/cigale/popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+/* Panneau du bouton cigale : mêmes couleurs que about:cigale */
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  width: 320px;
+  padding: 14px 8px 8px;
+  background: #121214;
+  color: #ededed;
+  font: 14px/1.45 Inter, "Segoe UI Variable", "Segoe UI", Cantarell, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+header { display: flex; align-items: center; gap: 9px; padding: 0 8px; }
+.nom { font-weight: 600; font-size: 15px; }
+.etiquette {
+  margin-left: auto;
+  padding: 2px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: #b4b4b8;
+  font-size: 12px;
+}
+
+.site {
+  margin: 12px 0 6px;
+  padding: 11px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+.site p { margin: 0; }
+.hote { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.detail { color: #8c8c90; font-size: 13px; margin-top: 2px !important; }
+.detail:empty { display: none; }
+
+nav { display: flex; flex-direction: column; }
+button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+button:hover, button:focus-visible { background: rgba(255, 255, 255, 0.07); outline: 0; }
+button:disabled { opacity: 0.4; cursor: default; background: none; }
+svg {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
+}
+hr { width: 100%; margin: 6px 0; border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); }

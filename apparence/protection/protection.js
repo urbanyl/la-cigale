@@ -644,3 +644,19 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden) afficherRapport();
 });
 window.addEventListener("load", () => setTimeout(() => window.scrollTo(0, 0), 300));
+
+// --- Catégories (colonne de gauche) ---
+
+function montrerCategorie() {
+  const sections = [...document.querySelectorAll("main > section[data-categorie]")];
+  let categorie = location.hash.slice(1);
+  if (!sections.some((s) => s.dataset.categorie == categorie)) categorie = "general";
+  for (const s of sections) s.hidden = s.dataset.categorie != categorie;
+  for (const lien of document.querySelectorAll(".categorie[data-categorie]")) {
+    if (lien.dataset.categorie == categorie) lien.setAttribute("aria-current", "page");
+    else lien.removeAttribute("aria-current");
+  }
+  window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", montrerCategorie);
+montrerCategorie();
