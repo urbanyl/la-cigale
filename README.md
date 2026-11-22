@@ -8,7 +8,7 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 <a href="https://github.com/urbanyl/la-cigale/releases/latest"><img src="https://img.shields.io/github/v/release/urbanyl/la-cigale?label=version&color=a9b89a" alt="Version"></a>
 <a href="https://github.com/urbanyl/la-cigale/releases"><img src="https://img.shields.io/github/downloads/urbanyl/la-cigale/total?label=t%C3%A9l%C3%A9chargements&color=85887f" alt="Téléchargements"></a>
 <a href="https://github.com/urbanyl/la-cigale/actions/workflows/construire.yml"><img src="https://img.shields.io/github/actions/workflow/status/urbanyl/la-cigale/construire.yml?label=construction" alt="Construction"></a>
-<a href="LICENSE"><img src="https://img.shields.io/github/license/urbanyl/la-cigale?label=licence&color=85887f" alt="Licence"></a>
+<a href="#licence"><img src="https://img.shields.io/badge/licence-MPL--2.0-85887f" alt="Licence MPL-2.0"></a>
 <img src="https://img.shields.io/badge/bas%C3%A9%20sur-Firefox%20ESR%20153-e66000?logo=firefoxbrowser&logoColor=white" alt="Basé sur Firefox ESR 153">
 <img src="https://img.shields.io/badge/Windows-x64-0078d4?logo=windows&logoColor=white" alt="Windows">
 <img src="https://img.shields.io/badge/Linux-x64-333333?logo=linux&logoColor=white" alt="Linux">
