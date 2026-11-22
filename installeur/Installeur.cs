@@ -125,6 +125,10 @@ namespace LaCigale
             // en cas de mise à jour, on enlève d'abord les fichiers de l'ancienne version
             SupprimerFichiersListes(dossier, null);
 
+            // Firefox garde en cache les scripts de l'ancienne version tant que son numéro de build
+            // ne change pas (La Cigale reste sur le même Firefox) : on vide ce cache à chaque installation.
+            try { Directory.Delete(Path.Combine(Profil, "startupCache"), true); } catch (Exception) { }
+
             var fichiers = new List<string>();
             using (var archive = new ZipArchive(Ressources.Flux("charge.zip"), ZipArchiveMode.Read))
             {
