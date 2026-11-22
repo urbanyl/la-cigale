@@ -258,7 +258,7 @@ def tete(langue, page, relatif, schema):
 <script type="application/ld+json">
 {json.dumps(schema, ensure_ascii=False, indent=1)}
 </script>
-<link rel="stylesheet" href="{relatif}style.css">
+<link rel="stylesheet" href="{relatif}style.css?v=3">
 </head>
 '''
 

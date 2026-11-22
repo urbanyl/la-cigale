@@ -132,7 +132,25 @@ a { color: inherit; }
   @keyframes apparait { from { opacity: 0; } }
 }
 
+.sur-mobile { display: none; }
+
 @media (max-width: 640px) {
+  body { background-attachment: scroll; background-size: 180% auto; background-position: right bottom; }
+  .haut { padding: 16px 0; }
+  .titre { font-size: 23vw; }
+  .devise { font-size: 23px; }
+  .chant { margin-top: 34px; }
+  .action { margin-top: 32px; }
+  .telecharger { flex: 1 1 100%; text-align: center; padding: 16px 20px; }
+  .action p { flex: 1 1 100%; text-align: center; }
+  .sur-mobile { display: block; margin: 18px 0 0; padding: 12px 14px; border-left: 2px solid var(--olive); color: var(--pierre-douce); font-size: 15px; background: rgba(169, 184, 154, 0.06); }
+  .intro { font-size: 17px; }
+  .fonctions h3 { font-size: 18px; }
+  .versions a { padding: 16px 2px; }
+  .versions a:hover { padding-left: 2px; }
+  .citation p { font-size: 26px; }
+  .bas { flex-direction: column; gap: 0; margin-top: 80px; }
+  .bas a { padding: 12px 0; font-size: 16px; }
   .scene { padding-top: 6vh; }
   .chant canvas { height: 90px; }
   .versions a { grid-template-columns: 22px minmax(0, 1fr); }
@@ -190,4 +208,11 @@ body.page { background-attachment: fixed; }
 
 @media (max-width: 640px) {
   .coin { position: static; display: inline-block; margin: 0 16px 24px; }
+  .page main { padding-top: 40px; }
+  .page header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .page header img { width: 36px; height: 36px; }
+  .tableau { margin-left: -16px; margin-right: -16px; border-radius: 0; }
+  .tableau table { min-width: 560px; font-size: 14px; }
+  .tableau th:first-child { position: sticky; left: 0; z-index: 1; background: #151614; }
+  .bloc { padding: 16px; }
 }
