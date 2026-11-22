@@ -282,3 +282,15 @@ $("citation-texte").textContent = texteCitation;
 $("citation-auteur").textContent = auteurCitation;
 
 appliquerReglages();
+
+// Boutons Protection, Réglages, Tor, À propos : la page note l'action dans son adresse
+// (#…&ouvrir=tor), La Cigale la voit et agit. Un site web ne peut pas s'en servir.
+document.addEventListener("click", (e) => {
+  const lien = e.target.closest("a[data-ouvrir]");
+  if (!lien) return;
+  e.preventDefault();
+  const base = location.href.split("#")[0];
+  const ancre = location.hash;
+  history.replaceState(null, "", base + (ancre ? ancre + "&" : "#") + "ouvrir=" + lien.dataset.ouvrir);
+  setTimeout(() => history.replaceState(null, "", base + ancre), 300);
+});
