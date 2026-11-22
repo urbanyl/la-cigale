@@ -36,4 +36,16 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/comparaison/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/comparison/"/>
   </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/securite/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/securite/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/security/"/>
+  </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/en/security/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/securite/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/security/"/>
+  </url>
 </urlset>

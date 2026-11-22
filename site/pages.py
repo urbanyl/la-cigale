@@ -134,7 +134,99 @@ TEXTES = {
     },
 }
 AUTRE = {"fr": "en", "en": "fr"}
-CORRESPONDANCE = {"faq/": "en/faq/", "comparaison/": "en/comparison/", "en/faq/": "faq/", "en/comparison/": "comparaison/"}
+CORRESPONDANCE = {"faq/": "en/faq/", "comparaison/": "en/comparison/", "securite/": "en/security/",
+                  "en/faq/": "faq/", "en/comparison/": "comparaison/", "en/security/": "securite/"}
+
+TEXTES["fr"]["securite"] = {
+    "chemin": "securite/", "titre": "Sécurité de La Cigale : protections, vérifications et limites",
+    "h1": "Sécurité",
+    "description": "Ce que La Cigale verrouille, comment ses versions sont vérifiées, ce qu'elle contacte sur le réseau et ses limites connues. Rapport d'audit publié.",
+}
+TEXTES["en"]["securite"] = {
+    "chemin": "en/security/", "titre": "La Cigale security: protections, verification and limits",
+    "h1": "Security",
+    "description": "What La Cigale locks down, how its releases are verified, what it contacts on the network and its known limits. Audit report published.",
+}
+
+# Icônes SVG (trait), même graphisme partout
+ICONES = {
+    "cadenas": '<path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="5" y="11" width="14" height="10" rx="2"/>',
+    "paquet": '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',
+    "reseau": '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+    "alerte": '<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17.5v.5"/>',
+    "rapport": '<path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 13l2 2 4-4"/>',
+}
+
+SECURITE = {
+    "fr": [
+        ("cadenas", "Verrouillé, même face aux extensions", [
+            "Télémétrie, études et rapports de plantage coupés ; les programmes correspondants sont retirés du paquet.",
+            "Anti-empreinte de Tor Browser (<code>resistFingerprinting</code>) ; WebGL, WebGPU et WebRTC coupés.",
+            "HTTPS imposé, TLS 1.2 minimum, pas de 0-RTT, OCSP obligatoire et CRLite.",
+            "Cookies et cache isolés par site ; tout est effacé à la fermeture, rien n'est écrit dans un cache disque.",
+            "Pas de mots de passe enregistrés, pas de JavaScript dans les PDF, pas de DRM.",
+            "Les extensions installées en douce par d'autres programmes sont refusées.",
+        ]),
+        ("paquet", "Des versions vérifiables", [
+            "Firefox ESR vient de Mozilla : empreinte SHA-512 et signature GPG de Mozilla vérifiées, signature Authenticode sous Windows.",
+            "Chaque version publie ses empreintes SHA-256 (<code>SHA256SUMS.txt</code>).",
+            "La mise à jour en un clic compare l'empreinte de l'installeur téléchargé à celle publiée ; un écart annule tout.",
+            "Le dépôt APT est signé (clé ed25519, empreinte <code>8133 6ADC CAD0 2142 F542 BE53 E231 938C AAB4 F2D5</code>).",
+            "La clé privée du dépôt APT n'est jamais dans le code source : seule la construction automatique s'en sert.",
+        ]),
+        ("reseau", "Ce que La Cigale contacte", [
+            "<b>Quad9</b> (Suisse) pour le DNS chiffré : il voit les domaines visités.",
+            "<b>L'autorité de certification</b> du site (OCSP) : elle voit le certificat consulté.",
+            "<b>GitHub</b>, une fois par jour, pour savoir s'il existe une nouvelle version. Désactivable dans la page Protection.",
+            "<b>Mozilla</b>, seulement si vous traduisez une page : téléchargement du modèle de langue. Le texte reste sur l'ordinateur.",
+            "<b>api.ipify.org</b>, seulement quand vous lancez le test de fuites.",
+            "<b>Les sites de vos raccourcis</b>, pour afficher leur logo. Jamais Google ni un service tiers.",
+        ]),
+        ("alerte", "Limites connues", [
+            "L'installeur Windows n'est pas signé : SmartScreen affiche un avertissement. Vérifiez l'empreinte SHA-256 avant de l'ouvrir.",
+            "La configuration de La Cigale tourne avec les droits du navigateur (bac à sable <code>autoconfig</code> désactivé), parce qu'elle en a besoin. Un site web ne peut pas la modifier.",
+            "La Cigale ne cache pas votre adresse IP. La fenêtre Tor aide, mais pour un anonymat fort, Tor Browser reste la référence.",
+        ]),
+        ("rapport", "Audit", [
+            'Un audit statique du code a été mené en novembre 2026 : aucune faille critique, un risque élevé (mise à jour non vérifiée) corrigé depuis. <a href="https://github.com/urbanyl/la-cigale/blob/main/docs/audit-securite-zh.md">Lire le rapport</a>.',
+            'Une faille ? Signalez-la sur <a href="https://github.com/urbanyl/la-cigale/security">GitHub</a>.',
+        ]),
+    ],
+    "en": [
+        ("cadenas", "Locked, even against extensions", [
+            "Telemetry, studies and crash reports are off; the matching programs are removed from the package.",
+            "Tor Browser's fingerprinting protection (<code>resistFingerprinting</code>); WebGL, WebGPU and WebRTC off.",
+            "HTTPS only, TLS 1.2 minimum, no 0-RTT, mandatory OCSP and CRLite.",
+            "Cookies and cache isolated per site; everything is wiped on close, nothing goes to a disk cache.",
+            "No saved passwords, no JavaScript in PDFs, no DRM.",
+            "Extensions sideloaded by other programs are refused.",
+        ]),
+        ("paquet", "Verifiable releases", [
+            "Firefox ESR comes from Mozilla: SHA-512 checksum and Mozilla's GPG signature checked, Authenticode signature on Windows.",
+            "Every release publishes its SHA-256 checksums (<code>SHA256SUMS.txt</code>).",
+            "One-click update compares the downloaded installer to the published checksum; any mismatch cancels it.",
+            "The APT repository is signed (ed25519 key, fingerprint <code>8133 6ADC CAD0 2142 F542 BE53 E231 938C AAB4 F2D5</code>).",
+            "The APT private key is never in the source code: only the automated build uses it.",
+        ]),
+        ("reseau", "What La Cigale contacts", [
+            "<b>Quad9</b> (Switzerland) for encrypted DNS: it sees the domains you visit.",
+            "<b>The site's certificate authority</b> (OCSP): it sees which certificate is checked.",
+            "<b>GitHub</b>, once a day, to check for a new version. Can be turned off on the Protection page.",
+            "<b>Mozilla</b>, only when you translate a page: the language model is downloaded. The text stays on your computer.",
+            "<b>api.ipify.org</b>, only when you run the leak test.",
+            "<b>Your shortcuts' websites</b>, to show their logo. Never Google or a third-party service.",
+        ]),
+        ("alerte", "Known limits", [
+            "The Windows installer is not signed: SmartScreen shows a warning. Check the SHA-256 checksum before running it.",
+            "La Cigale's configuration runs with browser privileges (<code>autoconfig</code> sandbox off), because it needs them. Websites cannot change it.",
+            "La Cigale does not hide your IP address. The Tor window helps, but for strong anonymity Tor Browser remains the reference.",
+        ]),
+        ("rapport", "Audit", [
+            'A static code audit was carried out in November 2026: no critical flaw, one high risk (unverified update) fixed since. <a href="https://github.com/urbanyl/la-cigale/blob/main/docs/audit-securite-zh.md">Read the report</a> (Chinese).',
+            'Found a flaw? Report it on <a href="https://github.com/urbanyl/la-cigale/security">GitHub</a>.',
+        ]),
+    ],
+}
 
 
 def tete(langue, page, relatif, schema):
@@ -248,8 +340,35 @@ def page_comparaison(langue):
 ''' + pied(langue, "comparaison", relatif) + "</body>\n</html>\n"
 
 
+def page_securite(langue):
+    t = TEXTES[langue]
+    relatif = "../" if langue == "fr" else "../../"
+    blocs = []
+    for icone, titre, lignes in SECURITE[langue]:
+        items = "".join(f"      <li>{ligne}</li>\n" for ligne in lignes)
+        blocs.append(f"""  <section class="bloc">
+    <h2><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONES[icone]}</svg>{html.escape(titre)}</h2>
+    <ul>
+{items}    </ul>
+  </section>""")
+    blocs = "\n".join(blocs)
+    return tete(langue, "securite", relatif, [fil(langue, "securite")]) + f"""<body class="page">
+<main>
+  <header>
+    <img src="{relatif}symbole.png" alt="La Cigale">
+    <div>
+      <h1>{t["securite"]["h1"]}</h1>
+      <p class="sous-titre">La Cigale</p>
+    </div>
+  </header>
+{blocs}
+  <p class="suite"><a class="bouton" href="https://github.com/urbanyl/la-cigale/releases/latest">{t["telecharger"]}</a></p>
+</main>
+""" + pied(langue, "securite", relatif) + "</body>\n</html>\n"
+
+
 def sitemap():
-    paires = [("", "en/"), ("faq/", "en/faq/"), ("comparaison/", "en/comparison/")]
+    paires = [("", "en/"), ("faq/", "en/faq/"), ("comparaison/", "en/comparison/"), ("securite/", "en/security/")]
     entrees = []
     for fr, en in paires:
         for chemin in (fr, en):
@@ -266,7 +385,7 @@ def sitemap():
 
 if __name__ == "__main__":
     for langue in ("fr", "en"):
-        for page, fabrique in (("faq", page_faq), ("comparaison", page_comparaison)):
+        for page, fabrique in (("faq", page_faq), ("comparaison", page_comparaison), ("securite", page_securite)):
             cible = ICI / TEXTES[langue][page]["chemin"] / "index.html"
             cible.parent.mkdir(parents=True, exist_ok=True)
             cible.write_text(fabrique(langue), encoding="utf-8")

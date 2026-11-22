@@ -20,11 +20,11 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 
 | | La Cigale | Firefox | Chrome | Edge |
 |---|:---:|:---:|:---:|:---:|
-| Télémétrie désactivée d'office | ✅ | ❌ | ❌ | ❌ |
-| Bloqueur de publicités intégré | ✅ | ❌ | ❌ | ❌ |
-| Anti-empreinte renforcé (type Tor Browser) | ✅ | ❌ | ❌ | ❌ |
-| Données effacées à la fermeture | ✅ | ❌ | ❌ | ❌ |
-| Code source ouvert | ✅ | ✅ | ❌ | ❌ |
+| Télémétrie désactivée d'office | oui | non | non | non |
+| Bloqueur de publicités intégré | oui | non | non | non |
+| Anti-empreinte renforcé (type Tor Browser) | oui | non | non | non |
+| Données effacées à la fermeture | oui | non | non | non |
+| Code source ouvert | oui | oui | non | non |
 
 <p align="center">
   <img src="docs/captures/navigation-privee.png" alt="Fenêtre de navigation privée" width="49%">
@@ -120,260 +120,24 @@ motif, crépuscule provençal et plan technique. Ils se régénèrent avec `pyth
   <img src="fonds-ecran/la-cigale-5-plan.png" alt="Fond d'écran plan technique" width="49%">
 </p>
 
-## Sécurité : innovations maison & transparence honnête
-
-### Les huit piliers de défense qui vous protègent vraiment
-
-La Cigale implémente **huit innovations de sécurité** jamais vues dans aucun autre navigateur grand public. Pas pour faire beau, mais pour vraiment vous défendre contre les malwares, les trojans et les compromissions silencieuses. Chacune s'appuie sur des techniques prouvées par l'industrie de la cybersécurité, qu'on applique ici à un navigateur.
-
-#### 🔐 1. Manifeste de sécurité chiffré (éd25519)
-
-**Le problème :** Un malware peut récrire votre `cigale.cfg` ou les prefs Firefox et désactiver votre VPN/DNS chiffré *sans que vous le voyiez*. Vous naviguez en croyant être protégé, vous ne l'êtes pas.
-
-**La solution :** À chaque démarrage, La Cigale calcule le SHA-256 de ses 49 paramètres critiques. Ce hash est signé numériquement avec une clé éd25519 (crypto moderne, celle de Signal & Let's Encrypt). Si un malware a touché à quoi que ce soit, la signature ne correspond plus et vous êtes **alerté immédiatement**.
-
-**Pourquoi c'est innovant :** Les serveurs critiques (gouvernements, banques) font ça depuis 20 ans. Les navigateurs ? Jamais. Chrome ignore les modifications de config. Firefox laisse les prefs mozarder silencieusement. La Cigale se protège elle-même, sans dépendre du système d'exploitation.
-
-**Code :** `apparence/protection/securite.sys.mjs` · Vérification au démarrage (`initialiserSécurité`)
-
----
-
-#### 🚫 2. Blocage des injections de config par malware
-
-**Le problème :** Même si votre config est intacte, un malware peut essayer d'ajouter une NOUVELLE pref, non-whitelistée. Par exemple, `privacy.trackingProtection.enabled = false` pour réactiver le tracking.
-
-**La solution :** Une liste blanche (whitelist) explicite : EXACTEMENT 49 prefs autorisées. Toute tentative de pref non-whitelistée est bloquée silencieusement et loggée. Le malware échoue avant même de boucler une fois.
-
-```javascript
-export const PREFS_WHITELIST = new Set([
-  "privacy.resistFingerprinting",
-  "network.trr.mode",
-  "dom.security.https_only_mode",
-  // ... 46 autres
-]);
-
-export function validerPrefInjectée(clé, valeur) {
-  if (!PREFS_WHITELIST.has(clé)) {
-    enregistrerAuditLog("INJECTION_BLOQUER", { clé, valeur });
-    return false; // Pref rejetée
-  }
-  return true;
-}
-```
-
-**Pourquoi c'est innovant :** Les applis bancaires mobiles (iOS/Android) font ceci depuis 10 ans. Les navigateurs l'ont ignoré. La Cigale l'apporte à Firefox.
-
----
-
-#### 📝 3. Audit log local chiffré
-
-**Le problème :** Si un malware réussit à vous infecter, comment saviez-vous ? Les navigateurs gardent ZÉRO historique de sécurité.
-
-**La solution :** Un journal interne, chiffré, enregistre chaque événement suspect :
-- Injections bloquées
-- Domaines non autorisés
-- Modifications de profil
-- Tokens canary modifiés (voir point 8)
-
-Vous y accédez via la future onglet « Sécurité avancée » de la page Protection. Rien n'est envoyé en ligne. Les 1000 dernières entrées sont gardées, les plus anciennes purgées.
-
-```javascript
-export async function enregistrerAuditLog(événement, données = {}) {
-  const entrée = JSON.stringify({ timestamp: new Date().toISOString(), événement, ...données });
-  const journal = JSON.parse(P.getStringPref("cigale.securite.auditlog", "[]"));
-  journal.push(entrée);
-  if (journal.length > 1000) journal.shift();
-  P.setStringPref("cigale.securite.auditlog", JSON.stringify(journal));
-}
-```
-
-**Pourquoi c'est innovant :** C'est l'EDR (Endpoint Detection & Response) des gouvernements, gratuit et sur votre machine. Aucun concurrent n'offre ceci.
-
----
-
-#### ⚔️ 4. Rotation automatique des clés APT (Linux/Debian)
-
-**Le problème :** Sous Linux, La Cigale se met à jour via APT. Si la clé de signature est compromise, **toutes les futures mises à jour** peuvent être malveillantes.
-
-**La solution :** Rotation régulière des clés. Tous les 6 mois, nous générons une nouvelle clé, l'annonçons publiquement, et retirons l'ancienne. Même si quelqu'un vole la clé, il ne peut empoisonner que 6 mois de mises à jour. Les gros projets font ça : Linux kernel, Debian stable, Let's Encrypt.
-
-Calendrier public : github.com/urbanyl/la-cigale/security
-
-**Pourquoi c'est innovant :** Très peu de navigateurs re-distribués chiffrent leurs packages Linux. La Cigale le fait en standard ET rotate les clés.
-
----
-
-#### 🔍 5. Vérification d'intégrité du profil utilisateur
-
-**Le problème :** Un ransomware réécrit `prefs.js` pour réactiver les tracking. Vous ne le voyez pas jusqu'à ce que vous ayez divulgué vos données à une pub tracker.
-
-**La solution :** Chaque démarrage, les hash SHA-256 de vos fichiers critiques sont calculés et comparés à la dernière exécution :
-- `prefs.js`
-- `places.sqlite` (signets & historique)
-- `permissions.sqlite` (permissions des sites)
-
-Si un fichier a changé de façon inattendue, vous êtes alerté **avant la première navigation**.
-
-```javascript
-export async function verifierIntégritéProfil() {
-  const hashes = {}; // Calculer SHA-256 de prefs.js, places.sqlite, etc.
-  const ancien = JSON.parse(P.getStringPref("cigale.securite.profil.hashes", "{}"));
-  
-  if (ancien["prefs.js"] && ancien["prefs.js"] !== hashes["prefs.js"]) {
-    enregistrerAuditLog("PROFIL_MODIFIÉ", { fichier: "prefs.js" });
-    // Alerter l'utilisateur
-    return false;
-  }
-}
-```
-
-**Pourquoi c'est innovant :** C'est l'integrity checking des serveurs critiques, appliqué à votre navigateur. Zéro navigateur ne le fait.
-
----
-
-#### 🔒 6. Secure Boot maison du navigateur
-
-**Le problème :** Vous clonez votre disque dur (VM, sauvegarde, vol). La Cigale restaure automatiquement votre profil, incluant tokens & mots de passe. Sur la machine compromised/volée, c'est catastrophique.
-
-**La solution :** Au premier lancement, La Cigale génère une « empreinte machine » basée sur :
-- Hostname de votre système
-- UUID unique de votre ordinateur
-
-Si vous clonez votre disque, l'empreinte change. La Cigale détecte ceci et alerte. Vous pouvez alors récupérer une sauvegarde sécurisée.
-
-```javascript
-export async function initialiserSecureBoot() {
-  const empreinte = générerEmpreinteMachine(); // hostname + UUID
-  const ancien = P.getStringPref("cigale.securite.empreinte.machine", "");
-  
-  if (ancien && ancien !== empreinte) {
-    enregistrerAuditLog("MACHINE_CHANGE", { ancien, nouveau: empreinte });
-    return false; // Machine a changé, alerter!
-  }
-  P.setStringPref("cigale.securite.empreinte.machine", empreinte);
-}
-```
-
-**Pourquoi c'est innovant :** Les serveurs Windows/Linux font ça depuis des années. Aucun navigateur ne l'a apporté. La Cigale le fait.
-
----
-
-#### 🛑 7. Network Lockdown Mode (confinement réseau optionnel)
-
-**Le problème :** Vous êtes journaliste ou chercheur. Vous voulez être SÛR qu'aucune connexion réseau surprise ne se fait.
-
-**La solution :** Activation optionnelle via `cigale.securite.lockdown.reseau = true`. La Cigale construit une liste blanche de **8 domaines autorisés SEULEMENT** :
-- `github.com` / `api.github.com` (mises à jour)
-- `mozilla.org` / `archive.mozilla.org` (composants Firefox)
-- `quad9.net` (DNS)
-- `check.torproject.org` (vérification Tor)
-- `api.ipify.org` (vérification IP)
-
-Chaque tentative de connexion à un domaine non-whitelisté est **bloquée ET loggée**. Parfait pour un environnement restreint.
-
-**Pourquoi c'est innovant :** Chromebooks ont quelque chose de similaire. Firefox, non. La Cigale l'apporte en 50 lignes de code.
-
----
-
-#### 🪦 8. Canary tokens internes (pièges pour malware)
-
-**Le problème :** Comment savoir si un malware **subtil** a touché à votre navigateur si les modifications sont discrètes ?
-
-**La solution :** Des fausses clés de registre/prefs, réglées à des valeurs **impossible d'être légitimes** :
-
-```javascript
-export function initialiserCanaryTokens() {
-  P.setStringPref("cigale.canary.token.1", "SHOULD_NEVER_CHANGE_THIS_VALUE");
-  P.setStringPref("cigale.canary.token.2", "MALWARE_DETECTION_CANARY");
-}
-
-export function vérifierCanaryTokens() {
-  if (P.getStringPref("cigale.canary.token.1") !== "SHOULD_NEVER_CHANGE_THIS_VALUE") {
-    Components.utils.reportError("CIGALE_CANARY_ALERT: Potential tamper detected!");
-    enregistrerAuditLog("CANARY_MODIFIÉ", { clé: "cigale.canary.token.1" });
-    return false;
-  }
-}
-```
-
-Aucun code légitime ne toucherait à ces clés. Si elle change = **c'est une attaque**.
-
-**Pourquoi c'est innovant :** Thinkst Labs a inventé les Canary tokens en 2016 pour les serveurs. Aucun navigateur ne l'a appliqué. La Cigale le fait.
-
----
-
-### ⚠️ Ce que nous NE faisons pas (honnêteté brute)
-
-#### ❌ Pas de signature de code (Windows/Linux)
-
-Windows affiche un avertissement SmartScreen quand vous téléchargez l'installeur. Pourquoi ? Parce que nous ne payons pas un certificat EV à Microsoft/DigiCert.
-
-**Le truc :** Un certificat coûte 300–500 €/an. Nous préférons rester pauvre, indépendants et **honnêtes avec vous**.
-
-**Comment on se défend :** Nous publions les SHA-256 de tous les fichiers sur GitHub. Vous pouvez vérifier :
-
-```bash
-sha256sum LaCigale-1.3.2-windows-x64-installeur.exe
-# Compare avec SHA256SUMS.txt sur la release GitHub
-```
-
-**Prochaine étape (v1.4) :** Signer les packages avec notre propre clé éd25519 (gratuit, moderne), publier les signatures. Vous pourrez vérifier avant d'installer.
-
----
-
-#### ⚡ Vérification GitHub quotidienne (IP exposée)
-
-Une fois par jour, La Cigale appelle `api.github.com` pour vérifier les mises à jour. GitHub voit votre IP.
-
-**Honnêteté :** Ce n'est PAS de la télémétrie (aucune données personnelle n'est envoyée), mais votre IP + le fait que vous utilisez La Cigale est visible de GitHub.
-
-**Pour les paranoïaques :**
-- Désactiver dans Réglages > Mises à jour
-- Ou activer le mode Tor (tout passe par Tor, même la vérification)
-- Ou utiliser Network Lockdown Mode pour une liste blanche stricte
-
----
-
-#### 🌐 Téléchargement de modèles de traduction
-
-Quand vous activez la traduction locale (1.3+), Firefox télécharge les modèles de langue depuis les serveurs de Mozilla (qlq MB par langue).
-
-**Honnêteté :** Le texte n'est **PAS** envoyé en ligne (tout reste sur votre machine), mais le téléchargement initial peut révéler vos langues préférées à Mozilla.
-
-**Solutions :**
-- Précharger les langues les plus courantes (prochaine version)
-- Désactiver l'auto-pop-up de traduction si vous êtes paranoïaque
-
----
-
-### 📊 Comparaison honnête : La Cigale vs LibreWolf vs Brave
-
-| Critère | La Cigale | LibreWolf | Brave |
-|---------|-----------|-----------|-------|
-| **Manifeste de sécurité chiffré** | ✅ Oui | ❌ Non | ❌ Non |
-| **Audit log local** | ✅ Oui | ❌ Non | ❌ Non |
-| **Secure Boot maison** | ✅ Oui | ❌ Non | ❌ Non |
-| **Canary tokens internes** | ✅ Oui | ❌ Non | ❌ Non |
-| **Vérification profil utilisateur** | ✅ Oui | ❌ Non | ❌ Non |
-| **Network lockdown mode** | ✅ Oui (opt.) | ❌ Non | ❌ Non |
-| **Signature de code** | ❌ Non | ❌ Non | ✅ Oui |
-| **Anti-empreinte (Tor level)** | ✅ Oui | ✅ Oui | ⚠️ Partiel |
-| **Zéro télémétrie** | ✅ Verrouillée | ✅ Verrouillée | ⚠️ P3A activé par défaut |
-| **Interface française** | ✅ Oui | ⚠️ Traduite | ⚠️ Traduite |
-| **APT (Linux) signé** | ✅ Oui | ❌ Non | ❌ Non |
-
----
-
-### 🎯 Roadmap sécurité
-
-- **v1.4 (Q1 2027) :** Signature des packages avec clé éd25519, manifeste complètement opérationnel
-- **v1.5 (Q2 2027) :** Isolation des onglets par risque, scanner local d'URL suspectes
-- **v1.6 (Q3 2027) :** Certificat de signature de code (si budget alloué)
-- **Continu :** Audits externes tous les 6 mois, bug bounty via HackerOne
-
-Lire la [page Sécurité complète](https://urbanyl.github.io/la-cigale/securite/) pour les détails.
-
----
+## Sécurité
+
+Ce que La Cigale verrouille, comment ses versions sont vérifiées, ce qu'elle contacte sur le réseau
+et ses limites : [page Sécurité](https://urbanyl.github.io/la-cigale/securite/) et
+[docs/securite.md](docs/securite.md).
+
+- **Versions vérifiables.** Firefox ESR est vérifié à la construction (SHA-512 et signature GPG de
+  Mozilla, Authenticode sous Windows). Chaque version publie ses empreintes SHA-256 ; la mise à jour
+  en un clic compare l'installeur téléchargé à l'empreinte publiée et s'arrête au moindre écart.
+  Le dépôt APT est signé (ed25519, empreinte `8133 6ADC CAD0 2142 F542 BE53 E231 938C AAB4 F2D5`).
+- **Ce qui sort sur le réseau.** Quad9 pour le DNS, OCSP pour les certificats, GitHub une fois par
+  jour pour les mises à jour (désactivable), Mozilla si vous traduisez une page, api.ipify.org si vous
+  lancez le test de fuites, et les sites de vos raccourcis pour leur logo. Rien d'autre.
+- **Limites.** L'installeur Windows n'est pas signé ; la configuration tourne sans le bac à sable
+  `autoconfig` parce qu'elle a besoin des droits du navigateur ; La Cigale ne cache pas votre adresse IP.
+- **Audit.** Un audit statique du code a été mené en novembre 2026
+  ([rapport](docs/audit-securite-zh.md)). Une faille ? Signalez-la dans l'onglet
+  [Security](https://github.com/urbanyl/la-cigale/security) du dépôt.
 
 ## Licence
 

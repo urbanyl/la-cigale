@@ -89,3 +89,13 @@ body.page { overflow: auto; background-attachment: fixed; }
   .barre { flex-direction: column; align-items: stretch; gap: 8px; border-radius: 16px; padding: 12px; }
   .barre a { text-align: center; }
 }
+
+/* Page Sécurité */
+.bloc { margin-top: 14px; padding: 16px 20px 14px; background: rgba(30, 30, 33, .82); border-radius: 10px; }
+.bloc:first-of-type { margin-top: 30px; }
+.bloc h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; color: #fff; font-size: 15px; }
+.bloc h2 svg { width: 18px; height: 18px; flex: none; fill: none; stroke: #e4e4e6; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.bloc ul { margin: 0; padding-left: 18px; color: #c4c4c8; }
+.bloc li { margin: 5px 0; }
+.bloc code { font-size: 12.5px; color: #e4e4e6; }
+.bloc a { color: #fff; }

@@ -247,6 +247,8 @@ h2 {
   font-weight: 700;
   font-size: 17px;
 }
+.pastille.logo { background: #fff; overflow: hidden; }
+.pastille.logo img { width: 28px; height: 28px; object-fit: contain; }
 .raccourcis .nom { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .supprimer {
   position: absolute;

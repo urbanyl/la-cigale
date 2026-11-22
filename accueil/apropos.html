@@ -2,12 +2,13 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src chrome:; style-src chrome: 'unsafe-inline'; img-src chrome: data:; font-src chrome:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src about:; style-src about: 'unsafe-inline'; img-src about: data:; font-src about:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>À propos</title>
-  <link rel="icon" type="image/png" href="img/favicon.png">
-  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="about:apropos?f=img/favicon.png">
+  <link rel="stylesheet" href="about:apropos?f=style.css">
   <style>
+    :root, body { --image-fond: url("about:apropos?f=img/fond.jpg"); }
     .texte { color: var(--texte-doux); }
     .texte h1 { color: var(--texte); font-size: 32px; letter-spacing: -0.02em; margin: 0 0 8px; }
     .texte h2 { margin-top: 28px; }
@@ -18,7 +19,7 @@
 <body>
   <main class="scene texte">
     <header class="entete">
-      <img class="symbole" src="img/symbole-blanc.webp" alt="" width="56" height="56">
+      <img class="symbole" src="about:apropos?f=img/symbole-blanc.webp" alt="" width="56" height="56">
       <div>
         <h1>La Cigale</h1>
         <p class="date">Le navigateur libre, sobre et respectueux, conçu en France.</p>
@@ -52,6 +53,6 @@
 
     <footer class="pied"><a href="#" id="retour">← Retour</a></footer>
   </main>
-  <script src="apropos.js"></script>
+  <script src="about:apropos?f=apropos.js"></script>
 </body>
 </html>
