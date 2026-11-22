@@ -13,7 +13,7 @@
 <link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/">
 <link rel="alternate" hreflang="x-default" href="https://urbanyl.github.io/la-cigale/">
 <link rel="icon" type="image/png" href="../favicon.png">
-<meta name="theme-color" content="#0e0e10">
+<meta name="theme-color" content="#0c0d0c">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="La Cigale">
 <meta property="og:locale" content="en_US">
@@ -44,38 +44,60 @@
 </script>
 <link rel="stylesheet" href="../style.css">
 </head>
-<body>
+<body class="accueil">
+<header class="haut">
+  <a class="marque" href="./"><img src="../symbole.png" alt="" width="28" height="28">La Cigale</a>
+  <a class="langue" href="../" hreflang="fr" lang="fr">Français</a>
+</header>
 <main>
-  <header>
-    <img src="../symbole.png" alt="La Cigale">
-    <div>
-      <h1>La Cigale</h1>
-      <p class="sous-titre">The browser that keeps your data to itself</p>
+  <section class="scene">
+    <h1 class="titre"><span class="mot">La</span> <span class="mot">Cigale</span></h1>
+    <p class="devise">The browser that keeps your data quiet.</p>
+    <figure class="chant">
+      <canvas id="chant" aria-hidden="true"></canvas>
+      <figcaption>On load, the line sings like your data does in an ordinary browser. Then La Cigale silences it.</figcaption>
+    </figure>
+    <div class="action">
+      <a class="telecharger" href="https://github.com/urbanyl/la-cigale/releases/download/v1.3.9/LaCigale-1.3.9-windows-x64-installeur.exe">Download for Windows</a>
+      <p>Version 1.3.9, Windows 10 and 11</p>
     </div>
-    <span class="version" title="Current version">1.3</span>
-  </header>
+    <p class="intro">Firefox ESR tuned for privacy, free and open source. Nothing is sent to anyone, and everything is wiped when you close it.</p>
+  </section>
 
-  <div class="barre">
-    <p>Free and open source, based on Firefox ESR, tuned for privacy.</p>
-    <a href="https://github.com/urbanyl/la-cigale/releases/download/v1.3.9/LaCigale-1.3.9-windows-x64-installeur.exe">Download for Windows</a>
-  </div>
+  <section class="fonctions">
+    <h2>What it does without being asked</h2>
+    <ul>
+      <li><h3>No telemetry</h3><p>No reports, no studies, no ads in new tabs.</p></li>
+      <li><h3>uBlock Origin built in</h3><p>Trackers, ads and cookie banners blocked from the first launch.</p></li>
+      <li><h3>Fingerprinting protection</h3><p>Tor Browser's settings: your screen, fonts and time zone no longer give you away.</p></li>
+      <li><h3>Encrypted DNS</h3><p>Your DNS lookups go to Quad9, encrypted, instead of your internet provider.</p></li>
+      <li><h3>Your IP address hidden</h3><p>With the Tor window, or your own proxy list, rotated, with a kill switch.</p></li>
+      <li><h3>Nothing stays</h3><p>Cookies, history and cache wiped on close, except for the sites you keep.</p></li>
+    </ul>
+  </section>
 
-  <h2>Downloads</h2>
-  <nav class="tuiles">
-    <a href="https://github.com/urbanyl/la-cigale/releases/download/v1.3.9/LaCigale-1.3.9-windows-x64-installeur.exe"><b>W</b>Windows<small>installer</small></a>
-    <a href="https://github.com/urbanyl/la-cigale/releases/download/v1.3.9/LaCigale-1.3.9-windows-x64-portable.zip"><b>P</b>Portable<small>.zip</small></a>
-    <a href="https://github.com/urbanyl/la-cigale/releases/download/v1.3.9/la-cigale_1.3.9_amd64.deb"><b>U</b>Ubuntu, Debian<small>.deb</small></a>
-    <a href="https://github.com/urbanyl/la-cigale/releases/download/v1.3.9/LaCigale-1.3.9-linux-x86_64.tar.gz"><b>L</b>Linux<small>.tar.gz</small></a>
-    <a href="https://github.com/urbanyl/la-cigale/releases"><b>G</b>Releases<small>GitHub</small></a>
-  </nav>
+  <section class="versions">
+    <h2>Other versions</h2>
+    <ul>
+      <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.3.9/LaCigale-1.3.9-windows-x64-installeur.exe"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5 11 4.5v7H4zM13 4.2 20 3v8.5h-7zM4 12.5h7v7l-7-1zM13 12.5h7V21l-7-1.2z"/></svg><span class="nom">Windows</span><span class="quoi">Installer</span></a></li>
+      <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.3.9/LaCigale-1.3.9-windows-x64-portable.zip"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7a2 2 0 0 1 2-2H10l2 2h6.5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></svg><span class="nom">Windows portable</span><span class="quoi">.zip archive, no installation</span></a></li>
+      <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.3.9/la-cigale_1.3.9_amd64.deb"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg><span class="nom">Ubuntu and Debian</span><span class="quoi">.deb package, or APT repository</span></a></li>
+      <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.3.9/LaCigale-1.3.9-linux-x86_64.tar.gz"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="m7 10 3 2.5L7 15M12.5 15H17"/></svg><span class="nom">Other Linux</span><span class="quoi">.tar.gz archive</span></a></li>
+      <li><a href="https://github.com/urbanyl/la-cigale/releases"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg><span class="nom">All releases</span><span class="quoi">On GitHub, with SHA-256 checksums</span></a></li>
+    </ul>
+  </section>
 
-  <p class="fonctions">No telemetry · uBlock Origin · fingerprinting protection · encrypted DNS · Tor window · wiped on close · French interface</p>
-
-  <blockquote>“No one shall be subjected to arbitrary interference with his privacy, family, home or correspondence.”
-    <footer>Universal Declaration of Human Rights, art. 12</footer></blockquote>
-  <p class="liens"><a href="faq/">FAQ</a> · <a href="comparison/">La Cigale vs LibreWolf vs Brave</a> · <a href="security/">Security</a></p>
+  <blockquote class="citation">
+    <p>“No one shall be subjected to arbitrary interference with his privacy, family, home or correspondence.”</p>
+    <footer>Universal Declaration of Human Rights, article 12</footer>
+  </blockquote>
 </main>
-<a class="coin gauche" href="https://github.com/urbanyl/la-cigale">Source code</a>
-<a class="coin droite" href="../" hreflang="fr" lang="fr">Français</a>
+<footer class="bas">
+    <a href="faq/">FAQ</a>
+    <a href="comparison/">La Cigale, LibreWolf or Brave?</a>
+    <a href="security/">Security</a>
+    <a href="https://github.com/urbanyl/la-cigale">Source code</a>
+</footer>
+<script src="../chant.js" defer></script>
 </body>
 </html>
