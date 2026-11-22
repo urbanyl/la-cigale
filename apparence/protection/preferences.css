@@ -51,8 +51,8 @@ body {
   background-color: rgba(255, 255, 255, 0.04) !important;
 }
 
-/* bandeau collant de la recherche : translucide plutôt que noir plein */
-.sticky-container, #searchInput-container, .main-content > .sticky-container {
-  background: rgba(10, 10, 11, 0.55) !important;
-  backdrop-filter: blur(14px);
+/* bandeau collant de la recherche : transparent (sinon rectangle noir sur le fond), flou au défilement */
+#search-container {
+  background: transparent !important;
+  backdrop-filter: blur(16px);
 }
