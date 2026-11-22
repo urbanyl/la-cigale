@@ -11,7 +11,7 @@ const MOTEURS = {
 const RACCOURCIS_DEFAUT = [
   { nom: "Wikipédia", url: "https://fr.wikipedia.org" },
   { nom: "OpenStreetMap", url: "https://www.openstreetmap.org" },
-  { nom: "Service-Public", url: "https://www.service-public.fr" },
+  { nom: "Seyra", url: "https://seyra.website" },
   { nom: "Météo-France", url: "https://meteofrance.com" },
   { nom: "France Culture", url: "https://www.radiofrance.fr/franceculture" },
   { nom: "Framasoft", url: "https://framasoft.org" },
