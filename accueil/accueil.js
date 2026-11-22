@@ -32,6 +32,70 @@ const stockage = {
   },
 };
 
+// === Système de favicons dynamiques avec fallback lettres ===
+const favicons = {
+  cache: stockage.lire("favicons", {}),
+
+  async charger(nom, url) {
+    // Chercher dans le cache
+    if (this.cache[url]) {
+      return this.cache[url];
+    }
+
+    // Sources pour le favicon (par ordre de priorité)
+    const sources = [
+      `https://www.google.com/s2/favicons?sz=64&domain=${new URL(url).hostname}`,
+      `https://icons.duckduckgo.com/ip3/${new URL(url).hostname}.ico`,
+      `${new URL(url).origin}/favicon.ico`,
+    ];
+
+    for (const src of sources) {
+      try {
+        const img = new Image();
+        await new Promise((ok, err) => {
+          img.onload = () => ok();
+          img.onerror = err;
+          img.src = src;
+        });
+        // Favicon trouvé
+        const resultat = { type: "url", valeur: src };
+        this.cache[url] = resultat;
+        this.sauvegarder();
+        return resultat;
+      } catch (e) {
+        // Continuer vers la source suivante
+      }
+    }
+
+    // Fallback : première lettre en majuscule
+    const lettre = { type: "lettre", valeur: nom.charAt(0).toUpperCase() };
+    this.cache[url] = lettre;
+    this.sauvegarder();
+    return lettre;
+  },
+
+  sauvegarder() {
+    stockage.ecrire("favicons", this.cache);
+  },
+
+  appliquer(element, favicon) {
+    if (favicon.type === "url") {
+      const img = element.querySelector("img");
+      if (img) {
+        img.src = favicon.valeur;
+        img.style.display = "block";
+      }
+    } else {
+      // Lettre : style en CSS
+      const b = element.querySelector("b");
+      if (b) {
+        b.textContent = favicon.valeur;
+        b.style.display = "flex";
+      }
+    }
+  }
+};
+
 // Horloge et salutation
 const $ = (id) => document.getElementById(id);
 
@@ -170,7 +234,27 @@ function afficherRaccourcis() {
       a.href = r.url;
       const pastille = document.createElement("span");
       pastille.className = "pastille";
-      pastille.textContent = r.nom.trim().charAt(0).toUpperCase();
+
+      // Favicon dynamique : img ou lettre fallback
+      const img = document.createElement("img");
+      img.style.display = "none";
+      img.style.width = "100%";
+      img.style.height = "100%";
+
+      const b = document.createElement("b");
+      b.style.display = "flex";
+      b.style.alignItems = "center";
+      b.style.justifyContent = "center";
+      b.style.fontSize = "17px";
+      b.textContent = r.nom.trim().charAt(0).toUpperCase();
+
+      pastille.append(img, b);
+
+      // Charger le favicon en arrière-plan
+      favicons.charger(r.nom, r.url).then(favicon => {
+        favicons.appliquer(pastille, favicon);
+      });
+
       const nom = document.createElement("span");
       nom.className = "nom";
       nom.textContent = r.nom;
