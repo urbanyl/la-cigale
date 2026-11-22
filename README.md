@@ -18,12 +18,21 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 - **Oublier ce site**, **fenêtre Tor**, **conteneurs**, **liens nettoyés**, **sauvegarde chiffrée**,
   **verrou au démarrage**, **mots-clés de recherche** : voir [Fonctions](#fonctions).
 
-| | La Cigale | Firefox | Chrome | Edge |
+| Réglages d'origine | La Cigale | Firefox | Chrome | Edge |
 |---|:---:|:---:|:---:|:---:|
-| Télémétrie désactivée d'office | oui | non | non | non |
-| Bloqueur de publicités intégré | oui | non | non | non |
+| Télémétrie désactivée | oui | non | non | non |
+| Bloqueur de publicités et de traqueurs (uBlock Origin) | oui | non | non | non |
+| Bannières de cookies refusées toutes seules | oui | selon le pays | non | non |
 | Anti-empreinte renforcé (type Tor Browser) | oui | non | non | non |
-| Données effacées à la fermeture | oui | non | non | non |
+| HTTPS obligatoire | oui | non | non | non |
+| DNS chiffré | oui (Quad9) | non | selon le fournisseur | selon le fournisseur |
+| WebRTC coupé, pas de fuite de l'adresse IP | oui | non | non | non |
+| Liens nettoyés (utm, fbclid, gclid…) | oui | non | non | non |
+| Cookies, historique et cache effacés à la fermeture | oui | non | non | non |
+| Fenêtre Tor intégrée | oui | non | non | non |
+| Proxys avec rotation, règles par site et coupe-circuit | oui | non | non | non |
+| Alerte si votre vraie adresse IP apparaît | oui | non | non | non |
+| Verrou par mot de passe au démarrage | oui | non | non | non |
 | Code source ouvert | oui | oui | non | non |
 
 <p align="center">
@@ -36,7 +45,10 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 Le bouton cigale de la barre d'outils ouvre `about:cigale` : l'état réel des protections, le choix du
 profil, les sites où rester connecté et la vérification des mises à jour.
 
-<p align="center"><img src="docs/captures/protection.png" alt="Page Protection de La Cigale" width="760"></p>
+<p align="center">
+  <img src="docs/captures/protection.png" alt="Page Protection de La Cigale" width="49%">
+  <img src="docs/captures/adresse-ip.png" alt="Adresse IP : proxys, rotation et règles par site" width="49%">
+</p>
 
 ## Fonctions
 

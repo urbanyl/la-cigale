@@ -636,6 +636,21 @@ window.addEventListener("hashchange", afficherNouveautes);
 // sinon la page s'ouvre parfois déjà défilée
 history.scrollRestoration = "manual";
 afficher();
+// Au premier démarrage, uBlock s'installe quelques secondes après l'ouverture de la page :
+// on rafraîchit l'état dès qu'une extension s'active ou s'installe.
+try {
+  const { AddonManager } = ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
+  const ecouteur = { onEnabled: () => afficher(), onInstalled: () => afficher() };
+  AddonManager.addAddonListener(ecouteur);
+  const installation = { onInstallEnded: () => afficher() };
+  AddonManager.addInstallListener(installation);
+  window.addEventListener("unload", () => {
+    AddonManager.removeAddonListener(ecouteur);
+    AddonManager.removeInstallListener(installation);
+  });
+} catch (e) {
+  console.error(e);
+}
 afficherNouveautes();
 afficherRapport();
 afficherTor();

@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Photographie de vraies fenêtres de La Cigale (onglets compris) pour le README.
   Profil temporaire, fenêtre 1600x1000, image dans docs\captures\.
@@ -81,3 +81,5 @@ function Save-Fenetre($nom, $argsNav, $attente, $attendVide = $true) {
 Save-Fenetre 'accueil' @("`"$accueil`"") 12
 Save-Fenetre 'navigation-privee' @('-private-window') 10
 Save-Fenetre 'site' @('https://fr.wikipedia.org/wiki/Cigale') 20 $false
+Save-Fenetre 'protection' @('about:cigale') 30
+Save-Fenetre 'adresse-ip' @('about:cigale#proxy') 10
