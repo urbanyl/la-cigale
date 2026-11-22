@@ -35,12 +35,19 @@ const stockage = {
 // Horloge et salutation
 const $ = (id) => document.getElementById(id);
 
+// L'anti-empreinte met la page en UTC ; La Cigale passe le vrai fuseau dans l'adresse (#fuseau=Europe/Paris)
+const FUSEAU = (() => {
+  const f = decodeURIComponent((location.hash.match(/fuseau=([^&]+)/) || [])[1] || "");
+  try { if (f) { new Intl.DateTimeFormat("fr-FR", { timeZone: f }); return f; } } catch { /* fuseau inconnu */ }
+  return undefined;
+})();
+
 function rafraichirHeure() {
   const maintenant = new Date();
-  const h = maintenant.getHours();
-  $("heure").textContent = maintenant.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  const h = Number(new Intl.DateTimeFormat("fr-FR", { hour: "numeric", hourCycle: "h23", timeZone: FUSEAU }).format(maintenant));
+  $("heure").textContent = maintenant.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: FUSEAU });
   $("heure").dateTime = maintenant.toISOString();
-  $("date").textContent = maintenant.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  $("date").textContent = maintenant.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: FUSEAU });
   $("salut").textContent = h >= 18 || h < 5 ? "Bonsoir" : "Bonjour";
 }
 rafraichirHeure();

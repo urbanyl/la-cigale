@@ -1,0 +1,274 @@
+"""Génère les pages FAQ et comparaison du site (français et anglais).
+
+Usage : python site/pages.py   (réécrit faq/, comparaison/, en/faq/, en/comparison/ et sitemap.xml)
+"""
+import html
+import json
+from pathlib import Path
+
+ICI = Path(__file__).parent
+BASE = "https://urbanyl.github.io/la-cigale/"
+DATE = "2026-11-22"
+
+FAQ_FR = [
+    ("La Cigale est-elle gratuite ?",
+     "Oui, entièrement. Pas d'abonnement, pas de version payante, pas de publicité. Le code source est public sous licence MPL-2.0, la même que Firefox."),
+    ("Sur quoi repose La Cigale ?",
+     "Sur Firefox ESR, la version à support étendu de Mozilla. Elle reçoit tous les correctifs de sécurité de Mozilla, sans les changements d'interface toutes les quatre semaines. La Cigale y ajoute ses réglages, sa page d'accueil et ses outils de protection."),
+    ("En quoi est-ce différent de Firefox ?",
+     "Firefox envoie par défaut des données d'utilisation à Mozilla, affiche du contenu sponsorisé et garde l'historique. La Cigale coupe la télémétrie, installe uBlock Origin, active l'anti-empreinte de Tor Browser, chiffre le DNS, impose le HTTPS et efface tout à la fermeture."),
+    ("Mes extensions Firefox fonctionnent-elles ?",
+     "Oui. La Cigale accepte les extensions du site officiel de Mozilla, comme Firefox."),
+    ("Est-ce que La Cigale me rend anonyme ?",
+     "Elle rend le pistage beaucoup plus difficile, mais votre adresse IP reste visible des sites. Pour la cacher, utilisez la fenêtre Tor (Tor doit tourner sur l'ordinateur) ou un VPN de confiance. Pour un anonymat fort, Tor Browser reste la référence."),
+    ("Qu'est-ce que la fenêtre Tor ?",
+     "Une fenêtre à part dont tout le trafic, DNS compris, passe par le réseau Tor, avec un profil séparé effacé à la fermeture. Il faut que Tor soit déjà lancé : Tor Browser ouvert, ou le service tor sous Linux."),
+    ("Pourquoi des sites me demandent-ils de me reconnecter ?",
+     "Parce que les cookies sont effacés à la fermeture. Ajoutez les sites où vous voulez rester connecté dans la page Protection (bouton cigale), ou choisissez le profil Confort."),
+    ("Comment garder mes favoris d'un ordinateur à l'autre ?",
+     "Avec la sauvegarde chiffrée : un fichier protégé par mot de passe que vous rangez où vous voulez (clé USB, cloud). Il n'y a pas de serveur La Cigale, rien n'est envoyé en ligne."),
+    ("Comment La Cigale se met-elle à jour ?",
+     "Elle prévient une fois par jour quand une nouvelle version sort. Sous Ubuntu et Debian, le dépôt APT la met à jour avec le reste du système. Une nouvelle version est construite à chaque mise à jour de sécurité de Firefox ESR."),
+    ("Windows affiche un avertissement SmartScreen, est-ce normal ?",
+     "Oui : l'installeur n'est pas signé avec un certificat payant. Cliquez sur « Informations complémentaires » puis « Exécuter quand même ». Les empreintes SHA-256 de chaque fichier sont publiées pour vérifier le téléchargement."),
+    ("Sur quels systèmes La Cigale fonctionne-t-elle ?",
+     "Windows 10 et 11 (64 bits), Ubuntu, Debian et leurs dérivées (Linux Mint, Pop!_OS…), et toute distribution Linux 64 bits avec l'archive .tar.gz."),
+    ("Qui développe La Cigale ?",
+     "Un projet indépendant, sans lien avec Mozilla. Les questions et suggestions sont les bienvenues sur le Discord et sur GitHub."),
+]
+
+FAQ_EN = [
+    ("Is La Cigale free?",
+     "Yes, completely. No subscription, no paid tier, no ads. The source code is public under the MPL-2.0 licence, the same as Firefox."),
+    ("What is La Cigale based on?",
+     "Firefox ESR, Mozilla's extended support release. It gets every Mozilla security fix without the interface changes every four weeks. La Cigale adds its own settings, home page and protection tools."),
+    ("How is it different from Firefox?",
+     "Firefox sends usage data to Mozilla by default, shows sponsored content and keeps your history. La Cigale turns telemetry off, ships uBlock Origin, enables Tor Browser's fingerprinting protection, encrypts DNS, forces HTTPS and wipes everything on close."),
+    ("Do my Firefox extensions work?",
+     "Yes. La Cigale installs extensions from Mozilla's official add-ons site, just like Firefox."),
+    ("Does La Cigale make me anonymous?",
+     "It makes tracking much harder, but websites still see your IP address. To hide it, use the Tor window (Tor must be running on the computer) or a VPN you trust. For strong anonymity, Tor Browser remains the reference."),
+    ("Is the interface available in English?",
+     "Not yet: La Cigale is designed in French. Everything else works the same for any website in any language."),
+    ("What is the Tor window?",
+     "A separate window whose traffic, DNS included, goes through the Tor network, with its own profile wiped on close. Tor must already be running: Tor Browser open, or the tor service on Linux."),
+    ("Why do sites ask me to log in again?",
+     "Because cookies are wiped on close. Add the sites where you want to stay logged in on the Protection page (cicada button), or choose the Comfort profile."),
+    ("How is La Cigale updated?",
+     "It tells you once a day when a new version is out. On Ubuntu and Debian, the APT repository updates it with the rest of the system. A new version is built for every Firefox ESR security update."),
+    ("Windows shows a SmartScreen warning. Is that normal?",
+     "Yes: the installer is not signed with a paid certificate. Click \"More info\" then \"Run anyway\". SHA-256 checksums of every file are published so you can check the download."),
+]
+
+# [critère, La Cigale, LibreWolf, Brave] — état en novembre 2026
+COMPARAISON_FR = [
+    ("Moteur", "Firefox ESR (Gecko)", "Firefox (Gecko)", "Chromium (Blink)"),
+    ("Rythme des versions", "ESR : correctifs de sécurité, interface stable", "suit chaque version de Firefox", "suit Chromium, toutes les 4 semaines environ"),
+    ("Télémétrie", "aucune", "aucune", "statistiques anonymisées (P3A) activées d'office, désactivables"),
+    ("Bloqueur de publicités", "uBlock Origin", "uBlock Origin", "Brave Shields (intégré)"),
+    ("Anti-empreinte", "resistFingerprinting (méthode Tor Browser)", "resistFingerprinting", "valeurs aléatoires par site"),
+    ("Effacement à la fermeture", "oui, avec liste de sites à garder", "oui", "non par défaut"),
+    ("Navigation par Tor", "fenêtre Tor (Tor lancé à part)", "non", "fenêtre privée avec Tor intégrée"),
+    ("Cryptomonnaie, récompenses, IA", "aucune", "aucune", "portefeuille, Brave Rewards, assistant Leo (désactivables)"),
+    ("Interface et accueil en français", "oui, pensé en français", "traduit", "traduit"),
+    ("Profils de protection en un clic", "Confort, Standard, Renforcé", "réglages manuels", "réglages des Shields par site"),
+    ("Sauvegarde sans serveur", "fichier chiffré", "non", "synchronisation Brave (chiffrée)"),
+    ("Systèmes", "Windows, Linux", "Windows, macOS, Linux", "Windows, macOS, Linux, Android, iOS"),
+    ("Licence", "MPL-2.0", "MPL-2.0", "MPL-2.0"),
+]
+
+COMPARAISON_EN = [
+    ("Engine", "Firefox ESR (Gecko)", "Firefox (Gecko)", "Chromium (Blink)"),
+    ("Release cycle", "ESR: security fixes, stable interface", "follows every Firefox release", "follows Chromium, about every 4 weeks"),
+    ("Telemetry", "none", "none", "anonymised statistics (P3A) on by default, can be turned off"),
+    ("Ad blocker", "uBlock Origin", "uBlock Origin", "Brave Shields (built in)"),
+    ("Fingerprinting protection", "resistFingerprinting (Tor Browser method)", "resistFingerprinting", "per-site randomised values"),
+    ("Wipe on close", "yes, with a list of sites to keep", "yes", "not by default"),
+    ("Browsing over Tor", "Tor window (Tor running separately)", "no", "private window with Tor built in"),
+    ("Crypto, rewards, AI", "none", "none", "wallet, Brave Rewards, Leo assistant (can be turned off)"),
+    ("Interface language", "designed in French", "translated", "translated"),
+    ("One-click protection profiles", "Comfort, Standard, Hardened", "manual settings", "per-site Shields settings"),
+    ("Serverless backup", "encrypted file", "no", "Brave Sync (encrypted)"),
+    ("Platforms", "Windows, Linux", "Windows, macOS, Linux", "Windows, macOS, Linux, Android, iOS"),
+    ("Licence", "MPL-2.0", "MPL-2.0", "MPL-2.0"),
+]
+
+TEXTES = {
+    "fr": {
+        "faq": {
+            "chemin": "faq/", "titre": "Questions fréquentes sur La Cigale, navigateur privé",
+            "h1": "Questions fréquentes",
+            "description": "Réponses aux questions sur La Cigale : gratuit, basé sur Firefox ESR, anonymat, fenêtre Tor, extensions, mises à jour, Windows et Linux.",
+        },
+        "comparaison": {
+            "chemin": "comparaison/", "titre": "La Cigale, LibreWolf ou Brave : comparaison des navigateurs privés",
+            "h1": "La Cigale, LibreWolf et Brave",
+            "description": "Comparaison honnête de trois navigateurs axés sur la vie privée : La Cigale, LibreWolf et Brave. Moteur, télémétrie, bloqueur, anti-empreinte, Tor, systèmes.",
+        },
+        "retour": "← Accueil", "langue": "English", "telecharger": "Télécharger La Cigale",
+        "intro_comp": "Trois navigateurs qui prennent la vie privée au sérieux, avec des choix différents. "
+                      "Ce tableau décrit leur état en novembre 2026 ; une erreur ? Signalez-la sur GitHub.",
+        "conclusion": "<b>LibreWolf</b> est très proche dans l'esprit et suit Firefox au plus près. "
+                      "<b>Brave</b> convient si vous voulez Chromium, le mobile ou Tor intégré, avec des services en plus. "
+                      "<b>La Cigale</b> vise une base stable (ESR), des profils simples et une interface pensée en français.",
+        "colonnes": ("", "La Cigale", "LibreWolf", "Brave"),
+    },
+    "en": {
+        "faq": {
+            "chemin": "en/faq/", "titre": "La Cigale privacy browser: frequently asked questions",
+            "h1": "Frequently asked questions",
+            "description": "Answers about La Cigale: free, based on Firefox ESR, anonymity, Tor window, extensions, updates, Windows and Linux.",
+        },
+        "comparaison": {
+            "chemin": "en/comparison/", "titre": "La Cigale vs LibreWolf vs Brave: privacy browser comparison",
+            "h1": "La Cigale, LibreWolf and Brave",
+            "description": "A fair comparison of three privacy-focused browsers: La Cigale, LibreWolf and Brave. Engine, telemetry, ad blocking, fingerprinting, Tor, platforms.",
+        },
+        "retour": "← Home", "langue": "Français", "telecharger": "Download La Cigale",
+        "intro_comp": "Three browsers that take privacy seriously, with different choices. "
+                      "This table describes them as of November 2026; spotted a mistake? Report it on GitHub.",
+        "conclusion": "<b>LibreWolf</b> is very close in spirit and tracks Firefox closely. "
+                      "<b>Brave</b> suits you if you want Chromium, mobile or built-in Tor, with extra services. "
+                      "<b>La Cigale</b> aims for a stable base (ESR), simple profiles and a French-first interface.",
+        "colonnes": ("", "La Cigale", "LibreWolf", "Brave"),
+    },
+}
+AUTRE = {"fr": "en", "en": "fr"}
+CORRESPONDANCE = {"faq/": "en/faq/", "comparaison/": "en/comparison/", "en/faq/": "faq/", "en/comparison/": "comparaison/"}
+
+
+def tete(langue, page, relatif, schema):
+    t = TEXTES[langue][page]
+    chemin, autre = t["chemin"], CORRESPONDANCE[t["chemin"]]
+    fr, en = (chemin, autre) if langue == "fr" else (autre, chemin)
+    return f'''<!DOCTYPE html>
+<html lang="{langue}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{html.escape(t["titre"])}</title>
+<meta name="description" content="{html.escape(t["description"])}">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="{BASE}{chemin}">
+<link rel="alternate" hreflang="fr" href="{BASE}{fr}">
+<link rel="alternate" hreflang="en" href="{BASE}{en}">
+<link rel="alternate" hreflang="x-default" href="{BASE}{fr}">
+<link rel="icon" type="image/png" href="{relatif}favicon.png">
+<meta name="theme-color" content="#0e0e10">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="La Cigale">
+<meta property="og:locale" content="{"fr_FR" if langue == "fr" else "en_US"}">
+<meta property="og:title" content="{html.escape(t["titre"])}">
+<meta property="og:description" content="{html.escape(t["description"])}">
+<meta property="og:url" content="{BASE}{chemin}">
+<meta property="og:image" content="{BASE}apercu.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{json.dumps(schema, ensure_ascii=False, indent=1)}
+</script>
+<link rel="stylesheet" href="{relatif}style.css">
+</head>
+'''
+
+
+def pied(langue, page, relatif):
+    t = TEXTES[langue]
+    autre = CORRESPONDANCE[t[page]["chemin"]]
+    vers_autre = relatif + autre
+    return f'''<a class="coin gauche" href="{relatif}{"" if langue == "fr" else "en/"}">{t["retour"]}</a>
+<a class="coin droite" href="{vers_autre}" hreflang="{AUTRE[langue]}" lang="{AUTRE[langue]}">{t["langue"]}</a>
+'''
+
+
+def fil(langue, page):
+    t = TEXTES[langue][page]
+    accueil = BASE if langue == "fr" else BASE + "en/"
+    return {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "La Cigale", "item": accueil},
+        {"@type": "ListItem", "position": 2, "name": t["h1"], "item": BASE + t["chemin"]},
+    ]}
+
+
+def page_faq(langue):
+    faq = FAQ_FR if langue == "fr" else FAQ_EN
+    t = TEXTES[langue]
+    relatif = "../" if langue == "fr" else "../../"
+    schema = [{"@context": "https://schema.org", "@type": "FAQPage", "inLanguage": langue, "mainEntity": [
+        {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": r}} for q, r in faq]},
+        fil(langue, "faq")]
+    corps = "\n".join(f'''  <details{" open" if i < 2 else ""}>
+    <summary>{html.escape(q)}</summary>
+    <p>{html.escape(r)}</p>
+  </details>''' for i, (q, r) in enumerate(faq))
+    return tete(langue, "faq", relatif, schema) + f'''<body class="page">
+<main>
+  <header>
+    <img src="{relatif}symbole.png" alt="La Cigale">
+    <div>
+      <h1>{t["faq"]["h1"]}</h1>
+      <p class="sous-titre">La Cigale</p>
+    </div>
+  </header>
+  <section class="questions">
+{corps}
+  </section>
+  <p class="suite"><a class="bouton" href="https://github.com/urbanyl/la-cigale/releases/latest">{t["telecharger"]}</a></p>
+</main>
+''' + pied(langue, "faq", relatif) + "</body>\n</html>\n"
+
+
+def page_comparaison(langue):
+    lignes = COMPARAISON_FR if langue == "fr" else COMPARAISON_EN
+    t = TEXTES[langue]
+    relatif = "../" if langue == "fr" else "../../"
+    schema = [fil(langue, "comparaison")]
+    tete_tableau = "".join(f"<th scope=\"col\">{c}</th>" for c in t["colonnes"])
+    corps = "\n".join("      <tr><th scope=\"row\">{}</th>{}</tr>".format(
+        html.escape(l[0]), "".join(f"<td>{html.escape(c)}</td>" for c in l[1:])) for l in lignes)
+    return tete(langue, "comparaison", relatif, schema) + f'''<body class="page">
+<main>
+  <header>
+    <img src="{relatif}symbole.png" alt="La Cigale">
+    <div>
+      <h1>{t["comparaison"]["h1"]}</h1>
+      <p class="sous-titre">{t["intro_comp"]}</p>
+    </div>
+  </header>
+  <div class="tableau">
+    <table>
+      <thead><tr>{tete_tableau}</tr></thead>
+      <tbody>
+{corps}
+      </tbody>
+    </table>
+  </div>
+  <p class="conclusion">{t["conclusion"]}</p>
+  <p class="suite"><a class="bouton" href="https://github.com/urbanyl/la-cigale/releases/latest">{t["telecharger"]}</a></p>
+</main>
+''' + pied(langue, "comparaison", relatif) + "</body>\n</html>\n"
+
+
+def sitemap():
+    paires = [("", "en/"), ("faq/", "en/faq/"), ("comparaison/", "en/comparison/")]
+    entrees = []
+    for fr, en in paires:
+        for chemin in (fr, en):
+            entrees.append(f'''  <url>
+    <loc>{BASE}{chemin}</loc>
+    <lastmod>{DATE}</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="{BASE}{fr}"/>
+    <xhtml:link rel="alternate" hreflang="en" href="{BASE}{en}"/>
+  </url>''')
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
+            + "\n".join(entrees) + "\n</urlset>\n")
+
+
+if __name__ == "__main__":
+    for langue in ("fr", "en"):
+        for page, fabrique in (("faq", page_faq), ("comparaison", page_comparaison)):
+            cible = ICI / TEXTES[langue][page]["chemin"] / "index.html"
+            cible.parent.mkdir(parents=True, exist_ok=True)
+            cible.write_text(fabrique(langue), encoding="utf-8")
+            print(cible.relative_to(ICI))
+    (ICI / "sitemap.xml").write_text(sitemap(), encoding="utf-8")

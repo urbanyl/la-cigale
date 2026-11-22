@@ -56,6 +56,31 @@ blockquote footer { margin-top: 6px; font-style: normal; font-size: 12px; color:
 .gauche { left: 24px; }
 .droite { right: 24px; }
 
+/* Pages de texte (FAQ, comparaison) : on peut défiler */
+body.page { overflow: auto; background-attachment: fixed; }
+.page main { position: static; padding: 72px 0 90px; }
+.page .coin { position: fixed; }
+.questions { margin-top: 30px; }
+.questions details {
+  margin-bottom: 8px; padding: 12px 18px;
+  background: rgba(30, 30, 33, .82); border-radius: 10px;
+}
+.questions summary { cursor: pointer; font-weight: 600; }
+.questions p { margin: 10px 0 2px; color: #c4c4c8; }
+.tableau { margin-top: 30px; overflow-x: auto; border-radius: 10px; background: rgba(30, 30, 33, .82); }
+.tableau table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tableau th, .tableau td { padding: 9px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid #2c2c30; }
+.tableau thead th { color: #fff; font-weight: 600; border-bottom-color: #44444a; }
+.tableau tbody th { color: #b8b8bd; font-weight: 600; width: 22%; }
+.tableau td:nth-child(2) { color: #fff; }
+.tableau td { color: #c4c4c8; }
+.conclusion { margin: 22px 0 0; color: #c4c4c8; }
+.suite { margin: 26px 0 0; }
+.bouton { display: inline-block; padding: 9px 18px; border-radius: 22px; background: #fff; color: #111; text-decoration: none; font-weight: 600; }
+.liens { margin-top: 22px; text-align: center; font-size: 13px; }
+.liens a { color: #a8a8ae; margin: 0 8px; }
+.liens a:hover { color: #fff; }
+
 @media (max-width: 640px), (max-height: 620px) {
   body { overflow: auto; }
   main { position: static; padding: 28px 0 60px; }

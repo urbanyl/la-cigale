@@ -12,4 +12,28 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/"/>
   </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/faq/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/faq/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/faq/"/>
+  </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/en/faq/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/faq/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/faq/"/>
+  </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/comparaison/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/comparaison/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/comparison/"/>
+  </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/en/comparison/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/comparaison/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/comparison/"/>
+  </url>
 </urlset>
