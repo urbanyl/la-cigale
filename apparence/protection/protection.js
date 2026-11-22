@@ -661,16 +661,22 @@ function montrerCategorie() {
 window.addEventListener("hashchange", montrerCategorie);
 montrerCategorie();
 
-// --- Adresse IP : proxy personnel ---
+// --- Adresse IP : proxy personnel, rotation, règles, coupe-circuit, alertes ---
+
+function texteSante(i) {
+  const s = cigale.santeProxys.get(i);
+  if (!s) return "";
+  return s.ok ? `en ligne, ${s.ms} ms` : "ne répond pas";
+}
 
 function afficherProxys() {
   const liste = cigale.listeProxys();
   const actif = cigale.proxyActif();
   const boite = $("proxy-choix");
   boite.replaceChildren();
-  const option = (i, titre, detail) => {
+  const option = (i, titre, detail, horsLigne) => {
     const l = document.createElement("label");
-    l.className = "choix";
+    l.className = "choix" + (horsLigne ? " hors-ligne" : "");
     const r = document.createElement("input");
     r.type = "radio";
     r.name = "proxy";
@@ -678,22 +684,26 @@ function afficherProxys() {
     r.addEventListener("change", () => {
       cigale.choisirProxy(i);
       $("proxy-ip").textContent = "";
+      afficherCoupe();
     });
     const t = document.createElement("span");
     t.textContent = titre;
-    l.append(r, t);
-    if (detail) {
-      const d = document.createElement("span");
-      d.className = "discret";
-      d.textContent = detail;
-      l.append(d);
-    }
+    const d = document.createElement("span");
+    d.className = "discret";
+    d.id = "sante-" + i;
+    d.textContent = detail;
+    l.append(r, t, d);
     boite.append(l);
   };
   option(-1, "Connexion directe", "votre vraie adresse");
-  liste.forEach((p, i) => option(i, `${p.hote}:${p.port}`, p.utilisateur ? "avec identifiant" : ""));
+  liste.forEach((p, i) => {
+    const s = cigale.santeProxys.get(i);
+    option(i, `${p.hote}:${p.port}`, texteSante(i) || (p.utilisateur ? "avec identifiant" : ""), s && !s.ok);
+  });
   const n = liste.length;
   $("proxy-etat").textContent = n ? `${n} proxy${n > 1 ? "s" : ""} enregistré${n > 1 ? "s" : ""}.` : "";
+  afficherRegles();
+  afficherCoupe();
 }
 
 function enregistrerTexteProxys(texte) {
@@ -726,6 +736,144 @@ $("proxy-verifier").addEventListener("click", async () => {
   $("proxy-ip").textContent = "Vérification…";
   const { v4, v6 } = await cigale.adressesPubliques();
   $("proxy-ip").textContent =
-    v4 || v6 ? `Les sites voient : ${[v4, v6].filter(Boolean).join(" et ")}` : "Pas de réponse : le proxy ne répond pas.";
+    v4 || v6 ? `Les sites voient : ${[v4, v6].filter(Boolean).join(" et ")}` : "Pas de réponse : aucun proxy ne répond.";
 });
+$("proxy-tester").addEventListener("click", async () => {
+  const bouton = $("proxy-tester");
+  if (!cigale.listeProxys().length) return;
+  bouton.disabled = true;
+  $("proxy-ip").textContent = "Test de la liste…";
+  await cigale.testerProxys((i) => {
+    const d = $("sante-" + i);
+    if (d) {
+      d.textContent = texteSante(i);
+      d.parentElement.classList.toggle("hors-ligne", !cigale.santeProxys.get(i).ok);
+    }
+  });
+  const enLigne = [...cigale.santeProxys.values()].filter((s) => s.ok).length;
+  $("proxy-ip").textContent = `${enLigne} sur ${cigale.santeProxys.size} en ligne.`;
+  bouton.disabled = false;
+  afficherCoupe();
+});
+
+// Rotation
+for (const r of document.querySelectorAll('input[name="rotation"]')) {
+  r.checked = r.value == cigale.rotation();
+  r.addEventListener("change", () => cigale.definirRotation(r.value));
+}
+$("rotation-minutes").value = cigale.minutesRotation();
+$("rotation-minutes").addEventListener("change", (e) => {
+  cigale.definirMinutesRotation(parseInt(e.target.value, 10) || 10);
+  e.target.value = cigale.minutesRotation();
+});
+
+// Règles par site
+function nomCible(cible, liste) {
+  if (cible == "direct") return "Connexion directe";
+  if (cible == "auto") return "Proxy automatique";
+  const p = liste[cible];
+  return p ? `${p.hote}:${p.port}` : "Proxy automatique";
+}
+
+function remplirCibles() {
+  const liste = cigale.listeProxys();
+  const select = $("regle-cible");
+  select.replaceChildren();
+  const ajouter = (valeur, texte) => {
+    const o = document.createElement("option");
+    o.value = valeur;
+    o.textContent = texte;
+    select.append(o);
+  };
+  ajouter("direct", "Connexion directe");
+  if (liste.length) ajouter("auto", "Proxy automatique");
+  liste.forEach((p, i) => ajouter(String(i), `${p.hote}:${p.port}`));
+}
+
+function afficherRegles() {
+  remplirCibles();
+  const liste = cigale.listeProxys();
+  const regles = cigale.reglesProxy();
+  const ul = $("regles");
+  ul.replaceChildren();
+  if (!regles.length) {
+    const li = document.createElement("li");
+    li.className = "vide";
+    li.textContent = "Aucune règle : tous les sites suivent le choix ci-dessus.";
+    ul.append(li);
+    return;
+  }
+  regles.forEach((r, i) => {
+    const li = document.createElement("li");
+    const d = document.createElement("span");
+    d.textContent = r.domaine;
+    const c = document.createElement("span");
+    c.className = "discret";
+    c.textContent = nomCible(r.cible, liste);
+    const b = document.createElement("button");
+    b.textContent = "Retirer";
+    b.addEventListener("click", () => {
+      const reste = cigale.reglesProxy();
+      reste.splice(i, 1);
+      cigale.enregistrerRegles(reste);
+      afficherRegles();
+    });
+    li.append(d, c, b);
+    ul.append(li);
+  });
+}
+
+$("regle-ajouter").addEventListener("click", () => {
+  const domaine = cigale.nettoyerDomaine($("regle-domaine").value);
+  if (!domaine || !domaine.includes(".")) return;
+  const v = $("regle-cible").value;
+  const cible = v == "direct" || v == "auto" ? v : parseInt(v, 10);
+  const regles = cigale.reglesProxy().filter((r) => r.domaine != domaine);
+  regles.push({ domaine, cible });
+  cigale.enregistrerRegles(regles);
+  $("regle-domaine").value = "";
+  afficherRegles();
+});
+$("regle-domaine").addEventListener("keydown", (e) => {
+  if (e.key == "Enter") $("regle-ajouter").click();
+});
+
+// Coupe-circuit
+function afficherCoupe() {
+  $("coupe-circuit").checked = cigale.coupeCircuit();
+  const etat = $("coupe-etat");
+  if (cigale.proxyActif() < 0) {
+    etat.textContent = "Connexion directe choisie : le coupe-circuit ne s'applique pas.";
+  } else if (!cigale.coupeCircuit()) {
+    etat.textContent = "Désactivé : si aucun proxy ne répond, La Cigale passe par votre vraie adresse.";
+  } else {
+    const sante = [...cigale.santeProxys.values()];
+    const enLigne = sante.filter((s) => s.ok).length;
+    etat.textContent =
+      sante.length && !enLigne
+        ? "Actif, et aucun proxy ne répond : les pages sont bloquées."
+        : "Actif : votre vraie adresse ne passe jamais, même si les proxys tombent.";
+  }
+}
+$("coupe-circuit").addEventListener("change", (e) => {
+  cigale.definirCoupeCircuit(e.target.checked);
+  afficherCoupe();
+});
+
+// Alertes de fuite
+$("alertes-fuite").checked = cigale.alertesFuite();
+$("alertes-fuite").addEventListener("change", (e) => cigale.definirAlertesFuite(e.target.checked));
+function afficherFuite(resultat) {
+  const textes = {
+    direct: "Connexion directe : rien à vérifier.",
+    ok: `Dernière vérification : les sites voient ${resultat.ip}, pas votre vraie adresse.`,
+    fuite: `Dernière vérification : fuite, les sites voient votre vraie adresse (${resultat.ip}).`,
+    coupe: "Dernière vérification : aucun proxy ne répond.",
+  };
+  $("fuite-etat").textContent = textes[resultat.etat] || "";
+}
+const observateurFuite = (_s, _t, donnees) => afficherFuite(JSON.parse(donnees));
+Services.obs.addObserver(observateurFuite, "cigale-proxy-fuite");
+window.addEventListener("unload", () => Services.obs.removeObserver(observateurFuite, "cigale-proxy-fuite"));
+
 afficherProxys();

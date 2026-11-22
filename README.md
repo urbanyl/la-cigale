@@ -51,7 +51,7 @@ profil, les sites où rester connecté et la vérification des mises à jour.
 | **Mode lecture** | Touche F9 ou icône de page dans la barre d'adresse : texte seul, aux couleurs de La Cigale, avec lecture à voix haute (bouton casque). |
 | **Bannières cookies** | Refus automatique quand le site le permet ; sinon les listes « cookies » et « nuisances » de uBlock Origin, activées d'office, masquent la bannière. |
 | **Traduction** | Les pages dans une autre langue peuvent être traduites. La traduction tourne sur l'ordinateur, aucun texte n'est envoyé en ligne. |
-| **Adresse IP** | Dans la page Protection : importez votre liste de proxys (format Webshare `ip:port:identifiant:mot de passe`) et choisissez celui à utiliser. Passage en SOCKS5, DNS résolu par le proxy, jamais de repli silencieux sur la connexion directe. |
+| **Adresse IP** | Dans la page Protection : importez votre liste de proxys (format Webshare `ip:port:identifiant:mot de passe`) et choisissez celui à utiliser. Passage en SOCKS5, DNS résolu par le proxy. Rotation (à chaque démarrage, toutes les N minutes ou un proxy par site), règles par domaine (banque en direct, le reste par proxy), bascule sur le proxy suivant s'il ne répond pas, test de santé de la liste, coupe-circuit et alerte si la vraie adresse apparaît. |
 | **Vérifier les fuites** | Dans la page Protection : adresse IP vue par les sites, DNS utilisé et adresses exposées par WebRTC. |
 | **Mise à jour en un clic** | Sous Windows, « Mettre à jour » dans la barre d'avis télécharge le nouvel installeur, le lance et ferme La Cigale. |
 | **Verrou au démarrage** | Un mot de passe demandé à l'ouverture. C'est un verrou, pas un chiffrement : il protège des curieux, pas de quelqu'un qui a accès à vos fichiers. |

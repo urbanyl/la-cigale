@@ -155,14 +155,59 @@
       <h1>Adresse IP</h1>
       <div class="carte">
         <h2>Passer par un proxy</h2>
-        <p>Les sites voient l'adresse du proxy au lieu de la vôtre. Si le proxy ne répond plus, les pages
-          ne s'ouvrent pas : La Cigale ne retombe jamais en silence sur la connexion directe.</p>
+        <p>Les sites voient l'adresse du proxy au lieu de la vôtre. Si le proxy choisi ne répond pas,
+          La Cigale passe au suivant de la liste.</p>
         <div id="proxy-choix" class="liste-choix"></div>
         <p class="ligne">
           <button id="proxy-verifier">Vérifier mon adresse</button>
+          <button id="proxy-tester">Tester la liste</button>
           <span id="proxy-ip" class="discret"></span>
         </p>
       </div>
+
+      <div class="carte">
+        <h2>Rotation</h2>
+        <p>Changer de proxy empêche les sites de relier vos visites par l'adresse IP. La rotation
+          s'applique quand un proxy est coché ci-dessus.</p>
+        <div class="liste-choix">
+          <label class="choix"><input type="radio" name="rotation" value="fixe"><span>Toujours le proxy coché</span></label>
+          <label class="choix"><input type="radio" name="rotation" value="demarrage"><span>Un autre proxy à chaque démarrage</span></label>
+          <label class="choix"><input type="radio" name="rotation" value="minutes"><span>Changer toutes les
+            <input id="rotation-minutes" type="number" min="1" max="1440" class="nombre"> minutes</span></label>
+          <label class="choix"><input type="radio" name="rotation" value="site"><span>Un proxy différent par site</span>
+            <span class="discret">toujours le même pour un site donné</span></label>
+        </div>
+      </div>
+
+      <div class="carte">
+        <h2>Règles par site</h2>
+        <p>Une règle par domaine, sous-domaines compris. Par exemple votre banque en connexion directe et
+          tout le reste par proxy.</p>
+        <ul id="regles" class="regles"></ul>
+        <p class="ligne">
+          <input id="regle-domaine" placeholder="banque.fr" spellcheck="false">
+          <select id="regle-cible"></select>
+          <button id="regle-ajouter">Ajouter</button>
+        </p>
+      </div>
+
+      <div class="carte">
+        <h2>Coupe-circuit</h2>
+        <p>Quand un proxy est utilisé et qu'aucun proxy de la liste ne répond, les pages ne s'ouvrent pas
+          plutôt que de passer par votre vraie adresse.</p>
+        <label class="case"><input type="checkbox" id="coupe-circuit"><span>Bloquer toute connexion si aucun proxy ne répond</span></label>
+        <p id="coupe-etat" class="discret"></p>
+      </div>
+
+      <div class="carte">
+        <h2>Alertes de fuite</h2>
+        <p>À chaque changement de proxy, La Cigale compare l'adresse vue par les sites à votre vraie
+          adresse, et affiche une alerte si elle apparaît. WebRTC est désactivé et le DNS passe par le
+          proxy. Le test interroge api.ipify.org.</p>
+        <label class="case"><input type="checkbox" id="alertes-fuite"><span>Vérifier après chaque changement de proxy</span></label>
+        <p id="fuite-etat" class="discret"></p>
+      </div>
+
       <div class="carte">
         <h2>Ma liste de proxys</h2>
         <p>Une ligne par proxy : <code>ip:port:identifiant:mot de passe</code> (format Webshare), ou

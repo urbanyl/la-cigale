@@ -199,3 +199,13 @@ input[type="radio"], input[type="checkbox"] { accent-color: #d8d8dc; }
 .choix:hover { background: rgba(255, 255, 255, 0.07); }
 .choix .discret { margin-left: auto; }
 #proxy-texte { width: 100%; box-sizing: border-box; background: rgba(255, 255, 255, 0.05); color: inherit; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 10px; font: 13px ui-monospace, Consolas, monospace; resize: vertical; }
+
+.choix.hors-ligne > span:not(.discret) { color: var(--gris); text-decoration: line-through; }
+.choix .nombre { width: 64px; margin: 0 6px; padding: 4px 8px; border: 1px solid var(--bordure); border-radius: 8px; background: rgba(255, 255, 255, 0.05); color: inherit; font: inherit; }
+.regles { margin: 12px 0; padding: 0; list-style: none; }
+.regles li { display: flex; align-items: center; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--trait); }
+.regles li:last-child { border-bottom: 0; }
+.regles li .discret { margin-left: auto; }
+.regles li.vide { color: var(--gris); font-size: 14px; border: 0; }
+.regles button { padding: 2px 12px; font-size: 13px; }
+#regle-domaine { flex: 1 1 180px; }
