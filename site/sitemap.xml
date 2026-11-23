@@ -2,50 +2,98 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://urbanyl.github.io/la-cigale/</loc>
-    <lastmod>2026-11-22</lastmod>
+    <lastmod>2026-11-23</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/"/>
   </url>
   <url>
     <loc>https://urbanyl.github.io/la-cigale/en/</loc>
-    <lastmod>2026-11-22</lastmod>
+    <lastmod>2026-11-23</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/"/>
   </url>
   <url>
     <loc>https://urbanyl.github.io/la-cigale/faq/</loc>
-    <lastmod>2026-11-22</lastmod>
+    <lastmod>2026-11-23</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/faq/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/faq/"/>
   </url>
   <url>
     <loc>https://urbanyl.github.io/la-cigale/en/faq/</loc>
-    <lastmod>2026-11-22</lastmod>
+    <lastmod>2026-11-23</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/faq/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/faq/"/>
   </url>
   <url>
     <loc>https://urbanyl.github.io/la-cigale/comparaison/</loc>
-    <lastmod>2026-11-22</lastmod>
+    <lastmod>2026-11-23</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/comparaison/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/comparison/"/>
   </url>
   <url>
     <loc>https://urbanyl.github.io/la-cigale/en/comparison/</loc>
-    <lastmod>2026-11-22</lastmod>
+    <lastmod>2026-11-23</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/comparaison/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/comparison/"/>
   </url>
   <url>
     <loc>https://urbanyl.github.io/la-cigale/securite/</loc>
-    <lastmod>2026-11-22</lastmod>
+    <lastmod>2026-11-23</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/securite/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/security/"/>
   </url>
   <url>
     <loc>https://urbanyl.github.io/la-cigale/en/security/</loc>
-    <lastmod>2026-11-22</lastmod>
+    <lastmod>2026-11-23</lastmod>
     <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/securite/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/security/"/>
+  </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/mentions-legales/</loc>
+    <lastmod>2026-11-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/mentions-legales/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/legal-notice/"/>
+  </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/en/legal-notice/</loc>
+    <lastmod>2026-11-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/mentions-legales/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/legal-notice/"/>
+  </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/confidentialite/</loc>
+    <lastmod>2026-11-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/confidentialite/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/privacy/"/>
+  </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/en/privacy/</loc>
+    <lastmod>2026-11-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/confidentialite/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/privacy/"/>
+  </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/conditions/</loc>
+    <lastmod>2026-11-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/conditions/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/terms/"/>
+  </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/en/terms/</loc>
+    <lastmod>2026-11-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/conditions/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/terms/"/>
+  </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/licences/</loc>
+    <lastmod>2026-11-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/licences/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/licenses/"/>
+  </url>
+  <url>
+    <loc>https://urbanyl.github.io/la-cigale/en/licenses/</loc>
+    <lastmod>2026-11-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://urbanyl.github.io/la-cigale/licences/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/licenses/"/>
   </url>
 </urlset>

@@ -8,7 +8,7 @@ from pathlib import Path
 
 ICI = Path(__file__).parent
 BASE = "https://urbanyl.github.io/la-cigale/"
-DATE = "2026-11-22"
+DATE = "2026-11-23"
 
 FAQ_FR = [
     ("La Cigale est-elle gratuite ?",
@@ -258,7 +258,7 @@ def tete(langue, page, relatif, schema):
 <script type="application/ld+json">
 {json.dumps(schema, ensure_ascii=False, indent=1)}
 </script>
-<link rel="stylesheet" href="{relatif}style.css?v=3">
+<link rel="stylesheet" href="{relatif}style.css?v=4">
 </head>
 '''
 
@@ -367,8 +367,221 @@ def page_securite(langue):
 """ + pied(langue, "securite", relatif) + "</body>\n</html>\n"
 
 
+# ---------- Pages légales ----------
+
+ICONES.update({
+    "personne": '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    "serveur": '<rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/>',
+    "balance": '<path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/>',
+    "oeil": '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    "document": '<path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+})
+
+GH = "https://github.com/urbanyl/la-cigale"
+CONTACT_FR = f'par une <a href="{GH}/issues">issue sur GitHub</a>, ou en privé par <a href="{GH}/security">le signalement de sécurité</a>'
+CONTACT_EN = f'through a <a href="{GH}/issues">GitHub issue</a>, or privately through <a href="{GH}/security">security reporting</a>'
+HEBERGEUR_FR = 'GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis (<a href="https://github.com">github.com</a>).'
+HEBERGEUR_EN = 'GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, United States (<a href="https://github.com">github.com</a>).'
+MPL = '<a href="https://www.mozilla.org/MPL/2.0/">MPL-2.0</a>'
+
+LEGAL = {
+    "fr": {
+        "mentions": [
+            ("personne", "Éditeur", [
+                "Site et logiciel publiés par <b>urbanyl</b>, particulier agissant à titre non professionnel. "
+                "Conformément à l'article 6, III, 2 de la loi n° 2004-575 du 21 juin 2004 (LCEN), l'éditeur a choisi de rester sous pseudonyme ; "
+                "ses éléments d'identification ont été communiqués à l'hébergeur.",
+                "Directeur de la publication : urbanyl.",
+                f"Contact : {CONTACT_FR}.",
+            ]),
+            ("serveur", "Hébergeur", [HEBERGEUR_FR]),
+            ("balance", "Propriété intellectuelle", [
+                f"Le code de La Cigale et les textes de ce site sont distribués sous licence {MPL}.",
+                'Les marques et logiciels tiers restent la propriété de leurs titulaires ; voir <a href="../licences/">Licences et marques</a>.',
+            ]),
+        ],
+        "confidentialite": [
+            ("oeil", "En bref", [
+                "Le projet La Cigale ne collecte <b>aucune</b> donnée personnelle : pas de compte, pas de serveur à lui, pas de télémétrie, pas de mesure d'audience, pas de cookie.",
+                "Comme rien n'est collecté, il n'y a rien à consulter, corriger ou supprimer chez nous.",
+            ]),
+            ("serveur", "Ce site", [
+                'Il est hébergé par GitHub Pages. GitHub enregistre l\'adresse IP des visiteurs pour la sécurité du service, selon sa <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité</a>. L\'éditeur n\'a pas accès à ces journaux.',
+                "Aucun cookie, aucun script de suivi. La police d'écriture est servie par le site lui-même, sans appel à Google ni à un autre service.",
+                "Les téléchargements se font depuis GitHub Releases, dans les mêmes conditions.",
+            ]),
+            ("reseau", "Le navigateur", [
+                "Les données de navigation (historique, cookies, cache) restent sur votre ordinateur et sont effacées à la fermeture, sauf réglage contraire de votre part.",
+                "<b>Quad9</b> (Suisse) résout les noms de domaine en DNS chiffré : il voit les domaines visités, sans les associer à un compte.",
+                "<b>GitHub</b>, une fois par jour, pour vérifier s'il existe une nouvelle version (désactivable dans la page Protection).",
+                "<b>uBlock Origin</b> télécharge ses listes de filtres auprès de leurs auteurs.",
+                "<b>Mozilla</b>, seulement si vous traduisez une page ou installez une extension depuis son site.",
+                "<b>api.ipify.org</b>, seulement quand vous testez votre adresse IP.",
+                "<b>Les sites de vos raccourcis</b>, pour afficher leur logo.",
+                "<b>Votre fournisseur de proxy</b> ou <b>le réseau Tor</b>, seulement si vous les activez : ils voient alors les sites visités, selon leurs propres conditions.",
+            ]),
+            ("balance", "Vos droits", [
+                f"Pour toute question sur vos données : {CONTACT_FR}.",
+                'Vous pouvez aussi saisir la <a href="https://www.cnil.fr/fr/plaintes">CNIL</a>.',
+            ]),
+        ],
+        "conditions": [
+            ("document", "Licence", [
+                f"La Cigale est gratuite et son code source est public sous {MPL}. Vous pouvez l'utiliser, l'étudier, la modifier et la redistribuer selon cette licence.",
+            ]),
+            ("alerte", "Sans garantie", [
+                "Le logiciel est fourni « tel quel », sans garantie d'aucune sorte, dans les limites prévues par la loi (sections 6 et 7 de la MPL-2.0).",
+                "La Cigale réduit fortement le pistage mais ne garantit pas l'anonymat. Un proxy cache votre adresse au site visité, pas à son fournisseur. Pour un anonymat fort, utilisez Tor Browser.",
+            ]),
+            ("personne", "Votre usage", [
+                "Vous restez responsable de l'usage que vous faites du navigateur et des services auxquels vous le connectez (proxys, extensions, sites), dans le respect de la loi et de leurs propres conditions.",
+            ]),
+            ("balance", "Droit applicable", [
+                "Ces conditions relèvent du droit français. Elles peuvent évoluer avec le logiciel ; la version en ligne fait foi.",
+            ]),
+        ],
+        "licences": [
+            ("paquet", "Logiciels inclus", [
+                f"<b>Firefox ESR</b>, Mozilla Foundation, {MPL}. Firefox est une marque déposée de la Mozilla Foundation. La Cigale n'est ni affiliée à Mozilla ni approuvée par elle, et n'utilise ni le nom ni le logo de Firefox comme sa propre marque.",
+                '<b>uBlock Origin</b>, Raymond Hill et contributeurs, <a href="https://github.com/gorhill/uBlock/blob/master/LICENSE.txt">GPL-3.0</a>, inclus sans modification.',
+                '<b>La Cigale</b> elle-même : <a href="https://github.com/urbanyl/la-cigale/blob/main/LICENSE">MPL-2.0</a>.',
+            ]),
+            ("reseau", "Marques et services cités", [
+                "<b>Tor</b> est une marque du Tor Project, Inc. L'icône « Tor Browser icon » (The Tor Project, <a href=\"https://commons.wikimedia.org/wiki/File:Tor_Browser_icon.svg\">Wikimedia Commons</a>, licence CC BY-SA 4.0) sert uniquement à désigner la fenêtre qui passe par le réseau Tor ; La Cigale n'est ni affiliée au Tor Project ni approuvée par lui.",
+                "Quad9, Qwant, Startpage, Lilo, Wikipédia, OpenStreetMap, Légifrance, Seyra et les autres services cités appartiennent à leurs titulaires.",
+            ]),
+            ("document", "Logo et police", [
+                'Logo : « Cicada » par Alex Muravev, The Noun Project, licence <a href="https://creativecommons.org/licenses/by/3.0/deed.fr">CC BY 3.0</a>.',
+                'Police <b>Bricolage Grotesque</b>, Mathieu Triay, <a href="https://openfontlicense.org">SIL Open Font License 1.1</a>.',
+            ]),
+        ],
+    },
+    "en": {
+        "mentions": [
+            ("personne", "Publisher", [
+                "Website and software published by <b>urbanyl</b>, a private individual acting on a non-professional basis. "
+                "Under article 6, III, 2 of French law no. 2004-575 of 21 June 2004 (LCEN), the publisher chose to remain pseudonymous; "
+                "their identification details have been given to the host.",
+                "Publication director: urbanyl.",
+                f"Contact: {CONTACT_EN}.",
+            ]),
+            ("serveur", "Host", [HEBERGEUR_EN]),
+            ("balance", "Intellectual property", [
+                f"La Cigale's code and this website's texts are released under the {MPL}.",
+                'Third-party trademarks and software belong to their owners; see <a href="../licenses/">Licenses and trademarks</a>.',
+            ]),
+        ],
+        "confidentialite": [
+            ("oeil", "In short", [
+                "The La Cigale project collects <b>no</b> personal data: no account, no server of its own, no telemetry, no analytics, no cookies.",
+                "Since nothing is collected, there is nothing for us to access, correct or delete.",
+            ]),
+            ("serveur", "This website", [
+                'It is hosted on GitHub Pages. GitHub logs visitors\' IP addresses for security, as described in its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a>. The publisher has no access to these logs.',
+                "No cookies, no tracking scripts. The font is served by the site itself, with no call to Google or any other service.",
+                "Downloads come from GitHub Releases, under the same terms.",
+            ]),
+            ("reseau", "The browser", [
+                "Browsing data (history, cookies, cache) stays on your computer and is wiped on close, unless you change that.",
+                "<b>Quad9</b> (Switzerland) resolves domain names over encrypted DNS: it sees the domains you visit, without linking them to an account.",
+                "<b>GitHub</b>, once a day, to check for a new version (can be turned off on the Protection page).",
+                "<b>uBlock Origin</b> downloads its filter lists from their authors.",
+                "<b>Mozilla</b>, only when you translate a page or install an extension from its site.",
+                "<b>api.ipify.org</b>, only when you test your IP address.",
+                "<b>Your shortcuts' websites</b>, to show their logo.",
+                "<b>Your proxy provider</b> or <b>the Tor network</b>, only if you turn them on: they then see the sites you visit, under their own terms.",
+            ]),
+            ("balance", "Your rights", [
+                f"For any question about your data: {CONTACT_EN}.",
+                'You can also contact the French data protection authority, the <a href="https://www.cnil.fr/en/home">CNIL</a>, or your own.',
+            ]),
+        ],
+        "conditions": [
+            ("document", "License", [
+                f"La Cigale is free and its source code is public under the {MPL}. You may use, study, modify and redistribute it under that license.",
+            ]),
+            ("alerte", "No warranty", [
+                'The software is provided "as is", without warranty of any kind, to the extent permitted by law (sections 6 and 7 of the MPL-2.0).',
+                "La Cigale greatly reduces tracking but does not guarantee anonymity. A proxy hides your address from the site you visit, not from its provider. For strong anonymity, use Tor Browser.",
+            ]),
+            ("personne", "Your use", [
+                "You remain responsible for how you use the browser and the services you connect it to (proxies, extensions, websites), in line with the law and their own terms.",
+            ]),
+            ("balance", "Governing law", [
+                "These terms are governed by French law. They may change along with the software; the online version prevails.",
+            ]),
+        ],
+        "licences": [
+            ("paquet", "Included software", [
+                f"<b>Firefox ESR</b>, Mozilla Foundation, {MPL}. Firefox is a registered trademark of the Mozilla Foundation. La Cigale is neither affiliated with nor endorsed by Mozilla, and does not use the Firefox name or logo as its own brand.",
+                '<b>uBlock Origin</b>, Raymond Hill and contributors, <a href="https://github.com/gorhill/uBlock/blob/master/LICENSE.txt">GPL-3.0</a>, included unmodified.',
+                '<b>La Cigale</b> itself: <a href="https://github.com/urbanyl/la-cigale/blob/main/LICENSE">MPL-2.0</a>.',
+            ]),
+            ("reseau", "Trademarks and services mentioned", [
+                "<b>Tor</b> is a trademark of The Tor Project, Inc. The \"Tor Browser icon\" (The Tor Project, <a href=\"https://commons.wikimedia.org/wiki/File:Tor_Browser_icon.svg\">Wikimedia Commons</a>, CC BY-SA 4.0) only identifies the window that goes through the Tor network; La Cigale is neither affiliated with nor endorsed by the Tor Project.",
+                "Quad9, Qwant, Startpage, Lilo, Wikipedia, OpenStreetMap, Légifrance, Seyra and the other services mentioned belong to their owners.",
+            ]),
+            ("document", "Logo and font", [
+                'Logo: "Cicada" by Alex Muravev, The Noun Project, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.',
+                '<b>Bricolage Grotesque</b> font, Mathieu Triay, <a href="https://openfontlicense.org">SIL Open Font License 1.1</a>.',
+            ]),
+        ],
+    },
+}
+
+PAGES_LEGALES = {
+    "mentions": (("mentions-legales/", "Mentions légales", "Éditeur, hébergeur et propriété intellectuelle du site et du navigateur La Cigale."),
+                 ("en/legal-notice/", "Legal notice", "Publisher, host and intellectual property of the La Cigale website and browser.")),
+    "confidentialite": (("confidentialite/", "Confidentialité", "Ce que le site et le navigateur La Cigale font de vos données : rien n'est collecté, et voici ce que le navigateur contacte."),
+                        ("en/privacy/", "Privacy", "What the La Cigale website and browser do with your data: nothing is collected, and here is what the browser contacts.")),
+    "conditions": (("conditions/", "Conditions d'utilisation", "Licence, absence de garantie et responsabilité pour l'utilisation de La Cigale."),
+                   ("en/terms/", "Terms of use", "License, no warranty and responsibility when using La Cigale.")),
+    "licences": (("licences/", "Licences et marques", "Logiciels inclus dans La Cigale, leurs licences, et les marques citées."),
+                 ("en/licenses/", "Licenses and trademarks", "Software included in La Cigale, their licenses, and the trademarks mentioned.")),
+}
+for _cle, ((_fr, _hfr, _dfr), (_en, _hen, _den)) in PAGES_LEGALES.items():
+    TEXTES["fr"][_cle] = {"chemin": _fr, "titre": _hfr + " | La Cigale", "h1": _hfr, "description": _dfr}
+    TEXTES["en"][_cle] = {"chemin": _en, "titre": _hen + " | La Cigale", "h1": _hen, "description": _den}
+    CORRESPONDANCE[_fr] = _en
+    CORRESPONDANCE[_en] = _fr
+
+LIENS_LEGAUX = {
+    "fr": [("mentions-legales/", "Mentions légales"), ("confidentialite/", "Confidentialité"), ("conditions/", "Conditions"), ("licences/", "Licences")],
+    "en": [("en/legal-notice/", "Legal notice"), ("en/privacy/", "Privacy"), ("en/terms/", "Terms"), ("en/licenses/", "Licenses")],
+}
+
+
+def page_legale(langue, cle):
+    t = TEXTES[langue]
+    relatif = "../" if langue == "fr" else "../../"
+    blocs = []
+    for icone, titre, lignes in LEGAL[langue][cle]:
+        items = "".join(f"      <li>{ligne}</li>\n" for ligne in lignes)
+        blocs.append(f"""  <section class="bloc">
+    <h2><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONES[icone]}</svg>{html.escape(titre)}</h2>
+    <ul>
+{items}    </ul>
+  </section>""")
+    autres = " ".join(f'<a href="{relatif}{c}">{n}</a>' for c, n in LIENS_LEGAUX[langue] if c != t[cle]["chemin"])
+    maj = "Mise à jour le 23 novembre 2026." if langue == "fr" else "Last updated 23 November 2026."
+    corps = "\n".join(blocs)
+    return tete(langue, cle, relatif, [fil(langue, cle)]) + f"""<body class="page">
+<main>
+  <header>
+    <img src="{relatif}symbole.png" alt="La Cigale">
+    <div>
+      <h1>{t[cle]["h1"]}</h1>
+      <p class="sous-titre">{maj}</p>
+    </div>
+  </header>
+{corps}
+  <p class="liens">{autres}</p>
+</main>
+""" + pied(langue, cle, relatif) + "</body>\n</html>\n"
+
+
 def sitemap():
-    paires = [("", "en/"), ("faq/", "en/faq/"), ("comparaison/", "en/comparison/"), ("securite/", "en/security/")]
+    paires = [("", "en/"), ("faq/", "en/faq/"), ("comparaison/", "en/comparison/"), ("securite/", "en/security/")] + [(v[0][0], v[1][0]) for v in PAGES_LEGALES.values()]
     entrees = []
     for fr, en in paires:
         for chemin in (fr, en):
@@ -389,5 +602,10 @@ if __name__ == "__main__":
             cible = ICI / TEXTES[langue][page]["chemin"] / "index.html"
             cible.parent.mkdir(parents=True, exist_ok=True)
             cible.write_text(fabrique(langue), encoding="utf-8")
+            print(cible.relative_to(ICI))
+        for cle in PAGES_LEGALES:
+            cible = ICI / TEXTES[langue][cle]["chemin"] / "index.html"
+            cible.parent.mkdir(parents=True, exist_ok=True)
+            cible.write_text(page_legale(langue, cle), encoding="utf-8")
             print(cible.relative_to(ICI))
     (ICI / "sitemap.xml").write_text(sitemap(), encoding="utf-8")

@@ -8,7 +8,7 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 <a href="https://github.com/urbanyl/la-cigale/releases/latest"><img src="https://img.shields.io/github/v/release/urbanyl/la-cigale?label=version&color=a9b89a" alt="Version"></a>
 <a href="https://github.com/urbanyl/la-cigale/releases"><img src="https://img.shields.io/github/downloads/urbanyl/la-cigale/total?label=t%C3%A9l%C3%A9chargements&color=85887f" alt="Téléchargements"></a>
 <a href="https://github.com/urbanyl/la-cigale/actions/workflows/construire.yml"><img src="https://img.shields.io/github/actions/workflow/status/urbanyl/la-cigale/construire.yml?label=construction" alt="Construction"></a>
-<a href="#licence"><img src="https://img.shields.io/badge/licence-MPL--2.0-85887f" alt="Licence MPL-2.0"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/licence-MPL--2.0-85887f" alt="Licence MPL-2.0"></a>
 <img src="https://img.shields.io/badge/bas%C3%A9%20sur-Firefox%20ESR%20153-e66000?logo=firefoxbrowser&logoColor=white" alt="Basé sur Firefox ESR 153">
 <img src="https://img.shields.io/badge/Windows-x64-0078d4?logo=windows&logoColor=white" alt="Windows">
 <img src="https://img.shields.io/badge/Linux-x64-333333?logo=linux&logoColor=white" alt="Linux">
@@ -182,3 +182,10 @@ et ses limites : [page Sécurité](https://urbanyl.github.io/la-cigale/securite/
 MPL-2.0, comme Firefox. Firefox est une marque de la Mozilla Foundation ; La Cigale n'est ni affiliée
 à Mozilla ni approuvée par elle. Logo : « Cicada » par Alex Muravev (The Noun Project, CC BY 3.0).
 Icône Tor : « Tor Browser icon », The Tor Project ([Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Tor_Browser_icon.svg), CC BY-SA 4.0) ; Tor est une marque de The Tor Project, Inc., qui n'est pas associé à La Cigale.
+uBlock Origin (Raymond Hill et contributeurs) est inclus sans modification sous GPL-3.0.
+
+Texte complet de la licence : [LICENSE](LICENSE). Signaler une faille : [SECURITY.md](SECURITY.md).
+[Mentions légales](https://urbanyl.github.io/la-cigale/mentions-legales/) ·
+[Confidentialité](https://urbanyl.github.io/la-cigale/confidentialite/) ·
+[Conditions d'utilisation](https://urbanyl.github.io/la-cigale/conditions/) ·
+[Licences et marques](https://urbanyl.github.io/la-cigale/licences/)
