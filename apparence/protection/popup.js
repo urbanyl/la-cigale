@@ -4,6 +4,11 @@
 const $ = (id) => document.getElementById(id);
 const fenetre = window.browsingContext.topChromeWindow;
 const cigale = ChromeUtils.importESModule("chrome://browser/content/cigale/cigale.sys.mjs");
+const plus = ChromeUtils.importESModule("chrome://browser/content/cigale/plus.sys.mjs");
+const EMPREINTE = WPL.STATE_BLOCKED_FINGERPRINTING_CONTENT | (WPL.STATE_REPLACED_FINGERPRINTING_CONTENT || 0) |
+  (WPL.STATE_ALLOWED_CANVAS_FINGERPRINTING || 0) | (WPL.STATE_ALLOWED_FONT_FINGERPRINTING || 0);
+const COOKIES_TIERS = WPL.STATE_COOKIES_BLOCKED_FOREIGN | WPL.STATE_COOKIES_BLOCKED_TRACKER |
+  WPL.STATE_COOKIES_BLOCKED_SOCIALTRACKER | (WPL.STATE_COOKIES_PARTITIONED_FOREIGN || 0);
 const WPL = Ci.nsIWebProgressListener;
 const PISTAGE = WPL.STATE_BLOCKED_TRACKING_CONTENT | WPL.STATE_BLOCKED_SOCIALTRACKING_CONTENT |
   WPL.STATE_BLOCKED_FINGERPRINTING_CONTENT | WPL.STATE_BLOCKED_CRYPTOMINING_CONTENT |
@@ -42,6 +47,9 @@ async function rafraichir() {
     $("hote").textContent = "Aucun site sur cet onglet";
     $("connexion").textContent = "";
     $("bloques").textContent = "";
+    $("empreinte").textContent = "";
+    $("certificat").textContent = "";
+    $("alerte").hidden = true;
     ajusterHauteur();
     return;
   }
@@ -58,6 +66,30 @@ async function rafraichir() {
   const morceaux = [traqueurs ? `${traqueurs} traqueur${traqueurs > 1 ? "s" : ""} bloqué${traqueurs > 1 ? "s" : ""}` : "Aucun traqueur détecté"];
   if (badge) morceaux.push(`${badge} requête${badge == "1" ? "" : "s"} arrêtée${badge == "1" ? "" : "s"} par uBlock`);
   $("bloques").textContent = morceaux.join(" · ");
+
+  const compter = (masque) => Object.values(journal).filter((ev) => ev.some(([etat]) => etat & masque)).length;
+  const empreinte = compter(EMPREINTE);
+  const tiers = compter(COOKIES_TIERS);
+  $("empreinte").textContent = [
+    empreinte ? `${empreinte} tentative${empreinte > 1 ? "s" : ""} de prise d'empreinte neutralisée${empreinte > 1 ? "s" : ""}` : "Aucune prise d'empreinte détectée",
+    tiers ? `${tiers} site${tiers > 1 ? "s" : ""} tiers isolé${tiers > 1 ? "s" : ""}` : "",
+  ].filter(Boolean).join(" · ");
+
+  const cert = plus.rapportCertificat(navigateur);
+  const c = $("certificat");
+  c.classList.remove("recent");
+  if (cert) {
+    c.textContent = `Certificat émis il y a ${cert.jours} jour${cert.jours > 1 ? "s" : ""}` + (cert.emetteur ? ` par ${cert.emetteur}` : "");
+    if (cert.jours < 7) {
+      c.textContent += " : très récent, prudence si le site vous demande des informations";
+      c.classList.add("recent");
+    }
+  } else {
+    c.textContent = "";
+  }
+  const sosie = plus.sosieDe(adresse.host);
+  $("alerte").hidden = !sosie;
+  $("alerte").textContent = sosie ? `Ce site ressemble à ${sosie} sans être lui : risque d'hameçonnage.` : "";
   ajusterHauteur();
 }
 
@@ -70,6 +102,10 @@ function ouvrirProtection(categorie) {
 $("oublier").addEventListener("click", () => {
   cigale.oublierSite(fenetre).catch(console.error);
   fermer();
+});
+$("identite").addEventListener("click", () => {
+  fermer();
+  plus.nouvelleIdentite(fenetre).catch(console.error);
 });
 $("tor").addEventListener("click", () => {
   cigale.ouvrirFenetreTor(fenetre).catch(console.error);

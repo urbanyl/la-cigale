@@ -14,6 +14,9 @@
     <a class="categorie" href="#general" data-categorie="general">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/></svg>
       Vue d'ensemble</a>
+    <a class="categorie" href="#atouts" data-categorie="atouts">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+      Boucliers et confort</a>
     <a class="categorie" href="#page" data-categorie="page">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>
       Cette page</a>
@@ -50,7 +53,21 @@
       <p id="resume" class="discret"></p>
 
       <div id="nouveautes" class="carte" hidden>
-        <h2>Quoi de neuf dans La Cigale 1.3</h2>
+        <h2>Quoi de neuf dans La Cigale 1.4</h2>
+        <ul class="nouveautes">
+          <li><b>Nouvelle identité.</b> Un bouton efface tout, ferme les onglets et change de proxy : les sites ne peuvent plus vous relier à avant.</li>
+          <li><b>Identité par site.</b> Chaque site reçoit son propre proxy fixe, en plus de cookies et d'un cache déjà isolés par site.</li>
+          <li><b>Ouvrir le lien via Tor.</b> Clic droit sur un lien.</li>
+          <li><b>Bouclier de formulaires.</b> Alerte avant d'envoyer un mot de passe sans chiffrement ou vers un autre site.</li>
+          <li><b>Rapport de page.</b> Le bouton cigale montre traqueurs, prises d'empreinte, sites tiers isolés et âge du certificat.</li>
+          <li><b>Détecteur de sosies.</b> <kbd>paypa1.com</kbd> ou une adresse en lettres cyrilliques : La Cigale prévient.</li>
+          <li><b>Mode site inconnu.</b> JavaScript coupé sur les sites auxquels vous n'avez pas encore fait confiance.</li>
+          <li><b>Téléchargements vérifiés.</b> L'empreinte SHA-256 publiée sur la page est comparée au fichier reçu.</li>
+          <li><b>Panneau Seyra</b> sur le côté, <b>onglets en veille</b> et <b>onglets éphémères</b>, <b>lecture épurée automatique</b>,
+            <b>profils Travail, Perso et Banque</b>, et des <b>liens copiés sans pisteurs</b>.</li>
+        </ul>
+        <p><a href="#atouts">Tout régler dans « Boucliers et confort »</a></p>
+        <details><summary>Nouveautés de la 1.3</summary>
         <ul class="nouveautes">
           <li><b>Bannières cookies.</b> Les listes « cookies » et « nuisances » de uBlock sont activées, et La Cigale
             refuse les cookies toute seule quand le site le permet.</li>
@@ -70,6 +87,7 @@
             s'affiche si votre vraie adresse apparaît.</li>
           <li><b>Mises à jour plus propres.</b> Les anciens installeurs téléchargés sont supprimés.</li>
         </ul>
+        </details>
         <details><summary>Nouveautés de la 1.2</summary>
         <ul class="nouveautes">
           <li><b>Oublier ce site.</b> Un bouton dans la barre d'outils efface tout ce que La Cigale garde
@@ -114,6 +132,105 @@
         <table>
           <tbody id="etats"></tbody>
         </table>
+      </div>
+    </section>
+
+    <section data-categorie="atouts" hidden>
+      <h1>Boucliers et confort</h1>
+      <p class="discret">Des protections qu'aucun autre navigateur ne réunit, toutes calculées sur votre ordinateur : rien n'est envoyé à un service.</p>
+
+      <div class="carte">
+        <h2>Nouvelle identité</h2>
+        <p>Ferme tous les onglets, efface cookies, cache, historique et connexions, et passe à un autre proxy de votre liste.
+          Ce que vous ferez ensuite ne peut plus être relié à ce que vous avez fait avant. Aussi dans la barre d'outils et le bouton cigale.</p>
+        <p class="ligne"><button id="identite-maintenant">Nouvelle identité maintenant</button></p>
+      </div>
+
+      <div class="carte">
+        <h2>Identité par site</h2>
+        <p>Chaque site passe toujours par le même proxy de votre liste, et deux sites différents par des proxys différents.
+          Avec les cookies et le cache déjà isolés par site, deux sites ne peuvent plus vous relier par votre adresse.</p>
+        <label class="case"><input type="checkbox" id="identite-site"><span>Un proxy fixe par site</span></label>
+        <p id="identite-etat" class="discret"></p>
+      </div>
+
+      <div class="carte">
+        <h2>Bouclier de formulaires</h2>
+        <p>Avant qu'un mot de passe ou une adresse e-mail parte sans chiffrement, ou vers un autre site que celui affiché,
+          La Cigale vous demande confirmation. C'est la signature des faux formulaires de connexion.</p>
+        <label class="case"><input type="checkbox" id="bouclier"><span>Protéger mes formulaires</span></label>
+      </div>
+
+      <div class="carte">
+        <h2>Détecteur de sosies</h2>
+        <p>Une adresse qui imite une banque, un service public ou un grand site (<kbd>paypa1.com</kbd>, <kbd>amazon-remboursement.fr</kbd>,
+          lettres cyrilliques qui ressemblent à des latines) affiche une alerte avant que vous ne tapiez quoi que ce soit.
+          La comparaison se fait sur votre ordinateur, avec une liste de sites sensibles et vos sites conservés.</p>
+        <label class="case"><input type="checkbox" id="sosies"><span>Prévenir quand un site en imite un autre</span></label>
+      </div>
+
+      <div class="carte">
+        <h2>Mode site inconnu</h2>
+        <p>Sur un site auquel vous n'avez pas fait confiance, JavaScript est coupé : pas de script malveillant, pas de pistage par script.
+          Un clic sur « Faire confiance » le rétablit pour ce site. Les sites conservés sont toujours de confiance.</p>
+        <label class="case"><input type="checkbox" id="inconnu"><span>Couper JavaScript sur les sites inconnus</span></label>
+        <ul id="confiance" class="regles"></ul>
+      </div>
+
+      <div class="carte">
+        <h2>Téléchargements vérifiés</h2>
+        <p>Quand la page de téléchargement publie une empreinte SHA-256, La Cigale la compare au fichier reçu et vous dit s'il est intact.
+          Un programme venant d'un site inconnu affiche un avertissement.</p>
+        <label class="case"><input type="checkbox" id="telechargements"><span>Vérifier mes téléchargements</span></label>
+      </div>
+
+      <div class="carte">
+        <h2>Ouvrir un lien via Tor</h2>
+        <p>Clic droit sur un lien, « Ouvrir le lien via Tor » : la page s'ouvre dans la fenêtre Tor, sans rien emporter de cette fenêtre-ci.
+          Tor doit tourner (Tor Browser ouvert, ou le service tor).</p>
+      </div>
+
+      <div class="carte">
+        <h2>Panneau latéral</h2>
+        <p>Votre messagerie toujours à portée, à côté de la page. Le bouton « Panneau Seyra » de la barre d'outils l'ouvre et le ferme.</p>
+        <p class="ligne">
+          <input id="panneau-adresse" spellcheck="false" aria-label="Adresse du panneau">
+          <button id="panneau-ouvrir">Ouvrir le panneau</button>
+        </p>
+      </div>
+
+      <div class="carte">
+        <h2>Onglets en veille et éphémères</h2>
+        <p>Un onglet inutilisé est mis en veille : il libère la mémoire et ne tourne plus en arrière-plan.
+          Un onglet éphémère (clic droit sur un lien ou sur un onglet) se ferme seul quand vous l'oubliez, et le site est effacé à sa fermeture.</p>
+        <p class="ligne"><label>Veille après <input id="veille-minutes" type="number" min="0" max="1440" class="nombre"> minutes</label>
+          <span class="discret">0 : jamais</span></p>
+        <p class="ligne"><label>Onglet éphémère fermé après <input id="ephemere-minutes" type="number" min="0" max="1440" class="nombre"> minutes sans le regarder</label></p>
+        <p class="ligne"><button id="ephemere-ouvrir">Ouvrir un onglet éphémère</button></p>
+      </div>
+
+      <div class="carte">
+        <h2>Lecture épurée</h2>
+        <p>Les articles s'ouvrent directement en mode lecture : texte seul, sans publicité ni script. Pour la page d'origine, revenez en arrière.</p>
+        <label class="case"><input type="checkbox" id="lecture"><span>Ouvrir les articles en mode lecture</span></label>
+      </div>
+
+      <div class="carte">
+        <h2>Profils Travail, Perso et Banque</h2>
+        <p>Trois onglets conteneurs, chacun avec sa couleur et ses propres cookies : votre banque ne voit jamais ce que fait votre profil Perso.
+          Clic droit sur un lien, ou appui long sur le bouton « + », pour choisir le profil.</p>
+        <p class="ligne">
+          <button id="profils-creer">Créer les profils</button>
+          <button id="profil-banque">Ouvrir un onglet Banque</button>
+          <span id="profils-etat" class="discret"></span>
+        </p>
+      </div>
+
+      <div class="carte">
+        <h2>Liens copiés sans pisteurs</h2>
+        <p>« Copier le lien » et la copie de la barre d'adresse retirent <kbd>utm_</kbd>, <kbd>fbclid</kbd>, <kbd>gclid</kbd> et les autres
+          paramètres de pistage, et raccourcissent les liens Amazon. Ce que vous partagez ne trahit plus d'où vous venez.</p>
+        <label class="case"><input type="checkbox" id="copie"><span>Nettoyer les liens copiés</span></label>
       </div>
     </section>
 

@@ -209,3 +209,6 @@ input[type="radio"], input[type="checkbox"] { accent-color: #d8d8dc; }
 .regles li.vide { color: var(--gris); font-size: 14px; border: 0; }
 .regles button { padding: 2px 12px; font-size: 13px; }
 #regle-domaine { flex: 1 1 180px; }
+
+.nombre { width: 5em; }
+#panneau-adresse { flex: 1; min-width: 14em; }

@@ -21,6 +21,10 @@ FAQ_FR = [
      "Oui. La Cigale accepte les extensions du site officiel de Mozilla, comme Firefox."),
     ("Est-ce que La Cigale me rend anonyme ?",
      "Elle rend le pistage beaucoup plus difficile, mais sans réglage votre adresse IP reste visible des sites. Pour la cacher, choisissez un proxy dans Protection, Adresse IP (votre propre liste, par exemple Webshare), ouvrez la fenêtre Tor, ou utilisez un VPN de confiance. Pour un anonymat fort, Tor Browser reste la référence."),
+    ("Qu'est-ce que la « Nouvelle identité » ?",
+     "Un bouton de la barre d'outils, comme dans Tor Browser : il ferme les onglets, efface cookies, cache et historique, et passe à un autre proxy de votre liste. Ce que vous faites ensuite ne peut plus être relié à ce que vous faisiez avant."),
+    ("Comment La Cigale repère-t-elle les faux sites ?",
+     "Le détecteur de sosies compare l'adresse visitée à une liste de sites sensibles (banques, impôts, grandes plateformes) et à vos sites conservés : chiffres à la place de lettres, lettres cyrilliques, noms détournés comme paypal-securite.com. Tout est calculé sur votre ordinateur, rien n'est envoyé à un service."),
     ("Qu'est-ce que la fenêtre Tor ?",
      "Une fenêtre à part dont tout le trafic, DNS compris, passe par le réseau Tor, avec un profil séparé effacé à la fermeture. Il faut que Tor soit déjà lancé : Tor Browser ouvert, ou le service tor sous Linux."),
     ("Pourquoi des sites me demandent-ils de me reconnecter ?",
@@ -50,6 +54,10 @@ FAQ_EN = [
      "It makes tracking much harder, but by default websites still see your IP address. To hide it, pick a proxy in Protection, IP address (your own list, for example Webshare), open the Tor window, or use a VPN you trust. For strong anonymity, Tor Browser remains the reference."),
     ("Is the interface available in English?",
      "Not yet: La Cigale is designed in French. Everything else works the same for any website in any language."),
+    ("What is \"New identity\"?",
+     "A toolbar button, as in Tor Browser: it closes your tabs, wipes cookies, cache and history, and switches to another proxy from your list. What you do next can no longer be linked to what you did before."),
+    ("How does La Cigale spot fake sites?",
+     "The lookalike detector compares the address you visit with a list of sensitive sites (banks, tax office, big platforms) and your kept sites: digits instead of letters, Cyrillic letters, hijacked names like paypal-security.com. Everything is computed on your computer, nothing is sent anywhere."),
     ("What is the Tor window?",
      "A separate window whose traffic, DNS included, goes through the Tor network, with its own profile wiped on close. Tor must already be running: Tor Browser open, or the tor service on Linux."),
     ("Why do sites ask me to log in again?",
@@ -72,6 +80,13 @@ COMPARAISON_FR = [
     ("Cryptomonnaie, récompenses, IA", "aucune", "aucune", "portefeuille, Brave Rewards, assistant Leo (désactivables)"),
     ("Interface et accueil en français", "oui, pensé en français", "traduit", "traduit"),
     ("Profils de protection en un clic", "Confort, Standard, Renforcé", "réglages manuels", "réglages des Shields par site"),
+    ("Nouvelle identité en un clic", "oui : tout effacé, proxy changé", "non", "nouveau circuit Tor, en fenêtre Tor seulement"),
+    ("Un proxy différent par site", "oui, avec rotation et coupe-circuit", "non", "non"),
+    ("Alerte sur les sites sosies", "oui, calculée sur l'ordinateur", "non", "liste en ligne (Safe Browsing)"),
+    ("Mot de passe envoyé sans chiffrement ou vers un autre site", "confirmation demandée", "avertissement sur le champ seulement", "avertissement sur les formulaires non chiffrés"),
+    ("Empreinte SHA-256 des téléchargements vérifiée", "oui, automatiquement", "non", "non"),
+    ("JavaScript coupé sur les sites inconnus", "oui, un clic pour faire confiance", "non (extension à ajouter)", "réglage manuel par site"),
+    ("Onglets éphémères effacés à la fermeture", "oui", "non", "non"),
     ("Sauvegarde sans serveur", "fichier chiffré", "non", "synchronisation Brave (chiffrée)"),
     ("Systèmes", "Windows, Linux", "Windows, macOS, Linux", "Windows, macOS, Linux, Android, iOS"),
     ("Licence", "MPL-2.0", "MPL-2.0", "MPL-2.0"),
@@ -88,6 +103,13 @@ COMPARAISON_EN = [
     ("Crypto, rewards, AI", "none", "none", "wallet, Brave Rewards, Leo assistant (can be turned off)"),
     ("Interface language", "designed in French", "translated", "translated"),
     ("One-click protection profiles", "Comfort, Standard, Hardened", "manual settings", "per-site Shields settings"),
+    ("One-click new identity", "yes: everything wiped, proxy changed", "no", "new Tor circuit, in Tor windows only"),
+    ("A different proxy per site", "yes, with rotation and kill switch", "no", "no"),
+    ("Lookalike site warning", "yes, computed on your computer", "no", "online list (Safe Browsing)"),
+    ("Password sent unencrypted or to another site", "asks for confirmation", "warning on the field only", "warning on insecure forms"),
+    ("Download SHA-256 checked", "yes, automatically", "no", "no"),
+    ("JavaScript off on unknown sites", "yes, one click to trust", "no (extension needed)", "manual per-site setting"),
+    ("Ephemeral tabs wiped on close", "yes", "no", "no"),
     ("Serverless backup", "encrypted file", "no", "Brave Sync (encrypted)"),
     ("Platforms", "Windows, Linux", "Windows, macOS, Linux", "Windows, macOS, Linux, Android, iOS"),
     ("Licence", "MPL-2.0", "MPL-2.0", "MPL-2.0"),
@@ -258,7 +280,7 @@ def tete(langue, page, relatif, schema):
 <script type="application/ld+json">
 {json.dumps(schema, ensure_ascii=False, indent=1)}
 </script>
-<link rel="stylesheet" href="{relatif}style.css?v=4">
+<link rel="stylesheet" href="{relatif}style.css?v=5">
 </head>
 '''
 

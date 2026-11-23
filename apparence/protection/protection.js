@@ -892,3 +892,81 @@ Services.obs.addObserver(observateurFuite, "cigale-proxy-fuite");
 window.addEventListener("unload", () => Services.obs.removeObserver(observateurFuite, "cigale-proxy-fuite"));
 
 afficherProxys();
+
+// --- Boucliers et confort (1.4) ---
+const plus = ChromeUtils.importESModule("chrome://browser/content/cigale/plus.sys.mjs");
+
+function caseReglage(id, pref, defaut) {
+  $(id).checked = prefs.getBoolPref(pref, defaut);
+  $(id).addEventListener("change", (e) => prefs.setBoolPref(pref, e.target.checked));
+}
+caseReglage("bouclier", "cigale.formulaires.bouclier", true);
+caseReglage("sosies", "cigale.sosies.actif", true);
+caseReglage("telechargements", "cigale.telechargements.verifier", true);
+caseReglage("lecture", "cigale.lecture.auto", false);
+caseReglage("copie", "cigale.copie.nettoyer", true);
+caseReglage("inconnu", "cigale.inconnu.actif", false);
+
+$("identite-maintenant").addEventListener("click", () => plus.nouvelleIdentite(fenetre).catch(console.error));
+
+function afficherIdentiteSite() {
+  const actif = cigale.rotation() == "site";
+  $("identite-site").checked = actif;
+  const n = cigale.listeProxys().length;
+  $("identite-etat").textContent = !n
+    ? "Ajoutez d'abord votre liste de proxys dans « Adresse IP »."
+    : actif ? `Actif : vos ${n} proxys sont répartis entre les sites.` : "";
+}
+$("identite-site").addEventListener("change", (e) => {
+  cigale.definirRotation(e.target.checked ? "site" : "fixe");
+  if (e.target.checked && cigale.proxyActif() < 0 && cigale.listeProxys().length) cigale.choisirProxy(0);
+  afficherIdentiteSite();
+  try { afficherProxys(); } catch {}
+});
+afficherIdentiteSite();
+
+function afficherConfiance() {
+  const liste = $("confiance");
+  liste.textContent = "";
+  for (const d of plus.sitesDeConfiance()) {
+    const li = document.createElement("li");
+    const nom = document.createElement("span");
+    nom.textContent = d;
+    const retirer = document.createElement("button");
+    retirer.textContent = "Retirer";
+    retirer.addEventListener("click", () => { plus.retirerConfiance(d); afficherConfiance(); });
+    li.append(nom, retirer);
+    liste.append(li);
+  }
+}
+afficherConfiance();
+
+$("panneau-adresse").value = prefs.getStringPref("cigale.panneau.adresse", "https://seyra.website/");
+$("panneau-adresse").addEventListener("change", (e) => {
+  try {
+    const u = new URL(e.target.value.trim());
+    if (/^https?:$/.test(u.protocol)) prefs.setStringPref("cigale.panneau.adresse", u.href);
+  } catch {}
+  e.target.value = prefs.getStringPref("cigale.panneau.adresse", "https://seyra.website/");
+});
+$("panneau-ouvrir").addEventListener("click", () => plus.basculerPanneau(fenetre));
+
+for (const [id, pref, defaut] of [["veille-minutes", "cigale.veille.minutes", 30], ["ephemere-minutes", "cigale.ephemere.minutes", 15]]) {
+  $(id).value = prefs.getIntPref(pref, defaut);
+  $(id).addEventListener("change", (e) => {
+    const n = Math.max(0, Math.min(1440, parseInt(e.target.value, 10) || 0));
+    prefs.setIntPref(pref, n);
+    e.target.value = n;
+  });
+}
+$("ephemere-ouvrir").addEventListener("click", () => plus.ouvrirEphemere(fenetre));
+
+function afficherProfils() {
+  const ok = plus.profilsActifs();
+  $("profils-creer").hidden = ok;
+  $("profil-banque").hidden = !ok;
+  $("profils-etat").textContent = ok ? "Profils prêts." : "";
+}
+$("profils-creer").addEventListener("click", () => { plus.creerProfils(); afficherProfils(); });
+$("profil-banque").addEventListener("click", () => plus.ouvrirDansProfil(fenetre, "Banque"));
+afficherProfils();

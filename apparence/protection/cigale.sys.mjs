@@ -96,9 +96,11 @@ export function estFenetreTor() {
   return prefs.getBoolPref("cigale.tor", false);
 }
 
-export async function ouvrirFenetreTor(win) {
+export async function ouvrirFenetreTor(win, adresse = "") {
+  if (adresse && !/^https?:\/\//i.test(adresse)) adresse = "";
   if (estFenetreTor()) {
-    win.OpenBrowserWindow();
+    if (adresse) win.openTrustedLinkIn(adresse, "window");
+    else win.OpenBrowserWindow();
     return true;
   }
   const port = await portTor();
@@ -119,6 +121,7 @@ export async function ouvrirFenetreTor(win) {
   const exe = Services.dirsvc.get("XREExeF", Ci.nsIFile);
   const args = ["-profile", dossier.path];
   if (Services.appinfo.OS == "Linux") args.unshift("--name", "la-cigale-tor", "--class", "LaCigaleTor");
+  if (adresse) args.push("-new-tab", adresse);
   const processus = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
   processus.init(exe);
   processus.runw(false, args, args.length);

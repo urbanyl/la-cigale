@@ -30,6 +30,32 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 <p align="center"><a href="https://www.kromse.com/scan?code=product_la_cigale"><img src="docs/captures/score-kromse.png" alt="Analyse de sécurité Kromse : risque faible, 11 sur 100" width="860"></a><br>
 <sub>Analyse de sécurité indépendante par <a href="https://www.kromse.com/scan?code=product_la_cigale">Kromse</a> : risque faible, 11/100.</sub></p>
 
+## Ce qu'aucun autre navigateur ne réunit
+
+La 1.4 ajoute des boucliers intégrés au navigateur, sans extension et sans service en ligne : tout est calculé sur votre ordinateur.
+
+| | |
+|---|---|
+| **Nouvelle identité** | Un clic, comme dans Tor Browser : onglets fermés, cookies, cache et historique effacés, proxy changé. Les sites ne peuvent plus vous relier à avant. |
+| **Un proxy par site** | Chaque site voit sa propre adresse IP, toujours la même ; deux sites différents, deux adresses. Avec les cookies déjà isolés par site, ils ne peuvent plus se recouper. |
+| **Détecteur de sosies** | `paypa1.com`, `amazon-remboursement.fr`, lettres cyrilliques qui imitent les latines : une alerte s'affiche avant que vous ne tapiez quoi que ce soit. |
+| **Bouclier de formulaires** | Un mot de passe ou une adresse e-mail ne part ni sans chiffrement, ni vers un autre site que celui affiché, sans votre confirmation. |
+| **Téléchargements vérifiés** | L'empreinte SHA-256 publiée sur la page est comparée au fichier reçu. Un programme venant d'un site inconnu est signalé. |
+| **Mode site inconnu** | JavaScript coupé sur les sites auxquels vous n'avez pas fait confiance ; un clic le rétablit. |
+| **Lien via Tor** | Clic droit sur un lien : il s'ouvre dans la fenêtre Tor, sans rien emporter de la fenêtre courante. |
+| **Rapport de page** | Le bouton cigale montre traqueurs bloqués, prises d'empreinte neutralisées, sites tiers isolés et âge du certificat (un certificat de quelques jours est un signe d'hameçonnage). |
+| **Onglets éphémères et veille** | Un onglet éphémère se ferme seul quand vous l'oubliez et le site est effacé avec lui ; les onglets inutilisés sont mis en veille. |
+| **Profils Travail, Perso, Banque** | Trois conteneurs prêts, chacun sa couleur et ses cookies. |
+| **Panneau Seyra** | La messagerie chiffrée [Seyra](https://seyra.website) ouverte à côté de la page. |
+| **Lecture épurée** | Les articles s'ouvrent en mode lecture : texte seul, sans publicité ni script (au choix). |
+| **Liens copiés sans pisteurs** | « Copier le lien » et la barre d'adresse retirent `utm_`, `fbclid`, `gclid`… et raccourcissent les liens Amazon. |
+
+<p align="center">
+  <img src="docs/captures/boucliers.png" alt="Boucliers et confort dans la page Protection" width="49%">
+  <img src="docs/captures/panneau-seyra.png" alt="Panneau Seyra à côté de la page" width="49%">
+</p>
+<p align="center"><img src="docs/captures/sosie.png" alt="Alerte : paypa1.com ressemble à paypal.com" width="860"></p>
+
 ## Pourquoi La Cigale
 
 - **Anonymat** : empreinte uniformisée façon Tor Browser, WebRTC coupé, DNS chiffré (Quad9) obligatoire.
@@ -56,6 +82,14 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 | Fenêtre Tor intégrée | oui | non | non | non |
 | Proxys avec rotation, règles par site et coupe-circuit | oui | non | non | non |
 | Alerte si votre vraie adresse IP apparaît | oui | non | non | non |
+| Nouvelle identité en un clic (tout effacé, proxy changé) | oui | non | non | non |
+| Un proxy différent pour chaque site | oui | non | non | non |
+| Alerte sur les sites sosies, calculée sur l'ordinateur | oui | liste en ligne | liste en ligne | liste en ligne |
+| Confirmation avant d'envoyer un mot de passe sans chiffrement ou vers un autre site | oui | avertissement partiel | avertissement partiel | avertissement partiel |
+| Empreinte SHA-256 des téléchargements vérifiée | oui | non | non | non |
+| JavaScript coupé sur les sites inconnus | oui | non | réglage manuel | réglage manuel |
+| Onglets éphémères effacés à la fermeture | oui | non | non | non |
+| Lien ouvert via Tor en un clic droit | oui | non | non | non |
 | Verrou par mot de passe au démarrage | oui | non | non | non |
 | Code source ouvert | oui | oui | non | non |
 

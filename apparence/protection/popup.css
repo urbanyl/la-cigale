@@ -63,3 +63,6 @@ svg {
   opacity: 0.85;
 }
 hr { width: 100%; margin: 6px 0; border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+
+.alerte { color: #f0a08a; font-weight: 600; }
+.recent { color: #f0c98a; }
