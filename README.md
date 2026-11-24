@@ -28,6 +28,10 @@ Dérivé de Firefox ESR, durci pour l'anonymat, conçu en français.</p>
 <a href="docs/captures/presentation.mp4">Voir la présentation complète en vidéo</a> (2 min 34, voix off et sous-titres : fonctions, sécurité, anonymat, installation)<br>
 <sub>Aussi : <a href="docs/captures/demo.mp4">la démonstration courte (26 s)</a> · <a href="docs/captures/presentation.srt">sous-titres .srt</a> · voix générée avec ElevenLabs</sub></p>
 
+<p align="center"><a href="docs/captures/cours.mp4"><img src="docs/captures/cours-apercu.jpg" alt="Vidéo : le cours de sécurité de La Cigale" width="720"></a><br>
+<a href="docs/captures/cours.mp4">Le cours : La Cigale face à Chrome et Opera GX</a> (2 min 14 : télémétrie, fingerprinting, fuite WebRTC, attaque homographe)<br>
+<sub><a href="docs/captures/cours.srt">sous-titres .srt</a> · voix générée avec ElevenLabs</sub></p>
+
 <p align="center"><a href="https://www.kromse.com/scan?code=product_la_cigale"><img src="docs/captures/score-kromse.png" alt="Analyse de sécurité Kromse : risque faible, 11 sur 100" width="860"></a><br>
 <sub>Analyse de sécurité indépendante par <a href="https://www.kromse.com/scan?code=product_la_cigale">Kromse</a> : risque faible, 11/100.</sub></p>
 

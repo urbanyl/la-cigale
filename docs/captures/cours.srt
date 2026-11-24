@@ -1,0 +1,200 @@
+1
+00:00:01,200 --> 00:00:02,407
+Bonjour à tous.
+
+2
+00:00:02,427 --> 00:00:03,799
+Asseyez-vous.
+
+3
+00:00:04,286 --> 00:00:07,533
+Aujourd'hui : la sécurité du navigateur.
+
+4
+00:00:07,553 --> 00:00:10,445
+Et pour ceux qui sont encore sur Chrome...
+
+5
+00:00:10,465 --> 00:00:12,906
+on va reprendre depuis le début.
+
+6
+00:00:12,926 --> 00:00:16,026
+Leçon un : la télémétrie.
+
+7
+00:00:16,046 --> 00:00:18,576
+Votre navigateur envoie à son éditeur des
+
+8
+00:00:18,596 --> 00:00:20,766
+statistiques sur votre usage.
+
+9
+00:00:20,786 --> 00:00:23,806
+Chez Chrome, l'éditeur, c'est Google.
+
+10
+00:00:23,826 --> 00:00:26,646
+Une régie publicitaire.
+
+11
+00:00:28,219 --> 00:00:29,826
+Je vous laisse faire le lien.
+
+12
+00:00:29,846 --> 00:00:31,626
+Chez La Cigale ?
+
+13
+00:00:31,646 --> 00:00:35,199
+Zéro paquet. La télémétrie est désactivée à
+
+14
+00:00:35,219 --> 00:00:36,726
+la source.
+
+15
+00:00:36,876 --> 00:00:39,560
+Leçon deux : le fingerprinting.
+
+16
+00:00:39,580 --> 00:00:43,096
+Taille d'écran, polices installées, rendu
+
+17
+00:00:43,116 --> 00:00:44,920
+canvas, fuseau horaire.
+
+18
+00:00:44,940 --> 00:00:48,243
+Sans un seul cookie, un site vous reconnaît.
+
+19
+00:00:48,263 --> 00:00:49,725
+La parade :
+
+20
+00:00:49,745 --> 00:00:52,446
+resistFingerprinting, la protection de Tor
+
+21
+00:00:52,466 --> 00:00:55,304
+Browser. Votre empreinte devient celle de
+
+22
+00:00:55,324 --> 00:00:56,836
+tout le monde.
+
+23
+00:00:56,986 --> 00:01:00,022
+Leçon trois : la fuite WebRTC.
+
+24
+00:01:00,042 --> 00:01:02,606
+Vous passez par un proxy, mais la
+
+25
+00:01:02,626 --> 00:01:06,706
+négociation ICE révèle votre adresse locale.
+
+26
+00:01:06,893 --> 00:01:10,233
+Classique. Chez nous, ICE est bridé :
+
+27
+00:01:10,253 --> 00:01:13,459
+aucun candidat local, et WebRTC passe par le
+
+28
+00:01:13,479 --> 00:01:14,706
+proxy.
+
+29
+00:01:14,856 --> 00:01:16,076
+Leçon quatre :
+
+30
+00:01:16,096 --> 00:01:18,329
+l'attaque homographe.
+
+31
+00:01:18,349 --> 00:01:20,156
+Un a cyrillique dans l'adresse.
+
+32
+00:01:20,176 --> 00:01:21,748
+À l'œil, identique.
+
+33
+00:01:21,768 --> 00:01:24,489
+Pour la machine, un autre domaine.
+
+34
+00:01:24,509 --> 00:01:27,332
+La Cigale le démasque avant que vous tapiez
+
+35
+00:01:27,352 --> 00:01:28,656
+quoi que ce soit.
+
+36
+00:01:28,806 --> 00:01:31,806
+Opera GX, au fond, vous suivez ?
+
+37
+00:01:33,086 --> 00:01:35,486
+Non. Il règle ses LED.
+
+38
+00:01:36,006 --> 00:01:38,288
+Et son VPN intégré ne protège que le
+
+39
+00:01:38,308 --> 00:01:39,399
+navigateur.
+
+40
+00:01:39,419 --> 00:01:41,806
+Techniquement ? Un proxy.
+
+41
+00:01:41,956 --> 00:01:44,469
+Résumons. DNS chiffré.
+
+42
+00:01:44,489 --> 00:01:47,016
+HTTPS obligatoire.
+
+43
+00:01:47,036 --> 00:01:49,906
+uBlock Origin intégré, le vrai, pas la
+
+44
+00:01:49,926 --> 00:01:52,336
+version bridée par Manifest V3.
+
+45
+00:01:52,356 --> 00:01:55,520
+Proxy par site, coupe-circuit, profils
+
+46
+00:01:55,540 --> 00:01:57,916
+isolés, liens nettoyés.
+
+47
+00:01:58,283 --> 00:02:00,106
+Interro surprise.
+
+48
+00:02:00,126 --> 00:02:02,806
+Quel navigateur ne vous vend pas ?
+
+49
+00:02:03,073 --> 00:02:06,806
+La Cigale. Code ouvert, français, gratuit.
+
+50
+00:02:08,473 --> 00:02:10,446
+Le cours est terminé.
+
