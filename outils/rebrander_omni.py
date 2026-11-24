@@ -37,7 +37,8 @@ AJOUTS_BROWSER = {
 # Page about:cigale (protection et profils) et icône du bouton de la barre d'outils
 CIGALE = "chrome/browser/content/browser/cigale/"
 for _f in ("protection.html", "protection.css", "protection.js", "cigale.sys.mjs", "tor.svg",
-           "popup.html", "popup.css", "popup.js", "preferences.css", "plus.sys.mjs", "plus-enfant.sys.mjs"):
+           "popup.html", "popup.css", "popup.js", "preferences.css", "plus.sys.mjs", "plus-enfant.sys.mjs",
+           "bricolage-latin.woff2", "bouton-barre.svg"):
     AJOUTS_BROWSER[CIGALE + _f] = (RACINE / "apparence" / "protection" / _f).read_bytes()
 # copie de la page d'accueil servie par about:apropos (adresse lisible, retour arrière normal)
 for _f in (RACINE / "accueil").rglob("*"):
@@ -115,7 +116,8 @@ CSS_INDICATEUR = b"""
 # logos de tiers, sélecteur de couleur, thèmes intégrés optionnels (Alpenglow).
 COULEUR_HEX = re.compile(r"#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b")
 EXCLUS_COULEURS = ("devtools", "/usercontext/", "/genai/assets/brands/", "thunderbird",
-                   "/webcompat/shims/", "colorpicker", "/builtin-themes/", "/pdfjs/")
+                   "/webcompat/shims/", "colorpicker", "/builtin-themes/", "/pdfjs/",
+                   "/cigale/tor.svg")  # le vrai logo Tor garde son violet
 # Fond de la zone de contenu en fenêtre privée : dégradé violet -> nuit La Cigale.
 FOND_PRIVE = (b"--tabpanel-background-color: linear-gradient(45deg, #722291 0%, #45278d 50%, #393473 100%) !important;",
               b"--tabpanel-background-color: #0a0a0b !important;")
@@ -235,6 +237,51 @@ THEME_ICONE = b"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
 <rect width="32" height="32" rx="7" fill="#0a0a0b"/><rect x="4" y="6" width="24" height="5" rx="2" fill="#1c1c1f"/>
 <rect x="4" y="13" width="24" height="13" rx="2" fill="#141416"/><circle cx="16" cy="19.5" r="3" fill="#ededed"/></svg>
 """
+
+
+def _manifeste(ident: str, nom: str, desc: str, c: dict, schema: str) -> bytes:
+    import json
+    return json.dumps({
+        "manifest_version": 2,
+        "browser_specific_settings": {"gecko": {"id": ident}},
+        "name": nom, "description": desc, "author": "Projet La Cigale", "version": "2.0.0",
+        "icons": {"32": "icon.svg"},
+        "theme": {"colors": c, "properties": {"color_scheme": schema, "content_color_scheme": schema}},
+    }, ensure_ascii=True, indent=2).encode()
+
+
+def _palette(frame, toolbar, champ, texte, doux, trait, survol, accent, popup, sidebar):
+    return {
+        "frame": frame, "frame_inactive": frame, "tab_background_text": doux, "tab_selected": toolbar,
+        "tab_text": texte, "tab_line": accent, "tab_loading": accent, "tab_background_separator": trait,
+        "toolbar": toolbar, "toolbar_text": texte, "toolbar_top_separator": toolbar, "toolbar_bottom_separator": trait,
+        "toolbar_vertical_separator": trait, "toolbar_field": champ, "toolbar_field_text": texte,
+        "toolbar_field_border": trait, "toolbar_field_focus": champ, "toolbar_field_text_focus": texte,
+        "toolbar_field_border_focus": accent, "toolbar_field_highlight": survol, "toolbar_field_highlight_text": texte,
+        "button_background_hover": survol, "button_background_active": trait, "icons": texte, "icons_attention": accent,
+        "focus_outline": accent, "popup": popup, "popup_text": texte, "popup_border": trait, "popup_highlight": survol,
+        "popup_highlight_text": texte, "sidebar": sidebar, "sidebar_text": texte, "sidebar_border": trait,
+        "sidebar_highlight": survol, "sidebar_highlight_text": texte, "ntp_background": frame, "ntp_text": texte,
+    }
+
+
+# Thème clair : encre sur papier, monochrome. Thème olive : le vert du site et des vidéos
+# (il prend la place d'Alpenglow, même identifiant, pour être proposé sans extension).
+THEMES = {
+    "chrome/browser/content/builtin-themes/light/": (_manifeste(
+        "firefox-compact-light@mozilla.org", "La Cigale clair", "Papier et encre : le thème clair de La Cigale.",
+        _palette("#e6e5e0", "#f6f5f1", "#ffffff", "#141416", "#5f5f64", "#d3d2cc", "rgba(0, 0, 0, 0.07)", "#141416", "#fbfaf7", "#efeee9"),
+        "light"), b"#f6f5f1", b"#141416"),
+    "chrome/browser/content/builtin-themes/alpenglow/": (_manifeste(
+        "firefox-alpenglow@mozilla.org", "La Cigale olive", "Tableau noir et vert olive : les couleurs du site de La Cigale.",
+        _palette("#141b16", "#1c2620", "#111713", "#e9e6dc", "#97a293", "#2e3c32", "rgba(169, 184, 154, 0.16)", "#a9b89a", "#1c2620", "#18211c"),
+        "dark"), b"#1c2620", b"#a9b89a"),
+}
+
+
+def _icone_theme(fond: bytes, encre: bytes) -> bytes:
+    return (b'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="' + fond +
+            b'"/><rect x="4" y="6" width="24" height="5" rx="2" fill="' + encre + b'" opacity=".25"/><circle cx="16" cy="19.5" r="4" fill="' + encre + b'"/></svg>')
 
 
 def correctif(donnees: bytes, ancre: bytes, remplacement: bytes, nom: str) -> bytes:
@@ -384,9 +431,23 @@ def transformer_identite(nom: str, donnees: bytes):
         return THEME_MANIFEST
     if nom in (THEME_DOSSIER + "icon.svg", THEME_DOSSIER + "preview.svg"):
         return THEME_ICONE
+    for dossier, (manifeste, fond, encre) in THEMES.items():
+        if nom == dossier + "manifest.json":
+            return manifeste
+        if nom in (dossier + "icon.svg", dossier + "preview.svg"):
+            return _icone_theme(fond, encre)
     if nom == "modules/BuiltInThemeConfig.sys.mjs":
-        ancre = b'"firefox-compact-dark@mozilla.org",\n    {\n      version: "' + THEME_VERSION + b'"'
-        return correctif(donnees, ancre, ancre.replace(THEME_VERSION, THEME_VERSION_CIGALE), nom)
+        # les trois thèmes deviennent des thèmes complets (palette La Cigale jusqu'en haut de la fenêtre),
+        # version relevée pour que les profils existants les réinstallent
+        for ident in (b"firefox-compact-light@mozilla.org", b"firefox-compact-dark@mozilla.org"):
+            ancre = b'"' + ident + b'",\n    {\n      version: "' + THEME_VERSION + b'"'
+            donnees = correctif(donnees, ancre, ancre.replace(THEME_VERSION, THEME_VERSION_CIGALE), nom)
+            debut = donnees.index(b'"' + ident + b'"')
+            fin = donnees.index(b"},", debut)
+            donnees = (donnees[:debut] + donnees[debut:fin].replace(b"      inApp: true,\n", b"")
+                       .replace(b"      nonNative: true,\n", b"") + donnees[fin:])
+        ancre = b'"firefox-alpenglow@mozilla.org",\n    {\n      version: "1.5.3"'
+        return correctif(donnees, ancre, ancre.replace(b"1.5.3", THEME_VERSION_CIGALE), nom)
     if nom in ICONES_MASQUE:
         return MASQUE_SVG
     if nom == "modules/RFPHelper.sys.mjs":

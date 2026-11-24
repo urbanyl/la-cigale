@@ -2,13 +2,47 @@
 :root {
   color-scheme: dark;
   --fond: #0a0a0b;
-  --surface: rgba(255, 255, 255, 0.04);
+  --surface: var(--surface);
   --surface-forte: rgba(255, 255, 255, 0.08);
   --bordure: rgba(255, 255, 255, 0.10);
   --texte: #ededed;
   --gris: #8c8c90;
   --trait: rgba(255, 255, 255, 0.08);
   --rayon: 14px;
+  --survol: rgba(255, 255, 255, 0.13);
+  --champ: var(--champ);
+  --coche: #d8d8dc;
+  --carte: rgba(18, 18, 20, 0.72);
+  --image-fond: url(chrome://browser/content/cigale/accueil/img/fond.jpg);
+}
+/* Thème « La Cigale olive » : tableau noir et vert olive */
+:root.olive {
+  color-scheme: dark;
+  --fond: #121815;
+  --texte: #e9e6dc;
+  --gris: #97a293;
+  --coche: #a9b89a;
+  --carte: rgba(24, 33, 28, 0.8);
+  --bordure: rgba(169, 184, 154, 0.18);
+  --surface-forte: rgba(169, 184, 154, 0.12);
+}
+/* Thème clair de La Cigale : la page suit, encre sur papier */
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --fond: #eeede9;
+    --surface: rgba(0, 0, 0, 0.035);
+    --surface-forte: rgba(0, 0, 0, 0.065);
+    --bordure: rgba(0, 0, 0, 0.12);
+    --texte: #141416;
+    --gris: #5f5f64;
+    --trait: rgba(0, 0, 0, 0.09);
+    --survol: rgba(0, 0, 0, 0.09);
+    --champ: rgba(0, 0, 0, 0.04);
+    --coche: #141416;
+    --carte: rgba(255, 255, 255, 0.78);
+    --image-fond: url(chrome://browser/content/cigale/accueil/img/fond-clair.jpg);
+  }
 }
 
 * { box-sizing: border-box; }
@@ -16,7 +50,7 @@ html { overflow-anchor: none; }
 
 body {
   margin: 0;
-  background: var(--fond) url(chrome://browser/content/cigale/accueil/img/fond.jpg) center / cover fixed no-repeat;
+  background: var(--fond) var(--image-fond) center / cover fixed no-repeat;
   color: var(--texte);
   font: 15px/1.55 Inter, "Segoe UI Variable", "Segoe UI", Cantarell, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -90,7 +124,7 @@ h1 {
 .carte {
   margin-top: 16px;
   padding: 18px 22px;
-  background: rgba(18, 18, 20, 0.72);
+  background: var(--carte);
   border: 1px solid var(--bordure);
   border-radius: var(--rayon);
 }
@@ -132,14 +166,14 @@ button {
   font-size: 14px;
   cursor: pointer;
 }
-button:hover { background: rgba(255, 255, 255, 0.13); }
+button:hover { background: var(--survol); }
 .icone-tor { vertical-align: -3px; margin-right: 8px; }
 
 input:not([type]), input[type="password"], select {
   padding: 7px 12px;
   border: 1px solid var(--bordure);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--champ);
   color: inherit;
   font: inherit;
 }
@@ -183,7 +217,7 @@ summary { cursor: pointer; }
 .nouveautes { padding-left: 18px; }
 .nouveautes li { margin: 8px 0; }
 
-input[type="radio"], input[type="checkbox"] { accent-color: #d8d8dc; }
+input[type="radio"], input[type="checkbox"] { accent-color: var(--coche); }
 
 /* Fenêtre étroite : les catégories passent au-dessus */
 @media (max-width: 900px) {
@@ -195,13 +229,13 @@ input[type="radio"], input[type="checkbox"] { accent-color: #d8d8dc; }
 
 /* Adresse IP : choix du proxy */
 .liste-choix { display: grid; gap: 6px; margin: 12px 0; max-height: 320px; overflow: auto; }
-.choix { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); cursor: pointer; }
-.choix:hover { background: rgba(255, 255, 255, 0.07); }
+.choix { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; background: var(--surface); cursor: pointer; }
+.choix:hover { background: var(--surface-forte); }
 .choix .discret { margin-left: auto; }
-#proxy-texte { width: 100%; box-sizing: border-box; background: rgba(255, 255, 255, 0.05); color: inherit; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 10px; font: 13px ui-monospace, Consolas, monospace; resize: vertical; }
+#proxy-texte { width: 100%; box-sizing: border-box; background: var(--champ); color: inherit; border: 1px solid var(--bordure); border-radius: 10px; padding: 10px; font: 13px ui-monospace, Consolas, monospace; resize: vertical; }
 
 .choix.hors-ligne > span:not(.discret) { color: var(--gris); text-decoration: line-through; }
-.choix .nombre { width: 64px; margin: 0 6px; padding: 4px 8px; border: 1px solid var(--bordure); border-radius: 8px; background: rgba(255, 255, 255, 0.05); color: inherit; font: inherit; }
+.choix .nombre { width: 64px; margin: 0 6px; padding: 4px 8px; border: 1px solid var(--bordure); border-radius: 8px; background: var(--champ); color: inherit; font: inherit; }
 .regles { margin: 12px 0; padding: 0; list-style: none; }
 .regles li { display: flex; align-items: center; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--trait); }
 .regles li:last-child { border-bottom: 0; }

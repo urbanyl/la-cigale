@@ -1,4 +1,6 @@
 /* about:preferences aux couleurs de about:cigale : fond noir, cartes translucides, accent blanc */
+/* avec le thème clair, les Paramètres gardent l'apparence claire de Firefox */
+@media (prefers-color-scheme: dark) {
 :root {
   color-scheme: dark;
   --background-color-canvas: #0a0a0b;
@@ -55,4 +57,5 @@ body {
 #search-container {
   background: transparent !important;
   backdrop-filter: blur(16px);
+}
 }

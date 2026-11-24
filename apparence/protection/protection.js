@@ -1,5 +1,9 @@
 "use strict";
 
+// avec le thème « La Cigale olive », la page prend ses couleurs (sinon noir et blanc, ou clair)
+document.documentElement.classList.toggle("olive",
+  Services.prefs.getStringPref("extensions.activeThemeID", "") == "firefox-alpenglow@mozilla.org");
+
 const $ = (id) => document.getElementById(id);
 const prefs = Services.prefs;
 const cigale = ChromeUtils.importESModule("chrome://browser/content/cigale/cigale.sys.mjs");

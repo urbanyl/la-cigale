@@ -660,10 +660,16 @@ export function installer() {
       id: "cigale-panneau-button",
       label: "Panneau Seyra",
       tooltiptext: "Afficher ou masquer Seyra sur le côté",
-      defaultArea: CustomizableUI.AREA_NAVBAR,
       onCreated: (n) => n.setAttribute("image", ICONE_SEYRA),
       onCommand: (e) => basculerPanneau(e.target.ownerGlobal),
     });
+    // Une seule fois par profil : Seyra quitte la barre d'outils (il est dans la barre latérale)
+    // et le bouton de la barre latérale passe tout à gauche, au-dessus de la colonne d'icônes.
+    if (!P.getBoolPref("cigale.barre.rangee", false)) {
+      CustomizableUI.removeWidgetFromArea("cigale-panneau-button");
+      CustomizableUI.addWidgetToArea("sidebar-button", CustomizableUI.AREA_NAVBAR, 0);
+      P.setBoolPref("cigale.barre.rangee", true);
+    }
     const css = `
       #cigale-identite-button { list-style-image: url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="context-fill" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 11.5-4.2"/><path d="M21 13a4 4 0 1 0-1.2 2.9"/><path d="M21 10v3h-3"/></svg>')}"); }
       #cigale-panneau-button { list-style-image: url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="context-fill" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/><path d="M17.5 9h1M17.5 12h1"/></svg>')}"); }

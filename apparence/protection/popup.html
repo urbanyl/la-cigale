@@ -7,38 +7,43 @@
 </head>
 <body>
   <header>
-    <img src="chrome://browser/content/cigale/bouton.png" alt="" width="20" height="20">
-    <span class="nom">La Cigale</span>
-    <span id="profil" class="etiquette"></span>
+    <img src="chrome://browser/content/cigale/bouton-barre.png" alt="" width="18" height="18">
+    <span class="marque">La Cigale</span>
+    <button id="profil" class="profil" title="Changer de profil de protection"></button>
   </header>
 
   <section class="site">
+    <p id="etat" class="etat"><i></i><span></span></p>
     <p id="hote" class="hote"></p>
-    <p id="connexion" class="detail"></p>
-    <p id="bloques" class="detail"></p>
-    <p id="empreinte" class="detail"></p>
-    <p id="certificat" class="detail"></p>
-    <p id="alerte" class="detail alerte" hidden></p>
+    <p id="alerte" class="alerte" hidden></p>
   </section>
+
+  <section class="chiffres">
+    <div><b id="n-traqueurs">0</b><span>traqueurs</span></div>
+    <div><b id="n-ublock">0</b><span>requêtes uBlock</span></div>
+    <div><b id="n-empreinte">0</b><span>empreintes</span></div>
+  </section>
+  <p id="certificat" class="certificat"></p>
 
   <nav>
     <button id="oublier">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
-      Oublier ce site</button>
+      <span>Oublier<br>ce site</span></button>
     <button id="identite">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 11.5-4.2"/><path d="M21 13a4 4 0 1 0-1.2 2.9"/><path d="M21 10v3h-3"/></svg>
-      Nouvelle identité</button>
-    <button id="tor">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/></svg>
-      Ouvrir une fenêtre Tor</button>
+      <span>Nouvelle<br>identité</span></button>
+    <button id="tor" class="tor">
+      <img src="chrome://browser/content/cigale/tor.svg" alt="" width="20" height="20">
+      <span>Fenêtre<br>Tor</span></button>
     <button id="fuites">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>
-      Vérifier les fuites</button>
-    <hr>
-    <button id="reglages">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/></svg>
-      Protection et réglages</button>
+      <span>Cette<br>page</span></button>
   </nav>
+
+  <button id="reglages" class="pied">
+    <span>Protection et réglages</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+  </button>
 <script src="chrome://browser/content/cigale/popup.js"></script>
 </body>
 </html>

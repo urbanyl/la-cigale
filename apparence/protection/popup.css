@@ -1,68 +1,139 @@
-/* Panneau du bouton cigale : mêmes couleurs que about:cigale */
-:root { color-scheme: dark; }
+/* Panneau du bouton cigale : identité La Cigale (nuit, pierre, olive), hauteur fixe, sans défilement */
+@font-face {
+  font-family: Bricolage;
+  src: url(chrome://browser/content/cigale/bricolage-latin.woff2) format("woff2");
+  font-weight: 300 700;
+  font-stretch: 75% 100%;
+}
+/* Noir et blanc par défaut (thème La Cigale), encre sur papier avec le thème clair,
+   vert olive seulement avec le thème « La Cigale olive ». */
+:root {
+  color-scheme: dark;
+  --fond: #0e0e0f;
+  --surface: #18181a;
+  --surface-survol: #202022;
+  --trait: rgba(255, 255, 255, 0.09);
+  --trait-fort: rgba(255, 255, 255, 0.28);
+  --texte: #ededed;
+  --doux: #8c8c90;
+  --eteint: #4a4a4e;
+  --accent: #ededed;
+  --rose: #e0907e;
+  --rose-fond: rgba(224, 144, 126, 0.1);
+  --rose-texte: #f3d3ca;
+}
+@media (prefers-color-scheme: light) {
+  :root:not(.olive) {
+    color-scheme: light;
+    --fond: #f6f5f1;
+    --surface: #ffffff;
+    --surface-survol: #efeee9;
+    --trait: rgba(0, 0, 0, 0.1);
+    --trait-fort: rgba(0, 0, 0, 0.3);
+    --texte: #141416;
+    --doux: #66666b;
+    --eteint: #bdbdb8;
+    --accent: #141416;
+    --rose: #b4432f;
+    --rose-fond: rgba(180, 67, 47, 0.08);
+    --rose-texte: #8a2f20;
+  }
+}
+:root.olive {
+  color-scheme: dark;
+  --fond: #121815;
+  --surface: #19211c;
+  --surface-survol: #1f2a22;
+  --trait: rgba(233, 240, 225, 0.1);
+  --trait-fort: rgba(169, 184, 154, 0.55);
+  --texte: #e9e6dc;
+  --doux: #8f998c;
+  --eteint: #4a5649;
+  --accent: #a9b89a;
+}
 * { box-sizing: border-box; }
-html, body { margin: 0; }
+html, body { margin: 0; overflow: hidden; }
 body {
-  width: 320px;
-  padding: 14px 8px 8px;
-  background: #121214;
-  color: #ededed;
-  font: 14px/1.45 Inter, "Segoe UI Variable", "Segoe UI", Cantarell, system-ui, sans-serif;
+  width: 340px;
+  padding: 16px 14px 12px;
+  background: var(--fond);
+  color: var(--texte);
+  font: 13.5px/1.4 "Segoe UI Variable", "Segoe UI", Cantarell, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
 
-header { display: flex; align-items: center; gap: 9px; padding: 0 8px; }
-.nom { font-weight: 600; font-size: 15px; }
-.etiquette {
+header { display: flex; align-items: center; gap: 8px; }
+.marque { font: 700 19px/1 Bricolage, sans-serif; font-stretch: 78%; letter-spacing: 0.01em; }
+.profil {
   margin-left: auto;
-  padding: 2px 9px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 4px 10px;
+  border: 1px solid var(--trait);
   border-radius: 999px;
-  color: #b4b4b8;
+  background: none;
+  color: var(--doux);
   font-size: 12px;
 }
+.profil:hover { color: var(--texte); border-color: var(--trait-fort); }
 
-.site {
-  margin: 12px 0 6px;
-  padding: 11px 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.site { margin-top: 16px; }
+.etat { display: flex; align-items: center; gap: 7px; color: var(--accent); font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.etat i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 20%, transparent); }
+.etat.risque { color: var(--rose); }
+.etat.neutre { color: var(--doux); }
+.hote {
+  margin-top: 6px;
+  font: 700 30px/1.05 Bricolage, sans-serif;
+  font-stretch: 75%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.alerte {
+  margin-top: 8px;
+  padding: 7px 10px;
+  border-left: 3px solid var(--rose);
+  background: var(--rose-fond);
+  color: var(--rose-texte);
+  font-size: 12.5px;
+}
+
+.chiffres { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 14px; border-top: 1px solid var(--trait); border-bottom: 1px solid var(--trait); }
+.chiffres div { padding: 10px 0 9px; }
+.chiffres div + div { padding-left: 12px; border-left: 1px solid var(--trait); }
+.chiffres b { display: block; font: 700 28px/1 Bricolage, sans-serif; font-stretch: 78%; font-variant-numeric: tabular-nums; }
+.chiffres b.zero { color: var(--eteint); }
+.chiffres span { color: var(--doux); font-size: 11.5px; }
+.certificat { min-height: 17px; margin-top: 8px; color: var(--doux); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.certificat.recent { color: #e8c48a; }
+
+nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 12px; }
+nav button {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  padding: 11px 2px 9px;
+  border: 1px solid var(--trait);
   border-radius: 12px;
+  background: var(--surface);
+  font-size: 11.5px; line-height: 1.15; text-align: center;
 }
-.site p { margin: 0; }
-.hote { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.detail { color: #8c8c90; font-size: 13px; margin-top: 2px !important; }
-.detail:empty { display: none; }
+nav button:hover, nav button:focus-visible { border-color: var(--trait-fort); background: var(--surface-survol); outline: 0; }
+nav button:disabled { opacity: 0.35; cursor: default; border-color: var(--trait); background: var(--surface); }
+svg { width: 19px; height: 19px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+nav button svg { color: var(--accent); }
+nav button img { width: 19px; height: 19px; }
 
-nav { display: flex; flex-direction: column; }
-button {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.pied {
+  display: flex; align-items: center; justify-content: space-between;
   width: 100%;
-  padding: 8px 10px;
+  margin-top: 10px;
+  padding: 9px 4px 2px;
   border: 0;
-  border-radius: 8px;
+  border-top: 1px solid var(--trait);
   background: none;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
+  color: var(--doux);
+  font-size: 12.5px;
 }
-button:hover, button:focus-visible { background: rgba(255, 255, 255, 0.07); outline: 0; }
-button:disabled { opacity: 0.4; cursor: default; background: none; }
-svg {
-  width: 17px;
-  height: 17px;
-  flex: none;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0.85;
-}
-hr { width: 100%; margin: 6px 0; border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); }
-
-.alerte { color: #f0a08a; font-weight: 600; }
-.recent { color: #f0c98a; }
+.pied:hover, .pied:focus-visible { color: var(--texte); outline: 0; }
+.pied svg { width: 15px; height: 15px; }
+@media (prefers-color-scheme: light) { :root:not(.olive) header img { filter: invert(1); } }

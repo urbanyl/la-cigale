@@ -73,7 +73,10 @@ function rafraichirHeure() {
   $("heure").textContent = maintenant.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: FUSEAU });
   $("heure").dateTime = maintenant.toISOString();
   $("date").textContent = maintenant.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: FUSEAU });
-  $("salut").textContent = h >= 18 || h < 5 ? "Bonsoir" : "Bonjour";
+  if (!$("salut").dataset.fait) {
+    $("salut").textContent = salutationDuMoment(h);
+    $("salut").dataset.fait = "1";
+  }
 }
 rafraichirHeure();
 setInterval(rafraichirHeure, 10_000);
@@ -272,11 +275,16 @@ $("reinitialiser").addEventListener("click", () => {
 // Personnalisation
 const REGLAGES_DEFAUT = { mode: "sombre", fond: "cigale", citation: true, horloge: true };
 const reglages = { ...REGLAGES_DEFAUT, ...stockage.lire("reglages", {}) };
+// le thème du navigateur fait foi : La Cigale le passe dans l'adresse (#…&theme=sombre|clair|olive)
+const THEME_ADRESSE = (location.hash.match(/theme=(sombre|clair|olive)/) || [])[1];
+if (THEME_ADRESSE) reglages.mode = THEME_ADRESSE;
+else if (reglages.mode === "auto") reglages.mode = "sombre";
 const sombreSysteme = matchMedia("(prefers-color-scheme: dark)");
 
 function appliquerReglages() {
-  const clair = reglages.mode === "clair" || (reglages.mode === "auto" && !sombreSysteme.matches);
+  const clair = reglages.mode === "clair";
   document.body.dataset.mode = clair ? "clair" : "sombre";
+  document.body.dataset.olive = String(reglages.mode === "olive");
   document.body.dataset.fond = reglages.fond;
   $("symbole").src = clair ? "img/symbole-noir.webp" : "img/symbole-blanc.webp";
   $("citation").hidden = !reglages.citation;
@@ -289,6 +297,7 @@ function appliquerReglages() {
 }
 
 function modifierReglage(cle, valeur) {
+  if (cle === "mode") demander("theme" + valeur);
   reglages[cle] = valeur;
   stockage.ecrire("reglages", reglages);
   appliquerReglages();
@@ -299,7 +308,6 @@ document.querySelectorAll(".choix input").forEach((entree) =>
 );
 $("reglage-citation").addEventListener("change", (e) => modifierReglage("citation", e.target.checked));
 $("reglage-horloge").addEventListener("change", (e) => modifierReglage("horloge", e.target.checked));
-sombreSysteme.addEventListener("change", appliquerReglages);
 
 const panneau = $("panneau");
 $("personnaliser").addEventListener("click", () => panneau.showModal());
@@ -316,12 +324,17 @@ appliquerReglages();
 
 // Boutons Protection, Réglages, Tor, À propos : la page note l'action dans son adresse
 // (#…&ouvrir=tor), La Cigale la voit et agit. Un site web ne peut pas s'en servir.
+function demander(action) {
+  const base = location.href.split("#")[0];
+  const theme = (action.match(/^theme(sombre|clair|olive)$/) || [])[1];
+  // après l'action, l'adresse garde le nouveau thème : un rechargement l'affiche tout de suite
+  const apres = theme ? location.hash.replace(/theme=[a-z]+/, "theme=" + theme) : location.hash;
+  history.replaceState(null, "", base + (location.hash ? location.hash + "&" : "#") + "ouvrir=" + action);
+  setTimeout(() => history.replaceState(null, "", base + apres), 300);
+}
 document.addEventListener("click", (e) => {
   const lien = e.target.closest("a[data-ouvrir]");
   if (!lien) return;
   e.preventDefault();
-  const base = location.href.split("#")[0];
-  const ancre = location.hash;
-  history.replaceState(null, "", base + (ancre ? ancre + "&" : "#") + "ouvrir=" + lien.dataset.ouvrir);
-  setTimeout(() => history.replaceState(null, "", base + ancre), 300);
+  demander(lien.dataset.ouvrir);
 });

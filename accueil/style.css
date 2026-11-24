@@ -1,3 +1,9 @@
+@font-face {
+  font-family: "Bricolage";
+  src: url("polices/bricolage-latin.woff2") format("woff2");
+  font-weight: 300 700;
+  font-stretch: 75% 100%;
+}
 :root {
   --fond: #0a0a0b;
   --surface: rgba(255, 255, 255, 0.04);
@@ -28,6 +34,20 @@ body[data-mode="clair"] {
   --image-fond: url("img/fond-clair.jpg");
   color-scheme: light;
 }
+/* Thème « La Cigale olive » : tableau noir et vert olive */
+body[data-olive="true"] {
+  --fond: #16201a;
+  --surface: rgba(169, 184, 154, 0.06);
+  --surface-forte: rgba(169, 184, 154, 0.12);
+  --bordure: rgba(169, 184, 154, 0.2);
+  --texte: #e9e6dc;
+  --texte-doux: #97a293;
+  --accent: #a9b89a;
+  --menu: rgba(22, 30, 25, 0.985);
+  --pastille-fond: #e9e6dc;
+  --image-fond: url("img/fond-olive.jpg");
+}
+body[data-olive="true"][data-fond="grain"] { --image-fond: url("img/grain-olive.jpg"); }
 body[data-fond="grain"] { --image-fond: url("img/grain.jpg"); }
 body[data-mode="clair"][data-fond="grain"] { --image-fond: url("img/grain-clair.jpg"); }
 body[data-fond="uni"] { --image-fond: none; }
@@ -54,7 +74,7 @@ body {
 /* En-tête */
 .entete { display: flex; align-items: center; gap: 16px; }
 .symbole { flex: none; opacity: 0.92; }
-.salut { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+.salut { margin: 0; font-family: Bricolage, sans-serif; font-size: 34px; font-weight: 700; font-stretch: 80%; line-height: 1.05; letter-spacing: 0; }
 .date { margin: 0; color: var(--texte-doux); font-size: 14px; }
 .date::first-letter { text-transform: uppercase; }
 .heure {
@@ -410,3 +430,9 @@ h2 {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* Police La Cigale (Bricolage Grotesque) sur les titres, l'horloge et les boutons forts */
+.heure { font-family: Bricolage, sans-serif; font-weight: 400; font-stretch: 85%; font-size: 56px; letter-spacing: -0.01em; }
+h2, .actions .tor b, .citation-texte, #citation-texte { font-family: Bricolage, sans-serif; font-stretch: 85%; }
+h2 { font-weight: 700; letter-spacing: 0.01em; }
+.actions .tor b { font-size: 16px; }
