@@ -32,12 +32,16 @@ const stockage = {
   },
 };
 
+// Logos fournis avec La Cigale (le site ne les publie pas aux adresses habituelles)
+const LOGOS_LOCAUX = { "https://seyra.website": "img/seyra.png" };
+
 // Logos des raccourcis : demandés au site lui-même (jamais à Google ou à un service tiers).
 // Tant que le logo n'est pas chargé, ou s'il n'existe pas, la pastille garde la lettre.
 function chargerLogo(pastille, adresse) {
   let origine;
   try { origine = new URL(adresse).origin; } catch { return; }
-  const essais = [origine + "/apple-touch-icon.png", origine + "/favicon.ico"];
+  const essais = [origine + "/apple-touch-icon.png", origine + "/favicon.ico", origine + "/favicon.png"];
+  if (LOGOS_LOCAUX[origine]) essais.unshift(LOGOS_LOCAUX[origine]);
   const img = new Image();
   img.alt = "";
   img.decoding = "async";
@@ -162,6 +166,11 @@ $("recherche").addEventListener("submit", (e) => {
 
 // Raccourcis
 let raccourcis = stockage.lire("raccourcis", RACCOURCIS_DEFAUT);
+// Les listes enregistrées avant 1.4.1 gardaient Service-Public : il cède sa place à Seyra.
+if (!raccourcis.some((r) => r.url.includes("seyra.website"))) {
+  const i = raccourcis.findIndex((r) => /service-public\.(fr|gouv\.fr)/.test(r.url));
+  if (i >= 0) { raccourcis[i] = { nom: "Seyra", url: "https://seyra.website" }; stockage.ecrire("raccourcis", raccourcis); }
+}
 const liste = $("raccourcis");
 
 function afficherRaccourcis() {

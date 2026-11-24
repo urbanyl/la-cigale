@@ -364,6 +364,26 @@ export function rapportCertificat(browser) {
 
 // ---------- 9. Panneau latéral (Seyra) ----------
 
+// Logo de Seyra (son favicon, 64 px), embarqué : rien n'est demandé au réseau pour l'afficher.
+const ICONE_SEYRA = "data:image/png;base64,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";
+const ICONE_IDENTITE = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#fbfbfe" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 11.5-4.2"/><path d="M21 13a4 4 0 1 0-1.2 2.9"/><path d="M21 10v3h-3"/></svg>');
+
+// Bouton Seyra dans la barre latérale verticale (à côté de l'historique, des favoris…) :
+// il ouvre le même panneau que le bouton de la barre d'outils.
+function seyraBarreLaterale(win) {
+  const sc = win.SidebarController;
+  if (!sc?.toolsAndExtensions || sc.toolsAndExtensions.has("cigale-seyra")) return;
+  sc.toolsAndExtensions.set("cigale-seyra", {
+    commandID: "cigale-seyra", view: "cigale-seyra", name: "cigale-seyra",
+    iconUrl: ICONE_SEYRA, tooltiptext: "Seyra", disabled: false,
+  });
+  for (const nom of ["toggle", "recordIconClick"]) {
+    const orig = sc[nom].bind(sc);
+    sc[nom] = (id, ...r) => id == "cigale-seyra" ? (nom == "toggle" ? basculerPanneau(win) : undefined) : orig(id, ...r);
+  }
+  win.dispatchEvent(new win.CustomEvent("SidebarItemAdded"));
+}
+
 export function basculerPanneau(win) {
   const doc = win.document;
   let boite = doc.getElementById("cigale-panneau");
@@ -455,6 +475,7 @@ const refusLecture = new Set();
 function installerFenetre(win) {
   if (win.cigalePlus || !win.gBrowser) return;
   win.cigalePlus = true;
+  try { seyraBarreLaterale(win); } catch (e) { console.error("La Cigale : barre latérale", e); }
   const doc = win.document;
   const g = win.gBrowser;
 
@@ -632,6 +653,7 @@ export function installer() {
       label: "Nouvelle identité",
       tooltiptext: "Tout effacer et changer de proxy : les sites ne peuvent plus vous relier à avant",
       defaultArea: CustomizableUI.AREA_NAVBAR,
+      onCreated: (n) => n.setAttribute("image", ICONE_IDENTITE),
       onCommand: (e) => nouvelleIdentite(e.target.ownerGlobal).catch(console.error),
     });
     CustomizableUI.createWidget({
@@ -639,6 +661,7 @@ export function installer() {
       label: "Panneau Seyra",
       tooltiptext: "Afficher ou masquer Seyra sur le côté",
       defaultArea: CustomizableUI.AREA_NAVBAR,
+      onCreated: (n) => n.setAttribute("image", ICONE_SEYRA),
       onCommand: (e) => basculerPanneau(e.target.ownerGlobal),
     });
     const css = `
