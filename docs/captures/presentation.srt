@@ -1,0 +1,256 @@
+1
+00:00:00,350 --> 00:00:02,339
+Votre navigateur parle de vous.
+
+2
+00:00:02,359 --> 00:00:03,279
+Sans arrêt.
+
+3
+00:00:03,299 --> 00:00:04,788
+Celui-ci se tait.
+
+4
+00:00:04,808 --> 00:00:07,034
+Voici La Cigale.
+
+5
+00:00:07,184 --> 00:00:09,939
+Un navigateur français, libre et open
+
+6
+00:00:09,959 --> 00:00:12,412
+source, construit sur Firefox.
+
+7
+00:00:12,432 --> 00:00:13,817
+Zéro télémétrie :
+
+8
+00:00:13,837 --> 00:00:16,847
+rien n'est envoyé à Mozilla, ni à personne.
+
+9
+00:00:16,867 --> 00:00:20,489
+Pas d'IA, pas de contenu sponsorisé.
+
+10
+00:00:20,509 --> 00:00:23,473
+Un clic sur la cigale, et vous voyez tout.
+
+11
+00:00:23,493 --> 00:00:27,455
+Bloqueur uBlock Origin intégré, HTTPS
+
+12
+00:00:27,475 --> 00:00:30,775
+obligatoire, DNS chiffré, fuites d'adresse
+
+13
+00:00:30,795 --> 00:00:33,573
+coupées, empreinte uniformisée comme dans
+
+14
+00:00:33,593 --> 00:00:37,161
+Tor Browser. Et à la fermeture, cookies,
+
+15
+00:00:37,181 --> 00:00:40,222
+historique et cache disparaissent.
+
+16
+00:00:40,242 --> 00:00:41,824
+Votre adresse IP ?
+
+17
+00:00:41,844 --> 00:00:43,473
+Importez vos proxys.
+
+18
+00:00:43,493 --> 00:00:46,236
+Rotation, règles par site, coupe-circuit si
+
+19
+00:00:46,256 --> 00:00:49,034
+le proxy tombe. Et avec un proxy par site,
+
+20
+00:00:49,054 --> 00:00:51,356
+chaque site voit une adresse différente.
+
+21
+00:00:51,376 --> 00:00:54,150
+Impossible de vous recouper.
+
+22
+00:00:54,170 --> 00:00:56,349
+Besoin de repartir de zéro ?
+
+23
+00:00:56,515 --> 00:00:58,051
+Nouvelle identité :
+
+24
+00:00:58,071 --> 00:01:01,743
+un clic, tout est effacé, le proxy change.
+
+25
+00:01:01,763 --> 00:01:03,477
+Un lien sensible ?
+
+26
+00:01:03,539 --> 00:01:06,871
+Clic droit, ouvrir via Tor.
+
+27
+00:01:06,891 --> 00:01:09,611
+Côté sécurité, La Cigale démasque les sites
+
+28
+00:01:09,631 --> 00:01:12,885
+sosies. Un « l » remplacé par un chiffre,
+
+29
+00:01:12,905 --> 00:01:15,102
+des lettres cyrilliques, un faux site de
+
+30
+00:01:15,122 --> 00:01:16,356
+remboursement :
+
+31
+00:01:16,376 --> 00:01:18,307
+l'alerte s'affiche avant que vous tapiez
+
+32
+00:01:18,327 --> 00:01:19,665
+quoi que ce soit.
+
+33
+00:01:19,685 --> 00:01:22,579
+Un mot de passe qui part sans chiffrement ?
+
+34
+00:01:22,599 --> 00:01:24,367
+Elle demande confirmation.
+
+35
+00:01:24,387 --> 00:01:25,888
+Un téléchargement ?
+
+36
+00:01:25,908 --> 00:01:28,528
+Son empreinte est vérifiée.
+
+37
+00:01:28,678 --> 00:01:30,411
+Pour votre hygiène numérique :
+
+38
+00:01:30,431 --> 00:01:33,000
+des onglets éphémères qui s'effacent seuls,
+
+39
+00:01:33,020 --> 00:01:35,427
+des profils Travail, Perso et Banque
+
+40
+00:01:35,447 --> 00:01:38,248
+séparés, des liens copiés sans pisteurs, un
+
+41
+00:01:38,268 --> 00:01:40,373
+verrou au démarrage, et une sauvegarde
+
+42
+00:01:40,393 --> 00:01:43,237
+chiffrée, sans aucun serveur.
+
+43
+00:01:43,257 --> 00:01:44,758
+Et le confort suit :
+
+44
+00:01:44,778 --> 00:01:47,080
+votre messagerie chiffrée Seyra à côté de la
+
+45
+00:01:47,100 --> 00:01:49,715
+page, la lecture épurée, les onglets en
+
+46
+00:01:49,735 --> 00:01:51,267
+veille.
+
+47
+00:01:51,287 --> 00:01:52,532
+Léger, aussi.
+
+48
+00:01:52,552 --> 00:01:55,261
+Trente-huit mégaoctets de moins que Firefox,
+
+49
+00:01:55,281 --> 00:01:57,385
+sans IA ni processus inutile.
+
+50
+00:01:57,405 --> 00:01:59,406
+Et en tête sur JavaScript dans notre banc
+
+51
+00:01:59,426 --> 00:02:00,876
+d'essai.
+
+52
+00:02:00,896 --> 00:02:02,281
+Cent pour cent français :
+
+53
+00:02:02,301 --> 00:02:04,974
+l'interface, les moteurs Qwant, Lilo et
+
+54
+00:02:04,994 --> 00:02:07,691
+Startpage, et des raccourcis vers Légifrance
+
+55
+00:02:07,711 --> 00:02:10,114
+ou Service-Public.
+
+56
+00:02:10,134 --> 00:02:11,763
+Tout le code est ouvert.
+
+57
+00:02:11,783 --> 00:02:14,914
+Vous pouvez tout lire, tout vérifier.
+
+58
+00:02:15,164 --> 00:02:17,129
+L'installer prend une minute.
+
+59
+00:02:17,149 --> 00:02:19,788
+Sur le site, téléchargez l'installeur.
+
+60
+00:02:19,808 --> 00:02:22,470
+Lancez-le, cochez vos options, cliquez sur
+
+61
+00:02:22,490 --> 00:02:23,747
+Installer.
+
+62
+00:02:23,767 --> 00:02:26,817
+Quelques secondes, et c'est prêt.
+
+63
+00:02:27,317 --> 00:02:30,350
+La Cigale. Le navigateur qui ne chante pas
+
+64
+00:02:30,370 --> 00:02:31,925
+vos données.
+
