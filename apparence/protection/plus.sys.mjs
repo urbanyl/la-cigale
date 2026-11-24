@@ -2,6 +2,7 @@
 // Chargé par cigale.cfg : ChromeUtils.importESModule("chrome://browser/content/cigale/plus.sys.mjs").installer().
 
 import * as cigale from "chrome://browser/content/cigale/cigale.sys.mjs";
+import * as bilan from "chrome://browser/content/cigale/bilan.sys.mjs";
 
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
@@ -10,6 +11,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ContextualIdentityService: "resource://gre/modules/ContextualIdentityService.sys.mjs",
   setInterval: "resource://gre/modules/Timer.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
 });
 
 const P = Services.prefs;
@@ -204,8 +206,8 @@ function estInconnu(hote) {
 
 // ---------- 2. Nouvelle identité ----------
 
-export async function nouvelleIdentite(win) {
-  const ok = Services.prompt.confirm(win, "Nouvelle identité",
+export async function nouvelleIdentite(win, { confirmer = true, message = "Nouvelle identité : tout est effacé." } = {}) {
+  const ok = !confirmer || Services.prompt.confirm(win, "Nouvelle identité",
     "Fermer tous les onglets, effacer cookies, cache et historique, et changer de proxy si vous en utilisez un ?\n\n" +
     "Les sites ne pourront pas relier ce que vous ferez ensuite à ce que vous avez fait avant.");
   if (!ok) return false;
@@ -240,7 +242,7 @@ export async function nouvelleIdentite(win) {
       proxy = ` Nouveau proxy : n° ${i + 1}.`;
     }
   }
-  barre(win, null, "cigale-identite", "Nouvelle identité : tout est effacé." + proxy, [], "PRIORITY_INFO_MEDIUM");
+  barre(win, null, "cigale-identite", message + proxy, [], "PRIORITY_INFO_MEDIUM");
   return true;
 }
 
@@ -468,6 +470,125 @@ export function ouvrirEphemere(win, url) {
   g.selectedTab = t;
 }
 
+// ---------- 14. Bouton panique (1.5) ----------
+// Tout fermer et tout effacer d'un coup, sans question : bouton rouge du panneau cigale ou Ctrl+Maj+F12.
+
+export function panique(win) {
+  return nouvelleIdentite(win, { confirmer: false, message: "Panique : onglets fermés, cookies, cache et historique effacés." });
+}
+
+// ---------- 15. Copier le lien propre (1.5) ----------
+
+export function copierLienPropre(win) {
+  const adresse = win.gBrowser.currentURI?.spec || "";
+  if (!/^https?:/.test(adresse)) return null;
+  const propre = nettoyerURL(adresse);
+  copier(propre);
+  if (propre != adresse) bilan.lienNettoye().catch(() => {});
+  return { propre, retire: Math.max(0, adresse.length - propre.length) };
+}
+
+// ---------- 16. Coffres : un site, ses propres cookies (1.5) ----------
+// Un site « au coffre » s'ouvre toujours dans son conteneur à lui (cookies, stockage et connexion
+// séparés du reste) ; l'onglet porte la couleur de son coffre.
+
+const SITES_SENSIBLES = [
+  "credit-agricole.fr", "societegenerale.fr", "bnpparibas.net", "mabanque.bnpparibas", "lcl.fr", "labanquepostale.fr",
+  "caisse-epargne.fr", "banquepopulaire.fr", "creditmutuel.fr", "cic.fr", "boursorama.com", "boursobank.com",
+  "fortuneo.fr", "hellobank.fr", "revolut.com", "n26.com", "qonto.com", "paypal.com", "impots.gouv.fr", "ameli.fr",
+  "caf.fr", "franceconnect.gouv.fr", "ants.gouv.fr", "doctolib.fr",
+];
+const COULEURS_COFFRE = ["turquoise", "green", "yellow", "orange", "pink", "purple", "blue", "red"];
+
+export function coffres() {
+  const l = new Set(lireListe("cigale.coffres"));
+  if (P.getBoolPref("cigale.coffres.sensibles", false)) for (const d of SITES_SENSIBLES) l.add(d);
+  for (const d of lireListe("cigale.coffres.retires")) l.delete(d);
+  return l;
+}
+
+export function estAuCoffre(hote) {
+  return !!hote && coffres().has(base(hote));
+}
+
+function identiteCoffre(domaine, creer) {
+  const CIS = lazy.ContextualIdentityService;
+  const nom = "Coffre " + domaine;
+  let i = CIS.getPublicIdentities().find((x) => x.name == nom);
+  if (!i && creer) {
+    let h = 0;
+    for (const c of domaine) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+    i = CIS.create(nom, "fence", COULEURS_COFFRE[h % COULEURS_COFFRE.length]);
+  }
+  return i?.userContextId || 0;
+}
+
+const deplaces = new WeakSet();
+
+function ouvrirAuCoffre(win, onglet, adresse) {
+  const domaine = base(hoteDe(Services.io.newURI(adresse)));
+  const id = identiteCoffre(domaine, true);
+  if (!id) return;
+  const g = win.gBrowser;
+  const nouvel = g.addTab(adresse, {
+    userContextId: id,
+    index: onglet._tPos + 1,
+    triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+  });
+  deplaces.add(nouvel.linkedBrowser);
+  if (onglet.selected) g.selectedTab = nouvel;
+  // l'ancien onglet n'avait rien d'autre à montrer : on le ferme
+  const reste = hoteDe(onglet.linkedBrowser.currentURI);
+  if (!reste || base(reste) == domaine) g.removeTab(onglet);
+}
+
+function verifierCoffre(win, browser, uri) {
+  if (!P.getBoolPref("privacy.userContext.enabled", false)) return false;
+  if (lazy.PrivateBrowsingUtils.isWindowPrivate(win) || deplaces.has(browser)) return false;
+  const hote = hoteDe(uri);
+  if (!estAuCoffre(hote)) return false;
+  const onglet = win.gBrowser.getTabForBrowser(browser);
+  if (!onglet) return false;
+  const id = identiteCoffre(base(hote), false);
+  if (id && onglet.userContextId == id) return false;
+  browser.stop();
+  lazy.setTimeout(() => ouvrirAuCoffre(win, onglet, uri.spec), 0);
+  return true;
+}
+
+// Mettre le site ouvert au coffre (ou l'en sortir). Renvoie l'état après le changement.
+export function basculerCoffre(win) {
+  const g = win.gBrowser;
+  const hote = hoteDe(g.currentURI);
+  if (!hote) return false;
+  const domaine = base(hote);
+  const liste = new Set(lireListe("cigale.coffres"));
+  const retires = new Set(lireListe("cigale.coffres.retires"));
+  const sauver = () => {
+    P.setStringPref("cigale.coffres", JSON.stringify([...liste].sort()));
+    P.setStringPref("cigale.coffres.retires", JSON.stringify([...retires].sort()));
+  };
+  if (estAuCoffre(hote)) {
+    liste.delete(domaine);
+    if (SITES_SENSIBLES.includes(domaine)) retires.add(domaine);
+    sauver();
+    barre(win, null, "cigale-coffre", `${domaine} n'est plus au coffre : il s'ouvrira de nouveau dans un onglet ordinaire.`, [], "PRIORITY_INFO_MEDIUM");
+    return false;
+  }
+  liste.add(domaine);
+  retires.delete(domaine);
+  sauver();
+  if (!P.getBoolPref("privacy.userContext.enabled", false)) P.setBoolPref("privacy.userContext.enabled", true);
+  const onglet = g.selectedTab;
+  if (!lazy.PrivateBrowsingUtils.isWindowPrivate(win) && onglet.userContextId != identiteCoffre(domaine, true)) {
+    ouvrirAuCoffre(win, onglet, g.currentURI.spec);
+  }
+  barre(win, null, "cigale-coffre",
+    `${domaine} est au coffre : ses cookies et sa connexion restent à part. Vous devrez peut-être vous reconnecter une fois.`,
+    [], "PRIORITY_INFO_MEDIUM");
+  return true;
+}
+
 // ---------- par fenêtre ----------
 
 const refusLecture = new Set();
@@ -476,8 +597,25 @@ function installerFenetre(win) {
   if (win.cigalePlus || !win.gBrowser) return;
   win.cigalePlus = true;
   try { seyraBarreLaterale(win); } catch (e) { console.error("La Cigale : barre latérale", e); }
+  try { bilan.suivre(win); } catch (e) { console.error("La Cigale : bilan", e); }
   const doc = win.document;
   const g = win.gBrowser;
+
+  // Ctrl+Maj+F12 : panique
+  try {
+    const commande = doc.createXULElement("command");
+    commande.id = "cigale-cmd-panique";
+    commande.addEventListener("command", () => panique(win).catch(console.error));
+    doc.getElementById("mainCommandSet").append(commande);
+    const touche = doc.createXULElement("key");
+    touche.id = "cigale-touche-panique";
+    touche.setAttribute("keycode", "VK_F12");
+    touche.setAttribute("modifiers", "accel,shift");
+    touche.setAttribute("command", "cigale-cmd-panique");
+    doc.getElementById("mainKeyset").append(touche);
+  } catch (e) {
+    console.error("La Cigale : raccourci panique", e);
+  }
 
   // menu contextuel des liens : via Tor, en onglet éphémère, dans un profil
   const menu = doc.getElementById("contentAreaContextMenu");
@@ -492,19 +630,30 @@ function installerFenetre(win) {
     eph.id = "cigale-lien-ephemere";
     eph.setAttribute("label", "Ouvrir dans un onglet éphémère");
     eph.addEventListener("command", () => ouvrirEphemere(win, win.gContextMenu?.linkURL));
+    const propre = doc.createXULElement("menuitem");
+    propre.id = "cigale-lien-propre";
+    propre.setAttribute("label", "Copier le lien sans pistage");
+    propre.addEventListener("command", () => {
+      const lien = win.gContextMenu?.linkURL;
+      if (!lien) return;
+      const net = nettoyerURL(lien);
+      if (net != lien) bilan.lienNettoye().catch(() => {});
+      copier(net);
+    });
     const ref = doc.getElementById("context-openlinkincontainertab") || doc.getElementById("context-openlinkprivate");
-    if (ref) ref.after(sep, tor, eph);
-    else menu.append(sep, tor, eph);
+    if (ref) ref.after(sep, tor, eph, propre);
+    else menu.append(sep, tor, eph, propre);
     menu.addEventListener("popupshowing", (e) => {
       if (e.target != menu) return;
       const lien = !!win.gContextMenu?.onLink && /^https?:/.test(win.gContextMenu?.linkURL || "");
-      for (const el of [sep, tor, eph]) el.hidden = !lien;
+      for (const el of [sep, tor, eph, propre]) el.hidden = !lien;
     });
     // 13. « Copier le lien » donne un lien sans pisteurs
     doc.addEventListener("command", (e) => {
       if (!P.getBoolPref("cigale.copie.nettoyer", true)) return;
       if (e.target.id == "context-copylink" && win.gContextMenu?.linkURL) {
         const propre = nettoyerURL(win.gContextMenu.linkURL);
+        if (propre != win.gContextMenu.linkURL) bilan.lienNettoye().catch(() => {});
         lazy.setTimeout(() => copier(propre), 30);
       }
     }, true);
@@ -519,7 +668,10 @@ function installerFenetre(win) {
     const adresse = g.currentURI?.spec;
     if (!adresse || !/^https?:/.test(adresse)) return;
     const propre = nettoyerURL(adresse);
-    if (propre != adresse) lazy.setTimeout(() => copier(propre), 30);
+    if (propre != adresse) {
+      bilan.lienNettoye().catch(() => {});
+      lazy.setTimeout(() => copier(propre), 30);
+    }
   });
 
   // menu des onglets : rendre éphémère
@@ -551,6 +703,8 @@ function installerFenetre(win) {
     onStateChange(browser, webProgress, request, flags) {
       if (!webProgress?.isTopLevel || !(flags & Ci.nsIWebProgressListener.STATE_IS_DOCUMENT)) return;
       if (flags & Ci.nsIWebProgressListener.STATE_START) {
+        // 16. site au coffre : il s'ouvre dans son conteneur
+        try { if (verifierCoffre(win, browser, request.QueryInterface(Ci.nsIChannel).URI)) return; } catch {}
         // 7. JavaScript coupé avant le chargement d'un site inconnu
         let hote = "";
         try { hote = hoteDe(request.QueryInterface(Ci.nsIChannel).URI); } catch {}
@@ -575,6 +729,7 @@ function installerFenetre(win) {
       if (avant.startsWith("about:reader?url=")) {
         try { refusLecture.add(decodeURIComponent(avant.slice(17))); } catch {}
       }
+      if (verifierCoffre(win, browser, uri)) return;
       const hote = hoteDe(uri);
       const boite = g.getNotificationBox(browser);
       for (const id of ["cigale-sosie", "cigale-inconnu"]) {
@@ -611,6 +766,7 @@ let installe = false;
 export function installer() {
   if (installe) return;
   installe = true;
+  try { bilan.installer(); } catch (e) { console.error("La Cigale : bilan", e); }
 
   try {
     ChromeUtils.registerWindowActor("CigalePlus", {

@@ -38,7 +38,8 @@ AJOUTS_BROWSER = {
 CIGALE = "chrome/browser/content/browser/cigale/"
 for _f in ("protection.html", "protection.css", "protection.js", "cigale.sys.mjs", "tor.svg",
            "popup.html", "popup.css", "popup.js", "preferences.css", "plus.sys.mjs", "plus-enfant.sys.mjs",
-           "bricolage-latin.woff2", "bouton-barre.svg"):
+           "bricolage-latin.woff2", "bouton-barre.svg", "bilan.sys.mjs", "bilan-enfant.sys.mjs",
+           "pages.css", "nouveautes.html", "nouveautes.js", "bienvenue.html", "bienvenue.js"):
     AJOUTS_BROWSER[CIGALE + _f] = (RACINE / "apparence" / "protection" / _f).read_bytes()
 # copie de la page d'accueil servie par about:apropos (adresse lisible, retour arrière normal)
 for _f in (RACINE / "accueil").rglob("*"):

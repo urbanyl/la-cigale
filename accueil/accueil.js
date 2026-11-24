@@ -273,7 +273,7 @@ $("reinitialiser").addEventListener("click", () => {
 });
 
 // Personnalisation
-const REGLAGES_DEFAUT = { mode: "sombre", fond: "cigale", citation: true, horloge: true };
+const REGLAGES_DEFAUT = { mode: "sombre", fond: "cigale", citation: true, horloge: true, bilan: true };
 const reglages = { ...REGLAGES_DEFAUT, ...stockage.lire("reglages", {}) };
 // le thème du navigateur fait foi : La Cigale le passe dans l'adresse (#…&theme=sombre|clair|olive)
 const THEME_ADRESSE = (location.hash.match(/theme=(sombre|clair|olive)/) || [])[1];
@@ -289,11 +289,13 @@ function appliquerReglages() {
   $("symbole").src = clair ? "img/symbole-noir.webp" : "img/symbole-blanc.webp";
   $("citation").hidden = !reglages.citation;
   $("heure").hidden = !reglages.horloge;
+  document.body.dataset.bilan = String(reglages.bilan);
   document.querySelectorAll(".choix input").forEach((entree) => {
     entree.checked = reglages[entree.name] === entree.value;
   });
   $("reglage-citation").checked = reglages.citation;
   $("reglage-horloge").checked = reglages.horloge;
+  $("reglage-bilan").checked = reglages.bilan;
 }
 
 function modifierReglage(cle, valeur) {
@@ -308,6 +310,7 @@ document.querySelectorAll(".choix input").forEach((entree) =>
 );
 $("reglage-citation").addEventListener("change", (e) => modifierReglage("citation", e.target.checked));
 $("reglage-horloge").addEventListener("change", (e) => modifierReglage("horloge", e.target.checked));
+$("reglage-bilan").addEventListener("change", (e) => modifierReglage("bilan", e.target.checked));
 
 const panneau = $("panneau");
 $("personnaliser").addEventListener("click", () => panneau.showModal());
@@ -338,3 +341,73 @@ document.addEventListener("click", (e) => {
   e.preventDefault();
   demander(lien.dataset.ouvrir);
 });
+
+// Bilan de la semaine : La Cigale l'envoie à cette page seulement (des nombres, aucune adresse de site).
+const nombre = (n) => new Intl.NumberFormat("fr-FR").format(n || 0);
+
+function afficherBilan(b) {
+  if (!b) return;
+  $("bilan").hidden = false;
+  const recent = Date.now() - (b.debut || Date.now()) < 6 * 86400000;
+  $("bilan-titre").textContent = !b.pages ? "Votre bilan commence aujourd'hui"
+    : recent ? "Depuis votre arrivée, La Cigale a bloqué" : "Cette semaine, La Cigale a bloqué";
+  $("bilan-total").textContent = nombre(b.bloques);
+  $("bilan-unite").textContent = b.bloques == 1 ? "tentative de pistage" : "tentatives de pistage";
+  $("bilan-traqueurs").textContent = nombre(b.traqueurs);
+  $("bilan-ublock").textContent = nombre(b.ublock);
+  $("bilan-empreintes").textContent = nombre(b.empreintes);
+  $("bilan-liens").textContent = nombre(b.liens);
+  const max = Math.max(1, ...b.parJour.map((j) => j.bloques));
+  $("bilan-graphe").replaceChildren(...b.parJour.map((j, i) => {
+    const [a, m, d] = j.jour.split("-").map(Number);
+    const date = new Date(a, m - 1, d);
+    const li = document.createElement("li");
+    const barre = document.createElement("i");
+    barre.style.height = Math.max(4, Math.round((j.bloques / max) * 100)) + "%";
+    const nom = document.createElement("span");
+    nom.textContent = date.toLocaleDateString("fr-FR", { weekday: "narrow" });
+    li.title = `${nombre(j.bloques)} le ${date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}`;
+    if (i == b.parJour.length - 1) li.className = "aujourdhui";
+    li.append(barre, nom);
+    return li;
+  }));
+  const qui = $("bilan-qui");
+  qui.replaceChildren();
+  const premiers = b.entreprises.slice(0, 4);
+  if (premiers.length) {
+    qui.append("Le plus souvent : ");
+    premiers.forEach(([nom, n], i) => {
+      if (i) qui.append(i == premiers.length - 1 ? " et " : ", ");
+      const e = document.createElement("b");
+      e.textContent = nom;
+      e.title = `présent sur ${nombre(n)} page${n > 1 ? "s" : ""}`;
+      qui.append(e);
+    });
+    qui.append(".");
+  } else {
+    qui.textContent = b.pages ? "Aucun traqueur rencontré pour l'instant."
+      : "Chaque traqueur bloqué sera compté ici, sans jamais noter les sites que vous visitez.";
+  }
+}
+
+window.addEventListener("cigale-bilan", (e) => afficherBilan(e.detail));
+const demanderBilan = () => window.dispatchEvent(new CustomEvent("cigale-demande-bilan", { bubbles: true }));
+demanderBilan();
+document.addEventListener("visibilitychange", () => { if (!document.hidden) demanderBilan(); });
+
+// Raccourcis choisis à la bienvenue : La Cigale les passe une fois dans l'adresse (#…&raccourcis=…)
+(() => {
+  const m = location.hash.match(/(?:^|[#&])raccourcis=([^&]+)/);
+  if (!m) return;
+  try {
+    const liste = JSON.parse(decodeURIComponent(m[1]))
+      .filter((r) => r && typeof r.nom == "string" && /^https:\/\//.test(r.url))
+      .slice(0, 12).map((r) => ({ nom: r.nom.slice(0, 24), url: r.url }));
+    if (liste.length) {
+      raccourcis = liste;
+      stockage.ecrire("raccourcis", raccourcis);
+      afficherRaccourcis();
+    }
+  } catch { /* liste illisible : on garde les raccourcis actuels */ }
+  history.replaceState(null, "", location.href.replace(/&?raccourcis=[^&]+/, ""));
+})();

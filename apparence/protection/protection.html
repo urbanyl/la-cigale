@@ -14,6 +14,9 @@
     <a class="categorie" href="#general" data-categorie="general">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/></svg>
       Vue d'ensemble</a>
+    <a class="categorie" href="#bilan" data-categorie="bilan">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+      Qui vous suivait</a>
     <a class="categorie" href="#atouts" data-categorie="atouts">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
       Boucliers et confort</a>
@@ -132,6 +135,37 @@
         <table>
           <tbody id="etats"></tbody>
         </table>
+      </div>
+    </section>
+
+    <section data-categorie="bilan" hidden>
+      <h1>Qui vous suivait</h1>
+      <div class="carte bilan-carte">
+        <div class="ligne bilan-periode" role="radiogroup" aria-label="Période">
+          <label><input type="radio" name="periode" value="7" checked><span>7 jours</span></label>
+          <label><input type="radio" name="periode" value="30"><span>30 jours</span></label>
+          <label><input type="radio" name="periode" value="90"><span>90 jours</span></label>
+        </div>
+        <p class="bilan-grand"><b id="b-total">0</b><span>tentatives de pistage bloquées</span></p>
+        <ul class="bilan-quatre">
+          <li><b id="b-traqueurs">0</b><span>traqueurs</span></li>
+          <li><b id="b-ublock">0</b><span>requêtes uBlock</span></li>
+          <li><b id="b-empreintes">0</b><span>lectures d'empreinte</span></li>
+          <li><b id="b-liens">0</b><span>liens nettoyés</span></li>
+        </ul>
+        <p id="b-pages" class="discret"></p>
+      </div>
+
+      <div class="carte">
+        <h2>Les entreprises derrière les traqueurs</h2>
+        <p class="discret">Sur combien de pages chacune a tenté de vous suivre, avant d'être bloquée.</p>
+        <ol id="b-entreprises" class="entreprises"></ol>
+      </div>
+
+      <div class="carte">
+        <h2>Ce qui est gardé</h2>
+        <p>Seulement des nombres, jour par jour, pendant 90 jours, dans votre profil. Jamais l'adresse des sites que vous visitez.</p>
+        <p class="ligne"><button id="b-effacer">Remettre le bilan à zéro</button></p>
       </div>
     </section>
 
@@ -275,6 +309,15 @@
         <p id="erreur-exception" class="erreur" role="alert" hidden></p>
         <ul id="exceptions"></ul>
       </div>
+
+      <div class="carte">
+        <h2>Coffres</h2>
+        <p>Un site au coffre s'ouvre toujours dans un onglet à lui, avec ses propres cookies et sa propre connexion :
+          aucun autre site ne peut les voir. L'onglet porte la couleur de son coffre. Ajoutez un site depuis le
+          bouton <b>cigale</b>, « Mettre au coffre ».</p>
+        <label class="case"><input type="checkbox" id="coffres-sensibles"><span>Mettre au coffre les banques, impôts, Ameli, CAF, PayPal et Doctolib</span></label>
+        <ul id="coffres" class="regles"></ul>
+      </div>
     </section>
 
     <section data-categorie="proxy" hidden>
@@ -415,7 +458,8 @@
           Prévenir quand une nouvelle version sort (une vérification par jour sur GitHub)
         </label>
         <p id="maj-etat" class="discret"></p>
-        <p><a href="#nouveautes" id="voir-nouveautes">Voir les nouveautés de cette version</a></p>
+        <p><a href="about:nouveautes" id="voir-nouveautes" target="_blank">Voir les nouveautés de cette version</a>
+          · <a href="about:bienvenue" target="_blank">Revoir la bienvenue</a></p>
       </div>
     </section>
   </main>

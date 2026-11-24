@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src chrome:; img-src chrome: data:; object-src 'none'">
+<title>Bienvenue</title>
+<link rel="icon" href="chrome://browser/content/cigale/bouton.png">
+<link rel="stylesheet" href="chrome://browser/content/cigale/pages.css">
+</head>
+<body>
+<main class="page">
+  <header class="hero">
+    <p class="marque"><img src="chrome://browser/content/cigale/bouton-barre.png" alt=""><span class="surtitre">Bienvenue</span></p>
+    <h1>La Cigale est prête.</h1>
+    <p class="chapeau">Trois choix et c'est parti. Tout se change ensuite à tout moment.</p>
+  </header>
+
+  <ol class="etapes" id="etapes">
+    <li>1 · Apparence</li>
+    <li>2 · Protection</li>
+    <li>3 · Raccourcis</li>
+  </ol>
+
+  <section class="etape" data-etape="0">
+    <h2>Votre apparence</h2>
+    <p>Tout le navigateur change : onglets, barre d'adresse, accueil et pages de La Cigale.</p>
+    <div class="cartes" role="radiogroup" aria-label="Apparence" id="themes">
+      <button class="choix-carte" role="radio" data-theme="firefox-compact-dark@mozilla.org">
+        <span class="coche"></span>
+        <span class="vignette v-sombre"><span class="haut"><i></i><i></i></span><span class="bas">Aa</span></span>
+        <b>Sombre</b><small>Noir et blanc, le thème d'origine.</small>
+      </button>
+      <button class="choix-carte" role="radio" data-theme="firefox-compact-light@mozilla.org">
+        <span class="coche"></span>
+        <span class="vignette v-clair"><span class="haut"><i></i><i></i></span><span class="bas">Aa</span></span>
+        <b>Clair</b><small>Encre sur papier, pour le plein jour.</small>
+      </button>
+      <button class="choix-carte" role="radio" data-theme="firefox-alpenglow@mozilla.org">
+        <span class="coche"></span>
+        <span class="vignette v-olive"><span class="haut"><i></i><i></i></span><span class="bas">Aa</span></span>
+        <b>Olive</b><small>Le vert de La Cigale, avec la cigale en fond.</small>
+      </button>
+    </div>
+  </section>
+
+  <section class="etape" data-etape="1" hidden>
+    <h2>Votre protection</h2>
+    <p>Le même blocage des traqueurs et la même anti-empreinte dans les trois cas. Ce qui change : ce qui est gardé, et JavaScript.</p>
+    <div class="cartes" role="radiogroup" aria-label="Profil de protection" id="profils">
+      <button class="choix-carte" role="radio" data-profil="confort">
+        <span class="coche"></span>
+        <span class="niveau"><i class="plein"></i><i></i><i></i></span>
+        <b>Confort</b><small>Les sites s'affichent en français et vous restez connecté d'une fois sur l'autre.</small>
+      </button>
+      <button class="choix-carte" role="radio" data-profil="standard">
+        <span class="coche"></span>
+        <span class="niveau"><i class="plein"></i><i class="plein"></i><i></i></span>
+        <b>Standard</b><small>Recommandé. Tout est effacé quand vous fermez La Cigale.</small>
+      </button>
+      <button class="choix-carte" role="radio" data-profil="renforce">
+        <span class="coche"></span>
+        <span class="niveau"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span>
+        <b>Renforcé</b><small>JavaScript coupé et marges autour des pages. Beaucoup de sites ne marcheront plus.</small>
+      </button>
+    </div>
+    <label class="option"><input type="checkbox" id="coffres-sensibles">
+      <span>Mettre au coffre les banques, impôts, Ameli, CAF, PayPal et Doctolib
+        <small>Chacun s'ouvre à part, avec ses propres cookies : aucun autre site ne peut les voir.</small></span></label>
+  </section>
+
+  <section class="etape" data-etape="2" hidden>
+    <h2>Vos raccourcis</h2>
+    <p>Les tuiles de votre page d'accueil. Douze au plus ; vous pourrez les modifier depuis l'accueil.</p>
+    <div class="tuiles" id="tuiles"></div>
+  </section>
+
+  <nav class="navigation">
+    <button class="bouton" id="precedent">Retour</button>
+    <span class="discret" id="compte"></span>
+    <button class="bouton plein" id="suivant">Continuer</button>
+  </nav>
+</main>
+<script src="chrome://browser/content/cigale/bienvenue.js"></script>
+</body>
+</html>

@@ -45,6 +45,12 @@
   }
 }
 
+@font-face {
+  font-family: Bricolage;
+  src: url(chrome://browser/content/cigale/bricolage-latin.woff2) format("woff2");
+  font-weight: 300 700;
+  font-stretch: 75% 100%;
+}
 * { box-sizing: border-box; }
 html { overflow-anchor: none; }
 
@@ -246,3 +252,30 @@ input[type="radio"], input[type="checkbox"] { accent-color: var(--coche); }
 
 .nombre { width: 5em; }
 #panneau-adresse { flex: 1; min-width: 14em; }
+
+/* Qui vous suivait (1.5) */
+.bilan-periode { gap: 6px; }
+.bilan-periode label { cursor: pointer; }
+.bilan-periode input { position: absolute; opacity: 0; pointer-events: none; }
+.bilan-periode span { display: inline-block; padding: 5px 14px; border: 1px solid var(--bordure); border-radius: 999px; color: var(--gris); font-size: 13px; }
+.bilan-periode input:checked + span { background: var(--texte); border-color: var(--texte); color: var(--fond); font-weight: 600; }
+.bilan-periode input:focus-visible + span { outline: 2px solid var(--gris); outline-offset: 2px; }
+.bilan-grand { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; margin: 18px 0 6px; }
+.bilan-grand b { font: 700 88px/0.9 Bricolage, sans-serif; font-stretch: 75%; font-variant-numeric: tabular-nums; }
+:root.olive .bilan-grand b { color: var(--coche); }
+.bilan-grand span { font-size: 18px; }
+.bilan-quatre { display: grid; grid-template-columns: repeat(4, 1fr); margin: 16px 0 4px; padding: 14px 0 0; list-style: none; border-top: 1px solid var(--trait); }
+.bilan-quatre li + li { padding-left: 16px; border-left: 1px solid var(--trait); }
+.bilan-quatre b { display: block; font: 700 28px/1.1 Bricolage, sans-serif; font-stretch: 78%; font-variant-numeric: tabular-nums; }
+.bilan-quatre span { color: var(--gris); font-size: 13px; }
+.entreprises { margin: 14px 0 0; padding: 0; list-style: none; counter-reset: rang; }
+.entreprises li { display: grid; grid-template-columns: 28px 150px 1fr 70px; align-items: center; gap: 10px; padding: 7px 0; counter-increment: rang; }
+.entreprises li::before { content: counter(rang); color: var(--gris); font: 700 18px Bricolage, sans-serif; font-stretch: 78%; }
+.entreprises .nom { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entreprises .barre { height: 10px; border-radius: 5px; background: var(--surface-forte); overflow: hidden; }
+.entreprises .barre i { display: block; height: 100%; border-radius: 5px; background: var(--texte); }
+:root.olive .entreprises .barre i { background: var(--coche); }
+.entreprises li:nth-child(n+4) .barre i { opacity: 0.55; }
+.entreprises .n { color: var(--gris); font-size: 14px; text-align: right; font-variant-numeric: tabular-nums; }
+.entreprises li.vide { display: block; color: var(--gris); font-size: 14px; }
+.entreprises li.vide::before { content: none; }

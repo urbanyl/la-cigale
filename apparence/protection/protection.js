@@ -974,3 +974,88 @@ function afficherProfils() {
 $("profils-creer").addEventListener("click", () => { plus.creerProfils(); afficherProfils(); });
 $("profil-banque").addEventListener("click", () => plus.ouvrirDansProfil(fenetre, "Banque"));
 afficherProfils();
+
+// --- Qui vous suivait (1.5) ---
+
+const bilan = ChromeUtils.importESModule("chrome://browser/content/cigale/bilan.sys.mjs");
+const nombreFr = (n) => new Intl.NumberFormat("fr-FR").format(n || 0);
+
+async function afficherBilan() {
+  const jours = Number(document.querySelector("input[name=periode]:checked")?.value) || 7;
+  const b = await bilan.resume(jours);
+  $("b-total").textContent = nombreFr(b.bloques);
+  $("b-traqueurs").textContent = nombreFr(b.traqueurs);
+  $("b-ublock").textContent = nombreFr(b.ublock);
+  $("b-empreintes").textContent = nombreFr(b.empreintes);
+  $("b-liens").textContent = nombreFr(b.liens);
+  $("b-pages").textContent = b.pages
+    ? `Sur ${nombreFr(b.pages)} page${b.pages > 1 ? "s" : ""} visitée${b.pages > 1 ? "s" : ""}, depuis le ${new Date(Math.max(b.debut, Date.now() - jours * 86400000)).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}.`
+    : "Le compte commence : naviguez un peu et revenez.";
+  const liste = $("b-entreprises");
+  const max = Math.max(1, ...b.entreprises.map(([, n]) => n));
+  if (!b.entreprises.length) {
+    const li = document.createElement("li");
+    li.className = "vide";
+    li.textContent = "Aucun traqueur rencontré sur cette période.";
+    liste.replaceChildren(li);
+    return;
+  }
+  liste.replaceChildren(...b.entreprises.slice(0, 15).map(([nom, n]) => {
+    const li = document.createElement("li");
+    const a = document.createElement("span");
+    a.className = "nom";
+    a.textContent = nom;
+    const barre = document.createElement("span");
+    barre.className = "barre";
+    const i = document.createElement("i");
+    i.style.width = Math.max(2, Math.round((n / max) * 100)) + "%";
+    barre.append(i);
+    const c = document.createElement("span");
+    c.className = "n";
+    c.textContent = `${nombreFr(n)} page${n > 1 ? "s" : ""}`;
+    li.append(a, barre, c);
+    return li;
+  }));
+}
+
+for (const r of document.querySelectorAll("input[name=periode]")) r.addEventListener("change", () => afficherBilan().catch(console.error));
+$("b-effacer").addEventListener("click", async () => {
+  if (!confirm("Remettre le bilan à zéro ? Les nombres gardés jusqu'ici seront effacés.")) return;
+  await bilan.effacer();
+  afficherBilan().catch(console.error);
+});
+
+function afficherCoffres() {
+  $("coffres-sensibles").checked = prefs.getBoolPref("cigale.coffres.sensibles", false);
+  const ul = $("coffres");
+  const perso = (() => { try { return JSON.parse(prefs.getStringPref("cigale.coffres", "[]")); } catch { return []; } })();
+  if (!perso.length) {
+    const li = document.createElement("li");
+    li.className = "vide";
+    li.textContent = "Aucun site ajouté à la main.";
+    ul.replaceChildren(li);
+    return;
+  }
+  ul.replaceChildren(...perso.map((d) => {
+    const li = document.createElement("li");
+    const nom = document.createElement("span");
+    nom.textContent = d;
+    const b = document.createElement("button");
+    b.textContent = "Retirer";
+    b.addEventListener("click", () => {
+      prefs.setStringPref("cigale.coffres", JSON.stringify(perso.filter((x) => x != d)));
+      afficherCoffres();
+    });
+    li.append(nom, b);
+    return li;
+  }));
+}
+$("coffres-sensibles").addEventListener("change", (e) => {
+  prefs.setBoolPref("cigale.coffres.sensibles", e.target.checked);
+  if (e.target.checked) prefs.setBoolPref("privacy.userContext.enabled", true);
+});
+afficherCoffres();
+
+window.addEventListener("hashchange", () => { if (location.hash == "#bilan") afficherBilan().catch(console.error); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden) afficherBilan().catch(console.error); });
+afficherBilan().catch(console.error);
