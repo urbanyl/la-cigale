@@ -6,121 +6,88 @@
 <title>What's new</title>
 <link rel="icon" href="chrome://browser/content/cigale/bouton.png">
 <link rel="stylesheet" href="chrome://browser/content/cigale/pages.css">
+<link rel="stylesheet" href="chrome://browser/content/cigale/verre/verre-pages.css">
 </head>
 <body>
 <main class="page">
   <header class="hero">
     <p class="marque"><img src="chrome://browser/content/cigale/bouton-barre.png" alt=""><span class="surtitre">What's new</span></p>
-    <h1>La Cigale <span id="version">1.7</span></h1>
-    <p class="chapeau">An AI assistant that runs on your computer, with no account and without sending your pages to anyone.
-      It summarizes, explains, translates, and can now stay open next to your tabs.</p>
+    <h1>La Cigale <span id="version">1.8</span></h1>
+    <p class="chapeau">A complete redesign in liquid glass: capsule tabs, a translucent address bar and menus,
+      glass pages, a single typeface and controls that respond. Your settings and protections stay the same.</p>
   </header>
 
   <div class="grille">
     <article class="atout tres-large">
       <div class="apercu">
-        <div class="mini-discussion" aria-hidden="true">
-          <p class="question">Summarize this page in three points</p>
-          <p class="reponse"><i class="l1"></i><i class="l2"></i><i class="l3"></i></p>
-          <small>On this computer</small>
+        <div class="mini-verre" aria-hidden="true">
+          <div class="barre-onglets"><span class="onglet actif">La Cigale</span><span class="onglet">Wikipedia</span><span class="plus">+</span></div>
+          <div class="barre-adresse"><i></i><span>Search or enter address</span></div>
         </div>
       </div>
       <div class="texte">
         <p class="numero">01</p>
-        <h2>A local AI assistant</h2>
-        <p>The model downloads once (2.5 to 5 GB depending on your choice), then everything happens on your computer:
-          no question and no page goes out to the Internet. It can read the open tab and, if you allow it,
-          your tabs, notes and bookmarks.</p>
-        <div class="actions"><button class="bouton plein" id="ouvrir-assistant">Open the assistant</button></div>
+        <h2>A liquid glass frame</h2>
+        <p>The open tab becomes a glass capsule, the address bar gets a blue ring while you type,
+          and the page sits in a frame with rounded corners. The light theme has white glass, the olive theme green glass.</p>
+        <div class="actions"><button class="bouton" id="verre"></button></div>
       </div>
     </article>
 
     <article class="atout large">
       <div class="apercu">
-        <ul class="mini-menu" aria-hidden="true">
-          <li class="titre">Ask La Cigale</li>
-          <li>Summarize this page</li>
-          <li>Analyze the links</li>
-          <li>Translate the page</li>
-          <li>Explain the selection</li>
-        </ul>
+        <div class="mini-cartes" aria-hidden="true"><span></span><span></span><span class="accent"></span></div>
       </div>
       <p class="numero">02</p>
-      <h2>Ask La Cigale</h2>
-      <p>Right-clicking a page or a tab replaces the old "Ask an AI chatbot": the request goes
-        to your local assistant, not to an online service.</p>
+      <h2>Glass pages</h2>
+      <p>The home page, Protection, the assistant and these pages move to frosted glass: translucent cards, a light edge,
+        soft shadows, a blue main button. With the olive theme, the accent stays olive.</p>
+      <div class="actions"><button class="bouton plein" id="voir-accueil">See my home page</button></div>
     </article>
 
     <article class="atout large">
       <div class="apercu">
-        <div class="mini-fenetre" aria-hidden="true">
-          <div class="cote"><i></i><i class="court"></i><i></i></div>
-          <div class="site"><i></i><i></i><i class="court"></i><i></i></div>
-        </div>
+        <div class="mini-gestes" aria-hidden="true"><span class="pastille-g">Confirm</span><span class="champ-g">la cigale|</span></div>
       </div>
       <p class="numero">03</p>
-      <h2>The assistant beside the page</h2>
-      <p>It opens in a panel on the side of the window and follows the tab you are looking at.
-        It has its own icon in the sidebar.</p>
-      <div class="actions"><button class="bouton" id="ouvrir-panneau-ia">Open the panel</button></div>
+      <h2>Controls that respond</h2>
+      <p>Tabs slide open, buttons press in under the click, cards ease into place.
+        If Windows is set to reduce animations, they stop.</p>
     </article>
 
     <article class="atout">
-      <div class="apercu">
-        <div class="mini-traduction" aria-hidden="true">
-          <span class="avant">La cigale chante tout l'été</span>
-          <span class="apres">The cicada sings all summer</span>
-        </div>
-      </div>
+      <div class="apercu"><p class="mini-police" aria-hidden="true">Aa</p></div>
       <p class="numero">04</p>
-      <h2>Local translation</h2>
-      <p>"Translate the page" replaces the text in place, top of the page first, keeping links and formatting.
-        One button brings back the original. It is slower than an online service, but nothing leaves.</p>
+      <h2>The system typeface</h2>
+      <p>Titles, numbers and text use the Windows typeface, set tight like on a Mac.
+        No more mix of two families.</p>
     </article>
 
     <article class="atout">
       <div class="apercu">
-        <ol class="mini-pensee" aria-hidden="true">
-          <li>Thinking</li>
-          <li>Checking</li>
-          <li class="fin">Answer</li>
-        </ol>
+        <ul class="mini-menu" aria-hidden="true">
+          <li class="titre">New tab</li>
+          <li>New window</li>
+          <li>Tor window</li>
+        </ul>
       </div>
       <p class="numero">05</p>
-      <h2>A model that thinks</h2>
-      <p>"Thinker" (Qwen3 4B) reasons before answering, and you can read its thinking step by step.</p>
+      <h2>Translucent menus</h2>
+      <p>Menus and panels have rounded corners and a highlight along the top. On Windows 11, they let
+        what is behind them show through.</p>
     </article>
 
     <article class="atout">
       <div class="apercu">
-        <ul class="mini-historique" aria-hidden="true">
-          <li><b>Bread recipe</b><small>yesterday</small></li>
-          <li><b>Letter to the landlord</b><small>Monday</small></li>
-          <li><b>Article summary</b><small>Nov 12</small></li>
+        <ul class="mini-petits" aria-hidden="true">
+          <li>Category hover</li>
+          <li>Field backgrounds</li>
         </ul>
       </div>
       <p class="numero">06</p>
-      <h2>History, if you want it</h2>
-      <p>Off by default. When on, it keeps your last 50 conversations on this computer.
-        The panic button wipes them along with everything else.</p>
-      <div class="actions"><button class="bouton" id="historique"></button></div>
-    </article>
-
-    <article class="atout tres-large">
-      <div class="apercu">
-        <ul class="mini-petits" aria-hidden="true">
-          <li>Seyra at the bottom of the sidebar</li>
-          <li>AI assistant button on the home page</li>
-          <li>Cigale button next to extensions</li>
-        </ul>
-      </div>
-      <div class="texte">
-        <p class="numero">07</p>
-        <h2>And small touches</h2>
-        <p>Seyra stays at the bottom of the sidebar, the home page gets an assistant button next to Tor,
-          and the cigale button sits just before the extensions button.</p>
-        <div class="actions"><button class="bouton" id="voir-accueil">See my home page</button></div>
-      </div>
+      <h2>Fixes</h2>
+      <p>In Protection, two base colours pointed to themselves: the category hover and the background
+        of input fields did not show. This is fixed.</p>
     </article>
   </div>
 </main>

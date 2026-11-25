@@ -2,7 +2,7 @@
 :root {
   color-scheme: dark;
   --fond: #0a0a0b;
-  --surface: var(--surface);
+  --surface: rgba(255, 255, 255, 0.05);
   --surface-forte: rgba(255, 255, 255, 0.08);
   --bordure: rgba(255, 255, 255, 0.10);
   --texte: #ededed;
@@ -10,7 +10,7 @@
   --trait: rgba(255, 255, 255, 0.08);
   --rayon: 14px;
   --survol: rgba(255, 255, 255, 0.13);
-  --champ: var(--champ);
+  --champ: rgba(255, 255, 255, 0.06);
   --coche: #d8d8dc;
   --carte: rgba(18, 18, 20, 0.72);
   --image-fond: url(chrome://browser/content/cigale/accueil/img/fond.jpg);

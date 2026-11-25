@@ -6,122 +6,88 @@
 <title>Quoi de neuf</title>
 <link rel="icon" href="chrome://browser/content/cigale/bouton.png">
 <link rel="stylesheet" href="chrome://browser/content/cigale/pages.css">
+<link rel="stylesheet" href="chrome://browser/content/cigale/verre/verre-pages.css">
 </head>
 <body>
 <main class="page">
   <header class="hero">
     <p class="marque"><img src="chrome://browser/content/cigale/bouton-barre.png" alt=""><span class="surtitre">Quoi de neuf</span></p>
-    <h1>La Cigale <span id="version">1.7</span></h1>
-    <p class="chapeau">Un assistant IA qui tourne sur votre ordinateur, sans compte et sans envoyer vos pages à personne.
-      Il résume, explique, traduit, et peut maintenant rester ouvert à côté de vos onglets.</p>
+    <h1>La Cigale <span id="version">1.8</span></h1>
+    <p class="chapeau">Une refonte complète, façon verre liquide : onglets en capsules, barre d'adresse et menus translucides,
+      pages en verre, une seule police et des gestes qui répondent. Vos réglages et vos protections ne changent pas.</p>
   </header>
 
   <div class="grille">
     <article class="atout tres-large">
       <div class="apercu">
-        <div class="mini-discussion" aria-hidden="true">
-          <p class="question">Résume cette page en trois points</p>
-          <p class="reponse"><i class="l1"></i><i class="l2"></i><i class="l3"></i></p>
-          <small>Sur cet ordinateur</small>
+        <div class="mini-verre" aria-hidden="true">
+          <div class="barre-onglets"><span class="onglet actif">La Cigale</span><span class="onglet">Wikipédia</span><span class="plus">+</span></div>
+          <div class="barre-adresse"><i></i><span>Rechercher ou saisir une adresse</span></div>
         </div>
       </div>
       <div class="texte">
         <p class="numero">01</p>
-        <h2>Un assistant IA local</h2>
-        <p>Le modèle se télécharge une fois (2,5 à 5 Go selon votre choix), puis tout se passe sur votre ordinateur :
-          aucune question ni aucune page ne part sur Internet. Il peut lire l'onglet ouvert, et, si vous l'autorisez,
-          vos onglets, notes et favoris.</p>
-        <div class="actions"><button class="bouton plein" id="ouvrir-assistant">Ouvrir l'assistant</button></div>
+        <h2>Le cadre en verre liquide</h2>
+        <p>L'onglet ouvert devient une capsule de verre, la barre d'adresse s'entoure d'un anneau bleu quand vous tapez,
+          la page repose dans un cadre aux coins arrondis. Le thème clair a son verre blanc, le thème olive son verre vert.</p>
+        <div class="actions"><button class="bouton" id="verre"></button></div>
       </div>
     </article>
 
     <article class="atout large">
       <div class="apercu">
-        <ul class="mini-menu" aria-hidden="true">
-          <li class="titre">Demander à La Cigale</li>
-          <li>Résumer cette page</li>
-          <li>Analyser les liens</li>
-          <li>Traduire la page</li>
-          <li>Expliquer la sélection</li>
-        </ul>
+        <div class="mini-cartes" aria-hidden="true"><span></span><span></span><span class="accent"></span></div>
       </div>
       <p class="numero">02</p>
-      <h2>Demander à La Cigale</h2>
-      <p>Un clic droit sur une page ou sur un onglet remplace l'ancien « Demander à un chatbot IA » : la demande part
-        à votre assistant local, pas à un service en ligne.</p>
+      <h2>Des pages en verre</h2>
+      <p>L'accueil, Protection, l'assistant et ces pages passent au verre dépoli : cartes translucides, liseré clair,
+        ombres douces, bouton principal en bleu. Avec le thème olive, l'accent reste olive.</p>
+      <div class="actions"><button class="bouton plein" id="voir-accueil">Voir mon accueil</button></div>
     </article>
 
     <article class="atout large">
       <div class="apercu">
-        <div class="mini-fenetre" aria-hidden="true">
-          <div class="cote"><i></i><i class="court"></i><i></i></div>
-          <div class="site"><i></i><i></i><i class="court"></i><i></i></div>
-        </div>
+        <div class="mini-gestes" aria-hidden="true"><span class="pastille-g">Valider</span><span class="champ-g">la cigale|</span></div>
       </div>
       <p class="numero">03</p>
-      <h2>L'assistant à côté de la page</h2>
-      <p>Il s'ouvre dans un panneau sur le côté de la fenêtre et suit l'onglet que vous regardez.
-        Une icône lui est réservée dans la barre latérale.</p>
-      <div class="actions"><button class="bouton" id="ouvrir-panneau-ia">Ouvrir le panneau</button></div>
+      <h2>Des gestes qui répondent</h2>
+      <p>Les onglets s'ouvrent en glissant, les boutons s'enfoncent sous le clic, les cartes arrivent en douceur.
+        Si Windows est réglé pour réduire les animations, elles s'arrêtent.</p>
     </article>
 
     <article class="atout">
-      <div class="apercu">
-        <div class="mini-traduction" aria-hidden="true">
-          <span class="avant">The cicada sings all summer</span>
-          <span class="apres">La cigale chante tout l'été</span>
-        </div>
-      </div>
+      <div class="apercu"><p class="mini-police" aria-hidden="true">Aa</p></div>
       <p class="numero">04</p>
-      <h2>Traduction locale</h2>
-      <p>« Traduire la page » remplace le texte sur place, le haut de la page d'abord, liens et mise en forme gardés.
-        Un bouton remet l'original. C'est plus lent qu'un service en ligne, mais rien ne sort.</p>
+      <h2>La police du système</h2>
+      <p>Titres, chiffres et textes utilisent la police de Windows, serrée comme sur un Mac.
+        Plus de mélange de deux familles.</p>
     </article>
 
     <article class="atout">
       <div class="apercu">
-        <ol class="mini-pensee" aria-hidden="true">
-          <li>Réflexion</li>
-          <li>Vérification</li>
-          <li class="fin">Réponse</li>
-        </ol>
+        <ul class="mini-menu" aria-hidden="true">
+          <li class="titre">Nouvel onglet</li>
+          <li>Nouvelle fenêtre</li>
+          <li>Fenêtre Tor</li>
+        </ul>
       </div>
       <p class="numero">05</p>
-      <h2>Un modèle qui réfléchit</h2>
-      <p>« Réfléchi » (Qwen3 4B) raisonne avant de répondre, et vous pouvez lire sa réflexion pas à pas.
-        Elle est écrite en anglais ; la réponse, en français.</p>
+      <h2>Menus translucides</h2>
+      <p>Menus et panneaux ont des coins arrondis et un reflet en haut. Sous Windows 11, ils laissent deviner
+        ce qu'il y a derrière.</p>
     </article>
 
     <article class="atout">
       <div class="apercu">
-        <ul class="mini-historique" aria-hidden="true">
-          <li><b>Recette du pain</b><small>hier</small></li>
-          <li><b>Lettre au bailleur</b><small>lundi</small></li>
-          <li><b>Résumé d'article</b><small>12 nov.</small></li>
+        <ul class="mini-petits" aria-hidden="true">
+          <li>Survol des catégories</li>
+          <li>Fond des champs</li>
         </ul>
       </div>
       <p class="numero">06</p>
-      <h2>Historique, si vous voulez</h2>
-      <p>Désactivé d'origine. Activé, il garde vos 50 dernières conversations sur cet ordinateur.
-        Le bouton panique les efface avec le reste.</p>
-      <div class="actions"><button class="bouton" id="historique"></button></div>
-    </article>
-
-    <article class="atout tres-large">
-      <div class="apercu">
-        <ul class="mini-petits" aria-hidden="true">
-          <li>Seyra en bas de la barre latérale</li>
-          <li>Bouton Assistant IA sur l'accueil</li>
-          <li>Bouton cigale à côté des extensions</li>
-        </ul>
-      </div>
-      <div class="texte">
-        <p class="numero">07</p>
-        <h2>Et de petites retouches</h2>
-        <p>Seyra reste en bas de la barre latérale, l'accueil gagne un bouton pour l'assistant à côté de Tor,
-          et le bouton cigale se range juste avant celui des extensions.</p>
-        <div class="actions"><button class="bouton" id="voir-accueil">Voir mon accueil</button></div>
-      </div>
+      <h2>Corrections</h2>
+      <p>Dans Protection, deux couleurs de base pointaient sur elles-mêmes : le survol des catégories et le fond
+        des champs de saisie ne s'affichaient pas. C'est réparé.</p>
     </article>
   </div>
 </main>
