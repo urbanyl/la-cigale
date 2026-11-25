@@ -190,3 +190,95 @@ html.panneau .statut { white-space: nowrap; padding: 3px 8px; }
 html.panneau #statut-texte { display: none; }
 html.panneau #modele { max-width: 150px; padding: 5px 8px; font-size: 13px; }
 html.panneau #ouvrir-reglages { font-size: 0; gap: 0; padding: 7px; }
+
+
+/* ---------- La Cigale 1.8 : mise en page façon app macOS (page entière seulement) ----------
+   Barre latérale à gauche (titre, état, actions, conversations, réglages), discussion à droite.
+   Le panneau à droite de la page garde sa colonne unique. */
+html:not(.panneau) .cadre:has(#discussion:not([hidden])) {
+  max-width: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    "tete   page"
+    "outils fil"
+    "liste  fil"
+    "liste  saisie"
+    "liste  pied";
+}
+html:not(.panneau) .cadre:has(#discussion:not([hidden]))::before {
+  content: "";
+  grid-area: 1 / 1 / -1 / 2;
+  background: var(--a-barre);
+  border-right: 1px solid var(--a-trait);
+}
+html:not(.panneau) .cadre:has(#discussion:not([hidden])) #discussion { display: contents; }
+
+/* barre latérale */
+html:not(.panneau) .cadre:has(#discussion:not([hidden])) .tete {
+  grid-area: tete;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  padding: 18px 16px 12px;
+  border-bottom: 0;
+}
+html:not(.panneau) .cadre:has(#discussion:not([hidden])) .tete h1 { font-size: 17px; font-weight: 600; }
+html:not(.panneau) .cadre:has(#discussion:not([hidden])) .tete > img { width: 22px; height: 22px; }
+html:not(.panneau) .cadre:has(#discussion:not([hidden])) .tete .espace { flex-basis: 100%; height: 0; }
+html:not(.panneau) .cadre:has(#discussion:not([hidden])) .tete #modele { width: 100%; max-width: none; padding: 4px 8px; font-size: 13px; }
+html:not(.panneau) .cadre:has(#discussion:not([hidden])) .tete #ouvrir-reglages {
+  position: fixed; left: 10px; bottom: 12px; width: 230px; justify-content: flex-start;
+  padding: 6px 8px; border-radius: 6px; font-size: 13px; color: var(--a-texte);
+}
+html:not(.panneau) .cadre:has(#discussion:not([hidden])) .tete #ouvrir-reglages svg { width: 16px; height: 16px; }
+html:not(.panneau) .cadre:has(#discussion:not([hidden])) .statut { order: 5; border: 0; padding: 0; font-size: 12px; }
+
+#discussion > .outils:first-child { grid-area: outils; }
+html:not(.panneau) #discussion > .outils:first-child {
+  flex-direction: column; align-items: stretch; gap: 2px; padding: 4px 10px 10px; flex-wrap: nowrap;
+  border-bottom: 1px solid var(--a-trait); margin: 0 6px;
+}
+html:not(.panneau) #discussion > .outils:first-child .espace { display: none; }
+html:not(.panneau) #discussion > .outils:first-child button {
+  justify-content: flex-start; padding: 6px 8px; border-radius: 6px; font-size: 13px; color: var(--a-texte);
+}
+html:not(.panneau) #discussion > .outils:first-child button svg { width: 16px; height: 16px; color: var(--a-accent); }
+html:not(.panneau) #discussion > .outils:first-child #effacer { order: -1; }
+html:not(.panneau) #discussion > .outils:first-child button[aria-expanded="true"] { background: var(--a-survol); }
+
+html:not(.panneau) #liste-conversations {
+  grid-area: liste; max-height: none; align-content: start; gap: 1px;
+  padding: 8px 10px 56px; margin: 0; border: 0; font-size: 13px;
+}
+html:not(.panneau) #liste-conversations .gris { padding: 4px 8px; font-size: 12.5px; }
+html:not(.panneau) .ligne-conversation { border-radius: 6px; position: relative; }
+html:not(.panneau) .ligne-conversation > button:first-child { flex-direction: column; align-items: flex-start; gap: 0; padding: 6px 8px; }
+html:not(.panneau) .ligne-conversation b { max-width: 100%; color: var(--a-texte); font-weight: 500; }
+html:not(.panneau) .ligne-conversation small { margin-left: 0; font-size: 11.5px; }
+html:not(.panneau) .ligne-conversation .supprimer { position: absolute; right: 4px; top: 6px; padding: 2px 6px; visibility: hidden; }
+html:not(.panneau) .ligne-conversation:hover .supprimer { visibility: visible; }
+html:not(.panneau) .ligne-conversation.actuelle { background: var(--a-accent); }
+html:not(.panneau) .ligne-conversation.actuelle b, html:not(.panneau) .ligne-conversation.actuelle small,
+html:not(.panneau) .ligne-conversation.actuelle .supprimer { color: var(--a-sur-accent); }
+html:not(.panneau) .ligne-conversation:hover:not(.actuelle) { background: var(--a-survol); }
+
+/* zone de discussion */
+html:not(.panneau) #outils-page {
+  grid-area: page; margin: 0; padding: 10px 24px; border-bottom: 1px solid var(--a-trait); font-size: 13px;
+}
+html:not(.panneau) #fil { grid-area: fil; padding: 24px max(24px, calc((100% - 760px) / 2)) 18px; }
+html:not(.panneau) #formulaire {
+  grid-area: saisie; width: min(760px, calc(100% - 48px)); justify-self: center; border-radius: 10px;
+}
+html:not(.panneau) .pied { grid-area: pied; padding: 0 24px 12px; font-size: 11.5px; }
+
+/* aplats : bulles, boutons et champs sans rien de superflu */
+.statut.marche .point { box-shadow: none; }
+.vide .grand { font-size: 24px; font-weight: 600; }
+.suggestions button { border-radius: 6px; }
+.pensee { border-radius: 6px; }
+.apropos { border-radius: 6px; }
+.ligne-modele, .modele, .rapport { border-radius: 10px; }
+body { background: var(--a-fond); }

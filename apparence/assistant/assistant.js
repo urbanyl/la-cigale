@@ -708,16 +708,18 @@ function restaurer(c) {
     markdown(reponse, m.texte);
     actionsMessage(b, m.texte);
   }
-  basculerConversations(false);
+  // page entière : la liste reste dans la barre latérale ; panneau : on la referme
+  if (PANNEAU) basculerConversations(false); else dessinerConversations();
   defiler();
 }
 
 function montrerHistorique() {
   const actif = A.historiqueActif();
-  $("historique").hidden = !actif;
+  // page entière : les conversations sont toujours listées dans la barre latérale, sans bouton
+  $("historique").hidden = !actif || !PANNEAU;
   $("pied-sans").hidden = actif;
   $("pied-avec").hidden = !actif;
-  if (!actif) basculerConversations(false);
+  basculerConversations(actif && !PANNEAU);
 }
 
 function nouvelleConversation() {
@@ -728,6 +730,7 @@ function nouvelleConversation() {
   pageJointe = "";
   for (const el of [...$("fil").children]) if (el.id != "vide") el.remove();
   $("vide").hidden = false;
+  if (!$("liste-conversations").hidden) dessinerConversations();
 }
 
 // ---------- événements ----------
