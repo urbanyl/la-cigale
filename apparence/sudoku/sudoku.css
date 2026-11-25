@@ -1,0 +1,218 @@
+/* police : remplacée par une adresse data: à la construction (rebrander_omni.py) */
+/* about:sudoku : le jeu de la page « pas de connexion », couleurs de La Cigale */
+@font-face {
+  font-family: Bricolage;
+  src: url("about:sudoku?f=bricolage.woff2") format("woff2");
+  font-weight: 300 700;
+  font-stretch: 75% 100%;
+}
+:root {
+  color-scheme: dark;
+  --fond: #0a0a0b;
+  --carte: rgba(18, 18, 20, 0.78);
+  --carte-forte: rgba(22, 22, 25, 0.92);
+  --trait: rgba(255, 255, 255, 0.09);
+  --trait-bloc: rgba(255, 255, 255, 0.42);
+  --trait-fort: rgba(255, 255, 255, 0.3);
+  --texte: #ededed;
+  --doux: #8c8c90;
+  --accent: #ffffff;
+  --sur-accent: #0a0a0b;
+  --saisie: #e8c48a;
+  --zone: rgba(255, 255, 255, 0.045);
+  --meme: rgba(255, 255, 255, 0.13);
+  --choisie: rgba(232, 196, 138, 0.24);
+  --rose: #e0907e;
+  --rose-fond: rgba(224, 144, 126, 0.16);
+  --vague: rgba(232, 196, 138, 0.32);
+  --image-fond: url("about:sudoku?f=fond.jpg");
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --fond: #eeede9;
+    --carte: rgba(255, 255, 255, 0.82);
+    --carte-forte: rgba(255, 255, 255, 0.95);
+    --trait: rgba(0, 0, 0, 0.1);
+    --trait-bloc: rgba(0, 0, 0, 0.55);
+    --trait-fort: rgba(0, 0, 0, 0.35);
+    --texte: #141416;
+    --doux: #5f5f64;
+    --accent: #141416;
+    --sur-accent: #ffffff;
+    --saisie: #9a6a12;
+    --zone: rgba(0, 0, 0, 0.035);
+    --meme: rgba(0, 0, 0, 0.09);
+    --choisie: rgba(154, 106, 18, 0.18);
+    --rose: #b4432f;
+    --rose-fond: rgba(180, 67, 47, 0.1);
+    --vague: rgba(154, 106, 18, 0.22);
+    --image-fond: url("about:sudoku?f=fond-clair.jpg");
+  }
+  .marque img { filter: invert(1); }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body {
+  min-height: 100vh;
+  background: var(--fond) var(--image-fond) center / cover fixed no-repeat;
+  color: var(--texte);
+  font: 15px/1.5 "Segoe UI Variable", "Segoe UI", Cantarell, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+a { color: inherit; }
+kbd { font: 600 11px ui-monospace, Consolas, monospace; padding: 1px 6px; border: 1px solid var(--trait-fort); border-bottom-width: 2px; border-radius: 5px; }
+svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.surtitre { color: var(--doux); font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+.bouton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 18px; border: 1px solid var(--trait-fort); border-radius: 999px;
+  background: transparent; font-size: 14px; font-weight: 600; text-decoration: none; white-space: nowrap;
+}
+.bouton:hover, .bouton:focus-visible { border-color: var(--texte); outline: 0; }
+.bouton.plein { background: var(--accent); border-color: var(--accent); color: var(--sur-accent); }
+.bouton.plein:hover { filter: brightness(1.08); }
+.bouton svg { width: 17px; height: 17px; }
+
+/* ---------- mise en page ---------- */
+.jeu {
+  --taille: min(600px, 100vw - 48px, 100vh - 170px);
+  width: min(1000px, 100% - 48px); margin: 0 auto; padding: 36px 0 48px;
+}
+.entete { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 22px; }
+.marque { display: flex; align-items: center; gap: 14px; }
+.marque img { width: 38px; height: 38px; }
+.marque h1 { margin: 0; font: 700 44px/0.95 Bricolage, sans-serif; font-stretch: 78%; }
+
+.niveaux { display: flex; padding: 4px; border: 1px solid var(--trait); border-radius: 999px; background: var(--carte); backdrop-filter: blur(16px); }
+.niveaux button { padding: 7px 15px; border: 0; border-radius: 999px; background: transparent; color: var(--doux); font-size: 13.5px; font-weight: 600; }
+.niveaux button:hover { color: var(--texte); }
+.niveaux button[aria-checked="true"] { background: var(--accent); color: var(--sur-accent); }
+
+.retour {
+  display: flex; align-items: center; gap: 12px; margin: 0 0 18px; padding: 10px 10px 10px 16px;
+  border: 1px solid var(--trait); border-radius: 16px; background: var(--carte); backdrop-filter: blur(16px);
+  color: var(--doux); font-size: 14px;
+}
+.retour span { flex: 1; }
+.retour.revenue { border-color: var(--saisie); color: var(--texte); }
+.retour.revenue svg { color: var(--saisie); }
+.retour circle { fill: currentColor; stroke: none; }
+
+.plateau { display: flex; gap: 28px; align-items: flex-start; }
+
+/* ---------- grille ---------- */
+.cadre {
+  position: relative; flex: none; width: var(--taille); height: var(--taille);
+  border: 2px solid var(--trait-bloc); border-radius: 18px; overflow: hidden;
+  background: var(--carte-forte); backdrop-filter: blur(18px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+.grille { display: grid; grid-template-columns: repeat(9, 1fr); grid-template-rows: repeat(9, 1fr); width: 100%; height: 100%; }
+.case {
+  position: relative; display: grid; place-items: center;
+  border-right: 1px solid var(--trait); border-bottom: 1px solid var(--trait);
+  font: 600 calc(var(--taille) / 9 * 0.54)/1 Bricolage, sans-serif; font-stretch: 85%;
+  color: var(--saisie); cursor: pointer; outline: 0;
+  transition: background-color 0.12s;
+}
+.case:nth-child(9n) { border-right: 0; }
+.case:nth-child(n+73) { border-bottom: 0; }
+.case.d3 { border-right: 2px solid var(--trait-bloc); }
+.case.l3 { border-bottom: 2px solid var(--trait-bloc); }
+.case:hover { background: var(--zone); }
+.case.zone { background: var(--zone); }
+.case.meme { background: var(--meme); }
+.case.choisie { background: var(--choisie); }
+.case.donnee { color: var(--texte); font-weight: 700; }
+.case.aidee { color: var(--doux); }
+.case.conflit { color: var(--rose); }
+.case.conflit.choisie, .case.conflit.saisie { background: var(--rose-fond); }
+.case .chiffre { pointer-events: none; }
+.case.pose .chiffre { animation: pose 0.22s ease-out; }
+@keyframes pose { from { transform: scale(0.55); opacity: 0.3; } }
+.case.vague { animation: vague 0.6s ease-out both; }
+@keyframes vague { 0% { background-color: transparent; } 35% { background-color: var(--vague); } 100% { background-color: transparent; } }
+
+.notes-case {
+  position: absolute; inset: 3px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
+  pointer-events: none;
+}
+.notes-case span {
+  display: grid; place-items: center; color: var(--doux);
+  font: 600 calc(var(--taille) / 9 * 0.25)/1 "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+}
+.notes-case span.allumee { color: var(--saisie); font-weight: 800; }
+
+/* ---------- voile : pause et victoire ---------- */
+.voile {
+  position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center;
+  background: color-mix(in srgb, var(--fond) 90%, transparent); backdrop-filter: blur(14px);
+  animation: apparait 0.25s ease-out;
+}
+@keyframes apparait { from { opacity: 0; } }
+.voile-titre { margin: 4px 0 6px; font: 700 64px/0.95 Bricolage, sans-serif; font-stretch: 78%; }
+.voile-texte { margin: 0 0 22px; color: var(--doux); font-size: 16px; }
+.voile-texte b { color: var(--texte); }
+.voile-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.voile p { margin-top: 0; }
+.record-neuf { display: inline-block; margin-bottom: 12px; padding: 4px 12px; border-radius: 999px; background: var(--saisie); color: var(--sur-accent); font-size: 12.5px; font-weight: 700; letter-spacing: 0.04em; }
+
+/* ---------- panneau ---------- */
+.cote { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 14px; }
+.infos {
+  display: flex; align-items: center; gap: 22px; padding: 14px 14px 14px 20px;
+  border: 1px solid var(--trait); border-radius: 18px; background: var(--carte); backdrop-filter: blur(16px);
+}
+.infos small { display: block; color: var(--doux); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.infos b { font: 700 30px/1.05 Bricolage, sans-serif; font-stretch: 80%; font-variant-numeric: tabular-nums; }
+.infos #record { color: var(--doux); }
+.rond {
+  margin-left: auto; display: grid; place-items: center; width: 44px; height: 44px;
+  border: 1px solid var(--trait-fort); border-radius: 50%; background: transparent;
+}
+.rond:hover { border-color: var(--texte); }
+
+.outils { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.outil {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px 10px;
+  border: 1px solid var(--trait); border-radius: 14px; background: var(--carte); backdrop-filter: blur(16px);
+  color: var(--doux); font-size: 12.5px; font-weight: 600;
+}
+.outil:hover { color: var(--texte); border-color: var(--trait-fort); }
+.outil svg { width: 22px; height: 22px; }
+.outil[aria-pressed="true"] { color: var(--sur-accent); background: var(--saisie); border-color: var(--saisie); }
+.outil[disabled] { opacity: 0.35; cursor: default; }
+.outil .etat {
+  position: absolute; top: 6px; right: 6px; min-width: 20px; padding: 1px 5px; border-radius: 999px;
+  background: var(--trait); color: var(--texte); font: 700 10.5px/1.4 system-ui, sans-serif; font-style: normal;
+}
+.outil[aria-pressed="true"] .etat { background: var(--sur-accent); color: var(--saisie); }
+
+.pave { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.touche {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 66px;
+  border: 1px solid var(--trait); border-radius: 14px; background: var(--carte-forte); backdrop-filter: blur(16px);
+}
+.touche:hover { border-color: var(--trait-fort); }
+.touche:active { transform: scale(0.96); }
+.touche b { font: 700 30px/1 Bricolage, sans-serif; font-stretch: 85%; }
+.touche small { color: var(--doux); font-size: 11px; font-weight: 600; }
+.touche.actif { border-color: var(--saisie); box-shadow: inset 0 0 0 1px var(--saisie); }
+.touche.fini { opacity: 0.28; }
+.pave.notes .touche b { color: var(--saisie); font-size: 22px; font-weight: 600; }
+
+.nouvelle { width: 100%; padding: 13px 18px; }
+.aide { margin: 0; color: var(--doux); font-size: 12.5px; text-align: center; }
+
+@media (max-width: 900px) {
+  .jeu { --taille: min(600px, 100vw - 32px); width: calc(100% - 32px); padding-top: 22px; }
+  .plateau { flex-direction: column; align-items: center; }
+  .cote { width: var(--taille); }
+  .aide { display: none; }
+}

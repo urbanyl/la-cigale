@@ -1,0 +1,23 @@
+/* about:sudoku avec le thème Olive (servi à la place de theme-aucun.css) */
+html:root:root {
+  color-scheme: dark;
+  --fond: #121815;
+  --carte: rgba(24, 33, 28, 0.82);
+  --carte-forte: rgba(28, 38, 32, 0.94);
+  --trait: rgba(169, 184, 154, 0.16);
+  --trait-bloc: rgba(169, 184, 154, 0.6);
+  --trait-fort: rgba(169, 184, 154, 0.55);
+  --texte: #e9e6dc;
+  --doux: #97a293;
+  --accent: #a9b89a;
+  --sur-accent: #121815;
+  --saisie: #d9c98f;
+  --zone: rgba(169, 184, 154, 0.06);
+  --meme: rgba(169, 184, 154, 0.17);
+  --choisie: rgba(217, 201, 143, 0.24);
+  --rose: #e0907e;
+  --rose-fond: rgba(224, 144, 126, 0.16);
+  --vague: rgba(217, 201, 143, 0.3);
+  --image-fond: url("about:sudoku?f=fond-olive.jpg");
+}
+html:root:root .marque img { filter: none; }

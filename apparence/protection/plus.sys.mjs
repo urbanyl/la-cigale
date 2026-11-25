@@ -767,6 +767,9 @@ export function installer() {
   if (installe) return;
   installe = true;
   try { bilan.installer(); } catch (e) { console.error("La Cigale : bilan", e); }
+  try {
+    ChromeUtils.importESModule("chrome://browser/content/cigale/sudoku/jeu.sys.mjs").installer();
+  } catch (e) { console.error("La Cigale : sudoku", e); }
 
   try {
     ChromeUtils.registerWindowActor("CigalePlus", {

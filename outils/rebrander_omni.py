@@ -46,6 +46,21 @@ for _f in (RACINE / "accueil").rglob("*"):
     if _f.is_file():
         AJOUTS_BROWSER[CIGALE + "accueil/" + _f.relative_to(RACINE / "accueil").as_posix()] = _f.read_bytes()
 AJOUTS_BROWSER[CIGALE + "bouton.png"] = (BRANDING / "png" / "logo-128.png").read_bytes()
+# about:sudoku, proposé par la page « pas de connexion »
+for _f in ("sudoku.html", "sudoku.css", "sudoku.js", "theme-olive.css", "theme-aucun.css", "jeu.sys.mjs"):
+    AJOUTS_BROWSER[CIGALE + "sudoku/" + _f] = (RACINE / "apparence" / "sudoku" / _f).read_bytes()
+# police intégrée : une page about: ordinaire ne peut pas la charger à part
+AJOUTS_BROWSER[CIGALE + "sudoku/sudoku.css"] = AJOUTS_BROWSER[CIGALE + "sudoku/sudoku.css"].replace(
+    b'url("about:sudoku?f=bricolage.woff2")',
+    b'url("data:font/woff2;base64,' + __import__("base64").b64encode(
+        (RACINE / "accueil" / "polices" / "bricolage-latin.woff2").read_bytes()) + b'")')
+# omni.ja de la boîte à outils : bouton « Jouer au sudoku » de la page d'erreur réseau
+NETERROR = "chrome/toolkit/content/global/aboutNetError.html"
+NETERROR_ANCRE = b'    <script src="chrome://global/content/neterror/aboutNetErrorCodes.js"></script>\n'
+NETERROR_AJOUT = b'    <script src="chrome://global/content/cigale-jeu.js"></script>\n'
+AJOUTS_RACINE = {
+    "chrome/toolkit/content/global/cigale-jeu.js": (RACINE / "apparence" / "sudoku" / "neterror-jeu.js").read_bytes(),
+}
 
 
 def _bouton_barre() -> bytes:
@@ -459,6 +474,8 @@ def transformer_identite(nom: str, donnees: bytes):
         return correctif(donnees, *FOND_PRIVE, nom)
     if nom == "chrome/browser/skin/classic/browser/browser-shared.css":
         return donnees + CSS_INDICATEUR
+    if nom == NETERROR:
+        return correctif(donnees, NETERROR_ANCRE, NETERROR_ANCRE + NETERROR_AJOUT, nom)
     base = nom.rsplit("/", 1)[-1]
     racine = base.rsplit(".", 1)[0]
     if nom == PRIVE + "aboutPrivateBrowsing.css":
@@ -589,7 +606,7 @@ def main():
     for omni in (installation / "browser" / "omni.ja", installation / "omni.ja"):
         if not omni.is_file():
             sys.exit(f"Introuvable : {omni}")
-        n = rebrander_omni(omni, AJOUTS_BROWSER if omni.parent.name == "browser" else None)
+        n = rebrander_omni(omni, AJOUTS_BROWSER if omni.parent.name == "browser" else AJOUTS_RACINE)
         total += n
         print(f"{omni.relative_to(installation)} : {n} fichiers modifiés")
     i = icones_fenetres(installation)
