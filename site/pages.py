@@ -280,7 +280,7 @@ def tete(langue, page, relatif, schema):
 <script type="application/ld+json">
 {json.dumps(schema, ensure_ascii=False, indent=1)}
 </script>
-<link rel="stylesheet" href="{relatif}style.css?v=5">
+<link rel="stylesheet" href="{relatif}style.css?v=6">
 </head>
 '''
 
