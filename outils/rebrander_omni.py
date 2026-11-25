@@ -46,6 +46,9 @@ for _f in (RACINE / "accueil").rglob("*"):
     if _f.is_file():
         AJOUTS_BROWSER[CIGALE + "accueil/" + _f.relative_to(RACINE / "accueil").as_posix()] = _f.read_bytes()
 AJOUTS_BROWSER[CIGALE + "bouton.png"] = (BRANDING / "png" / "logo-128.png").read_bytes()
+# petits outils (palette, notes, mini-lecteur, aperçu des liens, gestes, retouches)
+for _f in ("outils.sys.mjs", "outils-enfant.sys.mjs", "outils.css", "notes.html", "notes.js", "notes.css", "notes.svg"):
+    AJOUTS_BROWSER[CIGALE + "outils/" + _f] = (RACINE / "apparence" / "outils" / _f).read_bytes()
 # about:sudoku, proposé par la page « pas de connexion »
 for _f in ("sudoku.html", "sudoku.css", "sudoku.js", "theme-olive.css", "theme-aucun.css", "jeu.sys.mjs"):
     AJOUTS_BROWSER[CIGALE + "sudoku/" + _f] = (RACINE / "apparence" / "sudoku" / _f).read_bytes()

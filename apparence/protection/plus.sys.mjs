@@ -598,6 +598,8 @@ function installerFenetre(win) {
   win.cigalePlus = true;
   try { seyraBarreLaterale(win); } catch (e) { console.error("La Cigale : barre latérale", e); }
   try { bilan.suivre(win); } catch (e) { console.error("La Cigale : bilan", e); }
+  try { ChromeUtils.importESModule("chrome://browser/content/cigale/outils/outils.sys.mjs").fenetre(win); }
+  catch (e) { console.error("La Cigale : outils", e); }
   const doc = win.document;
   const g = win.gBrowser;
 
@@ -770,6 +772,9 @@ export function installer() {
   try {
     ChromeUtils.importESModule("chrome://browser/content/cigale/sudoku/jeu.sys.mjs").installer();
   } catch (e) { console.error("La Cigale : sudoku", e); }
+  try {
+    ChromeUtils.importESModule("chrome://browser/content/cigale/outils/outils.sys.mjs").installer();
+  } catch (e) { console.error("La Cigale : outils", e); }
 
   try {
     ChromeUtils.registerWindowActor("CigalePlus", {

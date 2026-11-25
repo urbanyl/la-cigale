@@ -35,13 +35,82 @@ const SALUTATIONS = {
     "La cigale veille", "Ici, on ne vous suit pas", "Naviguez léger", "À vous de jouer", "Une recherche ?",
     "Curieux aujourd'hui ?", "On explore ?", "Cap sur l'inconnu", "Que la curiosité vous guide", "Bonne navigation",
     "Envie d'apprendre un truc ?", "Une question en tête ?", "On découvre quoi ?", "Le web, en paix", "À l'abri des regards",
+    "Qu'est-ce qui vous amène ?", "Sur quoi on travaille ?", "Je vous écoute", "Une idée à creuser ?", "Dites-moi tout",
+    "Juste un coup d'œil, promis ?", "Onglet neuf, idées neuves", "Par ici la curiosité", "On reprend ?", "Alors, ce projet ?",
   ],
 };
 
-function salutationDuMoment(heure) {
+// Phrases calées sur l'heure exacte, le jour de la semaine et la date.
+// Elles passent devant les autres une fois sur deux quand il y en a.
+function salutationsPrecises(h, { minute = -1, jour = -1, quantieme = 0, mois = 0 } = {}) {
+  const semaine = jour >= 1 && jour <= 5;
+  const weekend = jour == 0 || jour == 6;
+  const p = [];
+  const ajouter = (condition, ...phrases) => { if (condition) p.push(...phrases); };
+
+  // heure par heure
+  ajouter(h >= 1 && h < 4, "Le sommeil, ça vous dit quelque chose ?", `${h} heure${h > 1 ? "s" : ""} du matin, quand même`,
+    "Le web ne dort jamais, et vous non plus apparemment", "Même les serveurs bâillent", "Rien de bon n'arrive après 2 heures, dit-on");
+  ajouter(h == 4, "Bah alors, on se lève tôt ?", "Même le boulanger dort encore", "4 heures du matin, sérieusement ?",
+    "Debout avant les oiseaux");
+  ajouter(h == 5, "Lève-tôt, ou pas encore couché ?", "Le réveil n'a même pas sonné, si ?", "Bah alors, on se lève tôt ?",
+    "Les cigales ne sont pas encore réveillées");
+  ajouter(h == 6, "Premier café en cours ?", "Le soleil fait à peine semblant", "Matinal, chapeau", "La maison dort encore ?");
+  ajouter(h == 7 && semaine, "Au boulot, chef", "On regarde la météo avant de partir ?", "Le métro attendra deux minutes",
+    "Clés, téléphone, portefeuille ?");
+  ajouter(h == 8 && semaine, "Au boulot, chef", "La journée commence pour de vrai", "Les mails peuvent attendre cinq minutes",
+    "On s'y met ?");
+  ajouter(h >= 9 && h < 11, "Le premier café est déjà loin ?", "Pile dans le rythme", "Le cerveau est chaud, on fonce");
+  ajouter(h == 11, "Ça sent bientôt la pause déj", "On pense déjà à manger ?", "Plus qu'une heure avant le déjeuner",
+    "L'estomac commence à parler ?");
+  ajouter(h == 12 || h == 13, "Bon appétit", "On mange devant l'écran ?", "Pause déj, la vraie", "Une idée de recette pour ce midi ?");
+  ajouter(h == 14, "Le fameux coup de barre de 14 heures", "La digestion, ce combat", "Les paupières sont lourdes ?",
+    "Un café pour tenir ?");
+  ajouter(h == 15 || h == 16, "Un petit goûter ?", "Quatre heures, l'heure sacrée du goûter", "La dernière ligne droite",
+    "Encore un peu de concentration");
+  ajouter((h == 17 || h == 18) && semaine, "Bientôt la quille", "On rentre bientôt ?", "La journée tire à sa fin",
+    "Le bureau se vide ?");
+  ajouter(h == 19 || h == 20, "Qu'est-ce qu'on mange ce soir ?", "À table bientôt ?", "Une recette pour ce soir ?",
+    "Apéro, peut-être ?");
+  ajouter(h == 21 || h == 22, "Un épisode, juste un", "Le canapé vous appelle", "Soirée série ?", "On se pose ?");
+  ajouter(h == 23, "Demain existe aussi, vous savez", "Encore un dernier onglet, promis ?", "Il serait temps d'y penser, au lit");
+  ajouter(h == 0, "Minuit passé, on ne juge pas", "Le jour d'après a déjà commencé", "Encore un dernier onglet, promis ?");
+
+  // la minute
+  ajouter(minute == 0 && h == 12, "Midi pile");
+  ajouter(minute == 0 && h == 0, "Minuit pile");
+  ajouter(minute == 0 && h != 0 && h != 12, `${h} heure${h > 1 ? "s" : ""} pile`);
+
+  // le jour de la semaine
+  ajouter(jour == 1 && h >= 5 && h < 12, "Lundi matin, courage", "Le lundi, on y va doucement", "Le week-end a passé trop vite ?");
+  ajouter(jour == 3 && h >= 9 && h < 18, "Mercredi, la moitié est faite");
+  ajouter(jour == 4 && h >= 9 && h < 18, "Jeudi, le vendredi se rapproche");
+  ajouter(jour == 5 && h >= 12 && h < 19, "Vendredi, le week-end est en vue", "Plus que quelques heures avant le week-end",
+    "Vendredi après-midi, on lève le pied ?");
+  ajouter(jour == 5 && h >= 19, "Enfin vendredi soir", "Le week-end commence maintenant");
+  ajouter(weekend && h >= 5 && h < 12, "Pas de réveil aujourd'hui ?", "Grasse matinée réussie ?", "Le week-end, enfin",
+    "Brunch en vue ?");
+  ajouter(jour == 6 && h >= 12 && h < 19, "Samedi, tout est permis", "Un samedi tranquille ?");
+  ajouter(jour == 0 && h >= 18, "Dimanche soir, lundi approche", "On profite des dernières heures du week-end");
+
+  // quelques dates
+  ajouter(quantieme == 1 && mois == 1, "Bonne année", "Nouvelle année, nouveaux onglets");
+  ajouter(quantieme == 31 && mois == 12, "Dernier jour de l'année", "On finit l'année en beauté ?");
+  ajouter(quantieme == 24 && mois == 12, "Veille de Noël, les cadeaux sont prêts ?");
+  ajouter(quantieme == 25 && mois == 12, "Joyeux Noël");
+  ajouter(quantieme == 1 && mois == 4, "Méfiez-vous des poissons aujourd'hui");
+  ajouter(quantieme == 13 && jour == 5, "Vendredi 13, prudence");
+  ajouter(quantieme == 21 && mois == 6, "Fête de la musique, et des cigales");
+  ajouter(quantieme == 14 && mois == 7, "Bon 14 Juillet");
+  ajouter(quantieme == 1 && h >= 5 && h < 12, "Nouveau mois, nouveau départ");
+  return p;
+}
+
+function salutationDuMoment(heure, details) {
   const moment = heure >= 5 && heure < 12 ? "matin" : heure >= 12 && heure < 18 ? "apresmidi"
     : heure >= 18 && heure < 23 ? "soir" : "nuit";
-  const liste = SALUTATIONS[moment].concat(SALUTATIONS.toujours);
+  const precises = salutationsPrecises(heure, details);
+  const liste = precises.length && Math.random() < 0.5 ? precises : SALUTATIONS[moment].concat(SALUTATIONS.toujours);
   // jamais deux fois la même d'affilée
   let derniere = "";
   try { derniere = sessionStorage.getItem("cigale.salut") || localStorage.getItem("cigale.salut") || ""; } catch { /* ignoré */ }

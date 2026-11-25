@@ -69,12 +69,18 @@ const FUSEAU = (() => {
 
 function rafraichirHeure() {
   const maintenant = new Date();
-  const h = Number(new Intl.DateTimeFormat("fr-FR", { hour: "numeric", hourCycle: "h23", timeZone: FUSEAU }).format(maintenant));
   $("heure").textContent = maintenant.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: FUSEAU });
   $("heure").dateTime = maintenant.toISOString();
   $("date").textContent = maintenant.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: FUSEAU });
   if (!$("salut").dataset.fait) {
-    $("salut").textContent = salutationDuMoment(h);
+    // en-US : « 8 » et non « 08 h », qui ne se lit pas comme un nombre
+    const parties = Object.fromEntries(new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "numeric", hourCycle: "h23",
+      weekday: "short", day: "numeric", month: "numeric", timeZone: FUSEAU }).formatToParts(maintenant).map((x) => [x.type, x.value]));
+    const h = Number(parties.hour) % 24;
+    $("salut").textContent = salutationDuMoment(h, {
+      minute: Number(parties.minute), jour: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(parties.weekday),
+      quantieme: Number(parties.day), mois: Number(parties.month),
+    });
     $("salut").dataset.fait = "1";
   }
 }
@@ -371,6 +377,7 @@ function afficherBilan(b) {
     li.append(barre, nom);
     return li;
   }));
+  resumeSemaine(b, recent);
   const qui = $("bilan-qui");
   qui.replaceChildren();
   const premiers = b.entreprises.slice(0, 4);
@@ -388,6 +395,29 @@ function afficherBilan(b) {
     qui.textContent = b.pages ? "Aucun traqueur rencontré pour l'instant."
       : "Chaque traqueur bloqué sera compté ici, sans jamais noter les sites que vous visitez.";
   }
+}
+
+// Le dimanche soir et le lundi matin : la semaine résumée en une phrase
+function resumeSemaine(b, recent) {
+  const p = $("bilan-semaine");
+  const parties = Object.fromEntries(new Intl.DateTimeFormat("en-US", { weekday: "short", hour: "numeric", hourCycle: "h23", timeZone: FUSEAU })
+    .formatToParts(new Date()).map((x) => [x.type, x.value]));
+  const h = Number(parties.hour) % 24;
+  const moment = (parties.weekday == "Sun" && h >= 17) || (parties.weekday == "Mon" && h < 12);
+  p.hidden = !moment || recent || !b.pages || !b.bloques;
+  if (p.hidden) return;
+  const jours = b.parJour.filter((j) => j.bloques > 0);
+  const fort = jours.reduce((a, j) => (j.bloques > (a?.bloques || 0) ? j : a), null);
+  const nomJour = (j) => {
+    const [a, m, d] = j.jour.split("-").map(Number);
+    return new Date(a, m - 1, d).toLocaleDateString("fr-FR", { weekday: "long" });
+  };
+  const morceaux = [`${parties.weekday == "Mon" ? "La semaine passée" : "Votre semaine"} en bref : ${nombre(b.bloques)} tentative${b.bloques > 1 ? "s" : ""} de pistage bloquée${b.bloques > 1 ? "s" : ""}`];
+  if (b.traqueurs) morceaux[0] += `, dont ${nombre(b.traqueurs)} traqueur${b.traqueurs > 1 ? "s" : ""}`;
+  morceaux[0] += ".";
+  if (fort && jours.length > 1) morceaux.push(`Le jour le plus chargé : ${nomJour(fort)}, avec ${nombre(fort.bloques)}.`);
+  if (b.liens) morceaux.push(`${nombre(b.liens)} lien${b.liens > 1 ? "s" : ""} nettoyé${b.liens > 1 ? "s" : ""} au passage.`);
+  p.textContent = morceaux.join(" ");
 }
 
 window.addEventListener("cigale-bilan", (e) => afficherBilan(e.detail));

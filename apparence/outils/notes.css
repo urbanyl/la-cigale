@@ -1,0 +1,35 @@
+/* Panneau Notes, aux couleurs de La Cigale */
+:root {
+  color-scheme: dark;
+  --fond: #111113;
+  --surface: #1a1a1d;
+  --trait: rgba(255, 255, 255, 0.1);
+  --texte: #ededed;
+  --doux: #8c8c90;
+}
+:root.olive { --fond: #141b17; --surface: #1b241f; --trait: rgba(169, 184, 154, 0.2); --texte: #e9e6dc; --doux: #97a293; }
+@media (prefers-color-scheme: light) {
+  :root:not(.olive) { color-scheme: light; --fond: #f6f5f2; --surface: #ffffff; --trait: rgba(0, 0, 0, 0.1); --texte: #141416; --doux: #5f5f64; }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  display: flex; flex-direction: column;
+  background: var(--fond); color: var(--texte);
+  font: 14px/1.55 "Segoe UI Variable", "Segoe UI", Cantarell, system-ui, sans-serif;
+}
+header { display: flex; align-items: center; gap: 8px; padding: 10px 10px 10px 14px; border-bottom: 1px solid var(--trait); }
+h1 { margin: 0; font-size: 14px; font-weight: 650; }
+.etat { flex: 1; color: var(--doux); font-size: 12px; }
+.bouton {
+  display: inline-grid; place-items: center; height: 26px; padding: 0 10px;
+  border: 1px solid var(--trait); border-radius: 999px; background: var(--surface); color: var(--texte);
+  font: inherit; font-size: 12px; cursor: pointer;
+}
+.bouton:hover { border-color: var(--doux); }
+.fermer { width: 26px; padding: 0; }
+textarea {
+  flex: 1; width: 100%; padding: 14px; border: 0; outline: 0; resize: none;
+  background: transparent; color: var(--texte); font: inherit; line-height: 1.6;
+}
+textarea::placeholder { color: var(--doux); }

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src chrome:; img-src chrome: data:; object-src 'none'">
+<title>Notes</title>
+<link rel="stylesheet" href="chrome://browser/content/cigale/outils/notes.css">
+</head>
+<body>
+  <header>
+    <h1>Notes</h1>
+    <span id="etat" class="etat" aria-live="polite"></span>
+    <button id="copier" class="bouton" title="Copier toutes les notes">Copier</button>
+    <button id="fermer" class="bouton fermer" title="Fermer le panneau" aria-label="Fermer le panneau">
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+  <textarea id="texte" spellcheck="true" placeholder="Écrivez ici. Tout est gardé sur cet ordinateur, dans votre profil.
+
+Astuce : sélectionnez un texte sur une page, puis clic droit et « Ajouter aux notes »."></textarea>
+  <script src="chrome://browser/content/cigale/outils/notes.js"></script>
+</body>
+</html>
