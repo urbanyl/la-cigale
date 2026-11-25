@@ -114,6 +114,9 @@ function actions(win) {
     ["Retouches : police lisible", "", () => retoucher(win, { police: "lisible" })],
     ["Retouches : tout remettre comme avant", "", () => retoucher(win, null)],
     ["Mode lecture", "F9", () => win.document.getElementById("reader-mode-button")?.click()],
+    ["Assistant IA local", "", () => win.switchToTabHavingURI("about:assistant", true)],
+    ["Assistant : résumer cette page", "", () => assistant(win, "resumer", g.selectedTab)],
+    ["Assistant : analyser les liens de la page", "", () => assistant(win, "liens", g.selectedTab)],
     ["Protection et profils", "", () => win.switchToTabHavingURI("about:cigale", true)],
     ["Qui vous suivait", "", () => win.switchToTabHavingURI("about:cigale#bilan", true, { ignoreFragment: "whenComparingAndReplace" })],
     ["Paramètres", "", () => win.openPreferences()],
@@ -437,6 +440,12 @@ function notesBarreLaterale(win) {
     const orig = sc[nom].bind(sc);
     sc[nom] = (id, ...r) => id == "cigale-notes" ? (nom == "toggle" ? basculerNotes(win) : undefined) : orig(id, ...r);
   }
+  // Seyra reste le dernier bouton de la barre latérale, quel que soit l'ordre d'installation
+  const seyra = sc.toolsAndExtensions.get("cigale-seyra");
+  if (seyra) {
+    sc.toolsAndExtensions.delete("cigale-seyra");
+    sc.toolsAndExtensions.set("cigale-seyra", seyra);
+  }
   win.dispatchEvent(new win.CustomEvent("SidebarItemAdded"));
 }
 
@@ -644,8 +653,29 @@ export function fenetre(win) {
     const remettre = entree("Tout remettre comme avant", () => retoucher(win, null, cible()));
     sous.append(popup);
 
+    // Assistant IA local : visible seulement une fois installé (about:assistant)
+    const ia = doc.createXULElement("menu");
+    ia.id = "cigale-assistant";
+    ia.setAttribute("label", "Assistant IA");
+    const iaPopup = doc.createXULElement("menupopup");
+    const iaEntree = (label, action, id) => {
+      const m = doc.createXULElement("menuitem");
+      m.setAttribute("label", label);
+      m.id = id;
+      m.addEventListener("command", () => {
+        const b = win.gContextMenu?.browser || win.gBrowser.selectedBrowser;
+        assistant(win, action, win.gBrowser.getTabForBrowser(b));
+      });
+      iaPopup.append(m);
+      return m;
+    };
+    iaEntree("Résumer cette page", "resumer", "cigale-assistant-resumer");
+    iaEntree("Analyser les liens", "liens", "cigale-assistant-liens");
+    const iaSelection = iaEntree("Expliquer la sélection", "selection", "cigale-assistant-selection");
+    ia.append(iaPopup);
+
     const ref = doc.getElementById("context-sep-viewsource") || doc.getElementById("context-viewsource");
-    if (ref) ref.before(sep, note, voir, sous); else menu.append(sep, note, voir, sous);
+    if (ref) ref.before(sep, note, voir, sous, ia); else menu.append(sep, note, voir, sous, ia);
 
     menu.addEventListener("popupshowing", (e) => {
       if (e.target != menu) return;
@@ -654,7 +684,9 @@ export function fenetre(win) {
       note.hidden = !cm?.isTextSelected;
       voir.hidden = !(cm?.onLink && /^https?:/.test(cm?.linkURL || ""));
       sous.hidden = !web || cm?.onLink || cm?.isTextSelected || cm?.onTextInput;
-      sep.hidden = note.hidden && voir.hidden && sous.hidden;
+      ia.hidden = !web || !P.getStringPref("cigale.assistant.modele", "") || cm?.onTextInput;
+      iaSelection.hidden = !cm?.isTextSelected;
+      sep.hidden = note.hidden && voir.hidden && sous.hidden && ia.hidden;
       if (!sous.hidden) {
         const r = retouches()[domaineDe(cm.browser.currentURI)] || {};
         for (const [cle, m] of Object.entries(coches)) {
@@ -665,6 +697,20 @@ export function fenetre(win) {
         masquerElement.label = r.masquer?.length ? `Masquer cet élément (${r.masquer.length} déjà masqué${r.masquer.length > 1 ? "s" : ""})` : "Masquer cet élément";
       }
     });
+  }
+}
+
+// Ouvre about:assistant et lui confie l'onglet à lire
+function assistant(win, action, onglet) {
+  const A = ChromeUtils.importESModule("chrome://browser/content/cigale/assistant/assistant.sys.mjs");
+  if (onglet && /^https?:/.test(onglet.linkedBrowser?.currentURI?.spec || "")) A.deposerDemande({ action, onglet });
+  const ouvert = [...win.gBrowser.tabs].find((t) => t.linkedBrowser.currentURI.spec == "about:assistant");
+  if (ouvert) {
+    // la page est déjà ouverte : elle prend la demande sans perdre la conversation
+    win.gBrowser.selectedTab = ouvert;
+    Services.obs.notifyObservers(null, "cigale-assistant-demande");
+  } else {
+    win.openTrustedLinkIn("about:assistant", "tab");
   }
 }
 

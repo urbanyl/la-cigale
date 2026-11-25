@@ -474,6 +474,8 @@ export function ouvrirEphemere(win, url) {
 // Tout fermer et tout effacer d'un coup, sans question : bouton rouge du panneau cigale ou Ctrl+Maj+F12.
 
 export function panique(win) {
+  // l'assistant local s'arrête aussi : sa mémoire de conversation disparaît avec lui
+  try { ChromeUtils.importESModule("chrome://browser/content/cigale/assistant/assistant.sys.mjs").arreter(); } catch {}
   return nouvelleIdentite(win, { confirmer: false, message: "Panique : onglets fermés, cookies, cache et historique effacés." });
 }
 

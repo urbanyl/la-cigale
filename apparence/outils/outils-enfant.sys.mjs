@@ -55,7 +55,28 @@ export class CigaleOutilsChild extends JSWindowActorChild {
 
   receiveMessage(message) {
     if (message.name == "Retouches") this.appliquer(true);
-    else if (message.name == "Selecteur") {
+    else if (message.name == "Contenu") {
+      // lu seulement à la demande de l'assistant local (about:assistant), jamais envoyé ailleurs
+      const doc = this.document;
+      const racine = doc.querySelector("article, main, [role=main]") || doc.body;
+      const nettoyer = (t) => (t || "").replace(/[ \t ]+/g, " ").replace(/\n\s*\n\s*\n+/g, "\n\n").trim();
+      let texte = nettoyer(racine?.innerText);
+      if (texte.length < 400 && racine != doc.body) texte = nettoyer(doc.body?.innerText);
+      const liens = [];
+      for (const a of doc.querySelectorAll("a[href]")) {
+        if (!/^https?:/.test(a.href)) continue;
+        liens.push({ adresse: a.href, texte: nettoyer(a.innerText || a.title || a.getAttribute("aria-label")).slice(0, 100) });
+        if (liens.length >= 600) break;
+      }
+      return {
+        titre: doc.title,
+        adresse: doc.URL,
+        langue: doc.documentElement.lang || "",
+        texte: texte.slice(0, 60000),
+        liens,
+        selection: (this.contentWindow.getSelection()?.toString() || "").trim().slice(0, 12000),
+      };
+    } else if (message.name == "Selecteur") {
       const el = this.cibleMenu;
       if (!el || !el.isConnected) return "";
       // on remonte au bloc visible qui contient l'élément cliqué (une image seule, un lien, un bandeau…)

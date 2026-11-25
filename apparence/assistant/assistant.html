@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src chrome:; img-src chrome: data:; object-src 'none'">
+<title>Assistant</title>
+<link rel="icon" href="chrome://browser/content/cigale/bouton.png">
+<link rel="stylesheet" href="chrome://browser/content/cigale/assistant/assistant.css">
+</head>
+<body>
+<div class="cadre">
+  <header class="tete">
+    <img src="chrome://browser/content/cigale/bouton.png" alt="" width="26" height="26">
+    <h1>Assistant</h1>
+    <span id="statut" class="statut"><span class="point"></span><span id="statut-texte">Local</span></span>
+    <span class="espace"></span>
+    <select id="modele" aria-label="Modèle" hidden></select>
+    <button id="ouvrir-reglages" class="discret" type="button" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      Réglages</button>
+  </header>
+
+  <!-- premier lancement : rien n'est téléchargé tant que l'utilisateur ne l'a pas demandé -->
+  <section id="installation" class="installation" hidden>
+    <h2>Une IA qui reste chez vous</h2>
+    <p class="chapo">L'assistant fonctionne entièrement sur cet ordinateur. Vos questions, les pages que vous lui montrez et ses réponses ne sont envoyées nulle part : pas de compte, pas de serveur, pas de pistage.</p>
+    <ul class="atouts">
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/></svg><span><b>Hors ligne</b> une fois installé. Le moteur n'écoute que cet ordinateur, avec une clé changée à chaque démarrage.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span><b>Sans filtre.</b> Les modèles proposés sont des versions dont les refus ont été retirés (« abliterated »). Vous restez responsable de ce que vous en faites.</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg><span><b>Résumé de page, analyse des liens, discussion libre</b>, dans cette page ou depuis le clic droit.</span></li>
+    </ul>
+    <div id="choix-modeles" class="modeles" role="radiogroup" aria-label="Modèle"></div>
+    <div class="action">
+      <button id="installer" class="principal" type="button">Télécharger et activer</button>
+      <button id="annuler" class="discret" type="button" hidden>Annuler</button>
+      <span id="taille-totale" class="gris"></span>
+    </div>
+    <div id="progression" class="progression" hidden>
+      <div class="barre"><div id="barre-plein"></div></div>
+      <p id="progression-texte" class="gris"></p>
+    </div>
+    <p id="erreur-installation" class="erreur" hidden></p>
+    <p class="note">Téléchargement unique : le moteur <b>llama.cpp</b> (environ 39 Mo, depuis github.com) puis le modèle choisi (depuis huggingface.co). Les versions sont fixées et chaque fichier est vérifié par son empreinte SHA-256 avant d'être utilisé. Tout est rangé dans votre profil et peut être supprimé dans les réglages.</p>
+  </section>
+
+  <section id="discussion" class="discussion" hidden>
+    <div class="outils">
+      <button id="montrer-page" class="discret" type="button" aria-expanded="false" aria-controls="outils-page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>Utiliser une page</button>
+      <span class="espace"></span>
+      <button id="effacer" class="discret" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nouvelle conversation</button>
+    </div>
+    <div id="outils-page" class="outils outils-page" hidden>
+      <label for="onglet">Page</label>
+      <select id="onglet"></select>
+      <button id="resumer" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h9"/></svg>Résumer</button>
+      <button id="liens" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>Analyser les liens</button>
+      <button id="selection" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14M5 20h14M9 9h6M9 15h6"/></svg>Expliquer la sélection</button>
+    </div>
+    <div id="fil" class="fil" aria-live="polite">
+      <div id="vide" class="vide">
+        <img class="mascotte" src="chrome://browser/content/cigale/bouton.png" alt="" width="64" height="64">
+        <p class="grand">Bonjour, je suis La Cigale.</p>
+        <p class="sous-titre">Posez-moi n'importe quelle question. Je réfléchis sur cet ordinateur, rien ne sort d'ici.</p>
+        <div class="suggestions">
+          <button type="button" data-suggestion="Présente-toi : qui es-tu et que sais-tu faire ?">Qui es-tu ?</button>
+          <button type="button" data-suggestion="Explique-moi simplement ce qu'est l'empreinte numérique d'un navigateur.">L'empreinte d'un navigateur</button>
+          <button type="button" data-suggestion="Écris-moi un petit poème sur une cigale qui protège la vie privée.">Un poème de cigale</button>
+          <button type="button" data-action="resumer">Résumer la page ouverte</button>
+        </div>
+        <button id="personnaliser" class="discret lien-personnaliser" type="button">Me présenter à La Cigale</button>
+      </div>
+    </div>
+    <form id="formulaire" class="saisie">
+      <textarea id="question" rows="1" placeholder="Demandez ce que vous voulez à La Cigale…" aria-label="Question"></textarea>
+      <div class="saisie-pied">
+        <label class="joindre"><input id="joindre" type="checkbox"> Avec le contenu de la page</label>
+        <span class="espace"></span>
+        <button id="stop" class="discret" type="button" hidden>Arrêter</button>
+        <button id="envoyer" class="principal" type="submit">Envoyer</button>
+      </div>
+    </form>
+    <p class="pied">Tout est calculé sur cet ordinateur. La conversation n'est pas enregistrée : elle disparaît en fermant l'onglet ou avec le bouton panique. Un modèle peut se tromper : vérifiez ce qui compte.</p>
+  </section>
+
+  <section id="reglages" class="reglages" hidden>
+    <h2>Réglages de l'assistant</h2>
+    <h3 class="titre-section">Ce que La Cigale sait de vous</h3>
+    <p class="gris">Rien de tout cela ne quitte cet ordinateur : ces informations sont seulement données au modèle local, à chaque question. La date et l'heure lui sont toujours données.</p>
+    <label class="champ-apropos" for="apropos">À propos de vous</label>
+    <textarea id="apropos" class="apropos" rows="3" maxlength="2000" placeholder="Par exemple : je m'appelle Alex, tutoie-moi, j'habite à Lyon, je suis développeur."></textarea>
+    <div class="contextes">
+      <label><input id="contexte-onglets" type="checkbox"> Les onglets ouverts (titres et adresses)</label>
+      <label><input id="contexte-notes" type="checkbox"> Mes notes</label>
+      <label><input id="contexte-favoris" type="checkbox"> Mes favoris récents</label>
+      <label><input id="contexte-historique" type="checkbox"> Mon historique récent (20 dernières pages)</label>
+    </div>
+    <h3 class="titre-section">Modèles</h3>
+    <div id="liste-modeles" class="liste-modeles"></div>
+    <p class="gris">Espace utilisé : <b id="espace-utilise">…</b></p>
+    <div class="action">
+      <button id="fermer-reglages" class="principal" type="button">Retour à la conversation</button>
+      <button id="tout-supprimer" class="danger" type="button">Tout supprimer</button>
+    </div>
+    <p class="note">« Tout supprimer » retire le moteur et les modèles de votre profil. L'assistant redevient inactif jusqu'à un nouveau téléchargement.</p>
+  </section>
+</div>
+<script src="chrome://browser/content/cigale/assistant/assistant.js"></script>
+</body>
+</html>
