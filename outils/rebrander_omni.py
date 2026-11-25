@@ -430,7 +430,11 @@ ILLUSTRATIONS_ERREUR = {"error-malformed-url.svg", "no-connection.svg", "securit
 
 def remplacer_image(base: str, donnees: bytes):
     if base.endswith(".svg"):
-        return LOGO_SVG
+        # garde la taille de l'image d'origine (width/height) : sans elle, un <img> sans
+        # dimensions CSS s'étire sur toute la largeur (ex. fox-ai.svg, page « AI controls »)
+        balise = re.search(rb"<svg\b[^>]*>", donnees)
+        attributs = b"".join(b" " + m.group(0) for m in re.finditer(rb'\b(?:width|height)="[^"]*"', balise.group(0))) if balise else b""
+        return LOGO_SVG.replace(b"<svg", b"<svg" + attributs, 1) if attributs else LOGO_SVG
     if base.endswith(".png"):
         return png_meme_taille(donnees)
     return None  # webp/avif : laissés tels quels
