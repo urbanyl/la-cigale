@@ -158,7 +158,11 @@ PAIRES["apparence/outils/outils.sys.mjs"] += [
     ('["Assistant IA local", ""', '["Local AI assistant", ""'),
     ('["Assistant : résumer cette page", ""', '["Assistant: summarize this page", ""'),
     ('["Assistant : analyser les liens de la page", ""', '["Assistant: analyze the links on this page", ""'),
-    ('ia.setAttribute("label", "Assistant IA");', 'ia.setAttribute("label", "AI assistant");'),
+    ('ia.setAttribute("label", "Demander à La Cigale");', 'ia.setAttribute("label", "Ask La Cigale");'),
+    ('iaOuvrir.setAttribute("label", "Ouvrir l\'assistant");', 'iaOuvrir.setAttribute("label", "Open the assistant");'),
+    ('entree("Résumer l\'onglet", "resumer");', 'entree("Summarize the tab", "resumer");'),
+    ('entree("Analyser les liens", "liens");', 'entree("Analyze the links", "liens");'),
+    ('entree("Ouvrir l\'assistant", "ouvrir");', 'entree("Open the assistant", "ouvrir");'),
     ('iaEntree("Résumer cette page", "resumer"', 'iaEntree("Summarize this page", "resumer"'),
     ('iaEntree("Analyser les liens", "liens"', 'iaEntree("Analyze the links", "liens"'),
     ('iaEntree("Expliquer la sélection", "selection"', 'iaEntree("Explain the selection", "selection"'),
@@ -202,4 +206,9 @@ PAIRES["apparence/assistant/assistant.sys.mjs"] += [
     ('"Notes de l\'utilisateur (extrait) :\\n"', '"User notes (excerpt):\\n"'),
     ('"Favoris récents :\\n"', '"Recent bookmarks:\\n"'),
     ('"Pages visitées récemment :\\n"', '"Recently visited pages:\\n"'),
+]
+
+PAIRES["accueil/index.html"] += [
+    ("<span><b>Assistant IA</b><small>la cigale, sur cet ordinateur</small></span>",
+     "<span><b>AI assistant</b><small>La Cigale, on this computer</small></span>"),
 ]

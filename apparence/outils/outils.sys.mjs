@@ -603,6 +603,7 @@ export function fenetre(win) {
 
   try { lecteur(win); } catch (e) { console.error("La Cigale : mini-lecteur", e); }
   try { notesBarreLaterale(win); } catch (e) { console.error("La Cigale : notes", e); }
+  try { menuOngletAssistant(win); } catch (e) { console.error("La Cigale : menu des onglets", e); }
   try { equiperFenetreRapide(win); } catch (e) { console.error("La Cigale : petite fenêtre", e); }
 
   // menu contextuel : notes, aperçu, retouches
@@ -653,10 +654,11 @@ export function fenetre(win) {
     const remettre = entree("Tout remettre comme avant", () => retoucher(win, null, cible()));
     sous.append(popup);
 
-    // Assistant IA local : visible seulement une fois installé (about:assistant)
+    // « Demander à La Cigale » : l'assistant local, à la place du « chatbot IA » de Firefox
+    // (s'il n'est pas encore installé, la page about:assistant propose de le télécharger)
     const ia = doc.createXULElement("menu");
     ia.id = "cigale-assistant";
-    ia.setAttribute("label", "Assistant IA");
+    ia.setAttribute("label", "Demander à La Cigale");
     const iaPopup = doc.createXULElement("menupopup");
     const iaEntree = (label, action, id) => {
       const m = doc.createXULElement("menuitem");
@@ -672,10 +674,17 @@ export function fenetre(win) {
     iaEntree("Résumer cette page", "resumer", "cigale-assistant-resumer");
     iaEntree("Analyser les liens", "liens", "cigale-assistant-liens");
     const iaSelection = iaEntree("Expliquer la sélection", "selection", "cigale-assistant-selection");
+    iaPopup.append(doc.createXULElement("menuseparator"));
+    const iaOuvrir = doc.createXULElement("menuitem");
+    iaOuvrir.setAttribute("label", "Ouvrir l'assistant");
+    iaOuvrir.addEventListener("command", () => assistant(win, "ouvrir", null));
+    iaPopup.append(iaOuvrir);
     ia.append(iaPopup);
 
     const ref = doc.getElementById("context-sep-viewsource") || doc.getElementById("context-viewsource");
-    if (ref) ref.before(sep, note, voir, sous, ia); else menu.append(sep, note, voir, sous, ia);
+    if (ref) ref.before(sep, note, voir, sous); else menu.append(sep, note, voir, sous);
+    const chatbot = doc.getElementById("context-ask-chat");
+    if (chatbot) chatbot.before(ia); else (ref ? ref.before(ia) : menu.append(ia));
 
     menu.addEventListener("popupshowing", (e) => {
       if (e.target != menu) return;
@@ -684,9 +693,10 @@ export function fenetre(win) {
       note.hidden = !cm?.isTextSelected;
       voir.hidden = !(cm?.onLink && /^https?:/.test(cm?.linkURL || ""));
       sous.hidden = !web || cm?.onLink || cm?.isTextSelected || cm?.onTextInput;
-      ia.hidden = !web || !P.getStringPref("cigale.assistant.modele", "") || cm?.onTextInput;
+      ia.hidden = !web || cm?.onTextInput;
       iaSelection.hidden = !cm?.isTextSelected;
-      sep.hidden = note.hidden && voir.hidden && sous.hidden && ia.hidden;
+      if (chatbot) chatbot.collapsed = true;
+      sep.hidden = note.hidden && voir.hidden && sous.hidden;
       if (!sous.hidden) {
         const r = retouches()[domaineDe(cm.browser.currentURI)] || {};
         for (const [cle, m] of Object.entries(coches)) {
@@ -698,6 +708,37 @@ export function fenetre(win) {
       }
     });
   }
+}
+
+// Menu des onglets : « Demander à La Cigale » à la place du « chatbot IA » de Firefox
+function menuOngletAssistant(win) {
+  const doc = win.document;
+  const menu = doc.getElementById("tabContextMenu");
+  if (!menu || doc.getElementById("cigale-assistant-onglet")) return;
+  const ia = doc.createXULElement("menu");
+  ia.id = "cigale-assistant-onglet";
+  ia.setAttribute("label", "Demander à La Cigale");
+  const popup = doc.createXULElement("menupopup");
+  const entree = (label, action) => {
+    const m = doc.createXULElement("menuitem");
+    m.setAttribute("label", label);
+    m.addEventListener("command", () => assistant(win, action, action == "ouvrir" ? null : win.TabContextMenu.contextTab));
+    popup.append(m);
+  };
+  entree("Résumer l'onglet", "resumer");
+  entree("Analyser les liens", "liens");
+  popup.append(doc.createXULElement("menuseparator"));
+  entree("Ouvrir l'assistant", "ouvrir");
+  ia.append(popup);
+  const chatbot = doc.getElementById("context_askChat");
+  if (chatbot) chatbot.before(ia); else menu.append(ia);
+  menu.addEventListener("popupshowing", (e) => {
+    if (e.target != menu) return;
+    const onglets = win.TabContextMenu?.contextTabs || [];
+    const onglet = win.TabContextMenu?.contextTab;
+    ia.hidden = onglets.length > 1 || !/^https?:/.test(onglet?.linkedBrowser?.currentURI?.spec || "");
+    if (chatbot) chatbot.collapsed = true;
+  });
 }
 
 // Ouvre about:assistant et lui confie l'onglet à lire
