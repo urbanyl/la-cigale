@@ -1,0 +1,69 @@
+# Construit La Cigale pour macOS (Intel et Apple Silicon) et ajoute l'image disque à une version publiée.
+# Lancement manuel depuis l'onglet « Actions ».
+name: macOS
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version publiée à compléter (ex. 1.8.1) ; vide = la dernière"
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: macos
+  cancel-in-progress: false
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Outils
+        run: |
+          python -m pip install --disable-pip-version-check Pillow
+          brew install --quiet gnupg
+      - name: Version visée
+        id: cible
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEMANDE: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if [ -n "$DEMANDE" ]; then tag="v${DEMANDE#v}"; else tag="$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName)"; fi
+          gh release view "$tag" --repo "$GITHUB_REPOSITORY" > /dev/null
+          corps="$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json body -q .body)"
+          esr="$(grep -oE 'Firefox ESR [0-9]+\.[0-9]+(\.[0-9]+)?' <<< "$corps" | head -n 1 | awk '{print $3}')"
+          [ -n "$esr" ] || { echo "Version ESR introuvable dans les notes de $tag"; exit 1; }
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+          echo "esr=${esr}esr" >> "$GITHUB_OUTPUT"
+          echo "À construire : La Cigale ${tag#v} pour macOS (Firefox ESR ${esr})"
+      - name: Construction
+        env:
+          VERSION_CIGALE: ${{ steps.cible.outputs.version }}
+          ESR: ${{ steps.cible.outputs.esr }}
+        run: |
+          printf '%s' "$VERSION_CIGALE" > VERSION
+          bash construire-macos.sh --version "$ESR"
+      - name: Ajout à la version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.cible.outputs.tag }}
+          VERSION_CIGALE: ${{ steps.cible.outputs.version }}
+        run: |
+          set -euo pipefail
+          dmg="LaCigale-$VERSION_CIGALE-macos.dmg"
+          cd dist
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" -p SHA256SUMS.txt --clobber
+          grep -v -- '-macos\.dmg$' SHA256SUMS.txt > sommes.tmp || true
+          shasum -a 256 "$dmg" >> sommes.tmp
+          mv sommes.tmp SHA256SUMS.txt
+          cat SHA256SUMS.txt
+          gh release upload "$TAG" "$dmg" SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --clobber
