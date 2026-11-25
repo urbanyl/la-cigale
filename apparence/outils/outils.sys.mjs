@@ -156,6 +156,7 @@ function ouvrirPalette(win) {
   let panneau = doc.getElementById("cigale-palette");
   if (!panneau) panneau = construirePalette(win);
   if (panneau.state == "open") { panneau.hidePopup(); return; }
+  panneau.toggleAttribute("olive", P.getStringPref("extensions.activeThemeID", "") == "firefox-alpenglow@mozilla.org");
   const champ = panneau.querySelector("input");
   champ.value = "";
   panneau.cigaleRemplir("");

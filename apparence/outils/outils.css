@@ -10,14 +10,16 @@
   --panel-padding: 0; --panel-shadow-margin: 0px;
   appearance: none; background: transparent; border: 0;
   --cp-fond: #2f2e2c; --cp-trait: rgba(255, 255, 255, 0.13); --cp-texte: #ecebe8; --cp-doux: #9b9993;
-  --cp-choix: rgba(255, 255, 255, 0.07); --cp-symbole: #e8c48a;
+  --cp-choix: rgba(255, 255, 255, 0.07); --cp-symbole: var(--cp-texte);
 }
 @media (prefers-color-scheme: light) {
   #cigale-palette {
     --cp-fond: #fbfaf8; --cp-trait: rgba(0, 0, 0, 0.12); --cp-texte: #1d1c1a; --cp-doux: #6f6d68;
-    --cp-choix: rgba(0, 0, 0, 0.05); --cp-symbole: #9a6a12;
+    --cp-choix: rgba(0, 0, 0, 0.05); --cp-symbole: var(--cp-texte);
   }
 }
+/* thème olive : le symbole prend le vert de La Cigale */
+#cigale-palette[olive] { --cp-symbole: #a9b89a; }
 .cigale-palette-boite {
   display: flex; flex-direction: column; max-height: 480px; overflow: hidden;
   background: var(--cp-fond); color: var(--cp-texte);
