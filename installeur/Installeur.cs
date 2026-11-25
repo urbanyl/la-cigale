@@ -425,30 +425,46 @@ namespace LaCigale
         static extern void SHChangeNotify(int evenement, int options, IntPtr a, IntPtr b);
     }
 
+    // 1.8 : style Apple, verre liquide (fond gris profond, pastilles, accent bleu, interrupteurs)
     static class Theme
     {
-        public static readonly Color Fond = Color.FromArgb(10, 10, 11);
-        public static readonly Color Surface = Color.FromArgb(20, 20, 22);
-        public static readonly Color SurfaceForte = Color.FromArgb(30, 30, 34);
-        public static readonly Color Bordure = Color.FromArgb(38, 38, 42);
-        public static readonly Color Texte = Color.FromArgb(237, 237, 237);
-        public static readonly Color TexteDoux = Color.FromArgb(140, 140, 144);
-        public static readonly Color Erreur = Color.FromArgb(255, 138, 128);
+        public static readonly Color Fond = Color.FromArgb(24, 24, 27);
+        public static readonly Color Surface = Color.FromArgb(40, 40, 44);
+        public static readonly Color SurfaceForte = Color.FromArgb(54, 54, 58);
+        public static readonly Color Bordure = Color.FromArgb(52, 52, 56);
+        public static readonly Color Reflet = Color.FromArgb(70, 255, 255, 255);
+        public static readonly Color Texte = Color.FromArgb(245, 245, 247);
+        public static readonly Color TexteDoux = Color.FromArgb(152, 152, 157);
+        public static readonly Color Accent = Color.FromArgb(10, 132, 255);
+        public static readonly Color AccentSurvol = Color.FromArgb(56, 154, 255);
+        public static readonly Color AccentAppui = Color.FromArgb(0, 110, 225);
+        public static readonly Color Vert = Color.FromArgb(48, 209, 88);
+        public static readonly Color Erreur = Color.FromArgb(255, 105, 97);
         public static float Echelle = 1f;
 
         public static int S(float valeur) { return (int)Math.Round(valeur * Echelle); }
 
+        static bool Existe(string nom) { return FontFamily.Families.Any(f => f.Name == nom); }
+
         public static Font Police(float taille, bool gras)
         {
-            string famille = FontFamily.Families.Any(f => f.Name == "Segoe UI Variable Text") ? "Segoe UI Variable Text" : "Segoe UI";
-            if (gras) famille = FontFamily.Families.Any(f => f.Name == "Segoe UI Variable Display Semib")
-                ? "Segoe UI Variable Display Semib" : "Segoe UI Semibold";
+            string famille = Existe("Segoe UI Variable Text") ? "Segoe UI Variable Text" : "Segoe UI";
+            if (gras) famille = Existe("Segoe UI Variable Text Semibold") ? "Segoe UI Variable Text Semibold" : "Segoe UI Semibold";
             return new Font(famille, taille, FontStyle.Regular, GraphicsUnit.Point);
+        }
+
+        // grands titres : la variante « Display », en gras, comme SF Pro Display
+        public static Font PoliceTitre(float taille)
+        {
+            return Existe("Segoe UI Variable Display")
+                ? new Font("Segoe UI Variable Display", taille, FontStyle.Bold, GraphicsUnit.Point)
+                : new Font("Segoe UI", taille, FontStyle.Bold, GraphicsUnit.Point);
         }
 
         public static GraphicsPath Arrondi(RectangleF r, float rayon)
         {
             var chemin = new GraphicsPath();
+            rayon = Math.Max(0.5f, Math.Min(rayon, Math.Min(r.Width, r.Height) / 2f));
             float d = rayon * 2;
             chemin.AddArc(r.X, r.Y, d, d, 180, 90);
             chemin.AddArc(r.Right - d, r.Y, d, d, 270, 90);
@@ -456,6 +472,35 @@ namespace LaCigale
             chemin.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
             chemin.CloseFigure();
             return chemin;
+        }
+
+        // surface de verre : dégradé vertical, liseré clair en haut, contour discret
+        public static void Verre(Graphics g, RectangleF zone, float rayon, Color haut, Color bas, Color contour)
+        {
+            using (var chemin = Arrondi(zone, rayon))
+            {
+                using (var pinceau = new LinearGradientBrush(new RectangleF(zone.X, zone.Y - 1, zone.Width, zone.Height + 2), haut, bas, 90f))
+                    g.FillPath(pinceau, chemin);
+                using (var crayon = new Pen(contour)) g.DrawPath(crayon, chemin);
+            }
+            var reflet = new RectangleF(zone.X + rayon * 0.6f, zone.Y + 0.5f, zone.Width - rayon * 1.2f, 1f);
+            using (var pinceau = new LinearGradientBrush(new RectangleF(reflet.X - 1, reflet.Y, reflet.Width + 2, 1), Color.FromArgb(0, 255, 255, 255), Reflet, 0f))
+            {
+                var melange = new ColorBlend
+                {
+                    Colors = new[] { Color.FromArgb(0, 255, 255, 255), Reflet, Reflet, Color.FromArgb(0, 255, 255, 255) },
+                    Positions = new[] { 0f, 0.25f, 0.75f, 1f },
+                };
+                pinceau.InterpolationColors = melange;
+                g.FillRectangle(pinceau, reflet);
+            }
+        }
+
+        // anneau de focus bleu, comme sur macOS
+        public static void Anneau(Graphics g, RectangleF zone, float rayon)
+        {
+            using (var crayon = new Pen(Color.FromArgb(150, Accent), S(3f)))
+            using (var chemin = Arrondi(zone, rayon)) g.DrawPath(crayon, chemin);
         }
     }
 
@@ -490,6 +535,7 @@ namespace LaCigale
         protected static Graphics Preparer(PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
             e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
             return e.Graphics;
         }
@@ -497,11 +543,11 @@ namespace LaCigale
         protected void DessinerFocus(Graphics g, RectangleF zone, float rayon)
         {
             if (!Focused || !ShowFocusCues) return;
-            using (var crayon = new Pen(Theme.TexteDoux, Theme.S(1.5f)))
-            using (var chemin = Theme.Arrondi(zone, rayon)) g.DrawPath(crayon, chemin);
+            Theme.Anneau(g, zone, rayon);
         }
     }
 
+    // bouton en pastille : bleu pour l'action principale, verre pour les autres
     class Bouton : Dessine, IButtonControl
     {
         public bool Primaire;
@@ -514,85 +560,90 @@ namespace LaCigale
             Text = texte;
             Primaire = primaire;
             Font = Theme.Police(10f, primaire);
-            Size = new Size(Theme.S(primaire ? 132 : 112), Theme.S(40));
+            Size = new Size(Theme.S(primaire ? 136 : 112), Theme.S(42));
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = Preparer(e);
             g.Clear(BackColor);
-            var zone = new RectangleF(Theme.S(2), Theme.S(2), Width - Theme.S(4) - 1, Height - Theme.S(4) - 1);
-            Color fond, texte, bord;
+            float marge = Theme.S(3) + (Appui ? Theme.S(1.5f) : 0);   // le bouton s'enfonce sous le clic
+            var zone = new RectangleF(marge, marge, Width - marge * 2 - 1, Height - marge * 2 - 1);
+            float rayon = zone.Height / 2f;
+            Color texte;
             if (Primaire)
             {
-                fond = !Enabled ? Theme.SurfaceForte : Appui ? Color.FromArgb(200, 200, 202) : Survol ? Color.White : Theme.Texte;
-                texte = Enabled ? Theme.Fond : Theme.TexteDoux;
-                bord = fond;
+                Color base_ = !Enabled ? Theme.SurfaceForte : Appui ? Theme.AccentAppui : Survol ? Theme.AccentSurvol : Theme.Accent;
+                Color haut = Enabled ? Color.FromArgb(Math.Min(255, base_.R + 22), Math.Min(255, base_.G + 22), Math.Min(255, base_.B + 6)) : base_;
+                Theme.Verre(g, zone, rayon, haut, base_, base_);
+                texte = Enabled ? Color.White : Theme.TexteDoux;
             }
             else
             {
-                fond = Appui ? Theme.Bordure : Survol ? Theme.SurfaceForte : Theme.Surface;
+                Color haut = Appui ? Color.FromArgb(62, 62, 67) : Survol ? Color.FromArgb(76, 76, 82) : Color.FromArgb(62, 62, 67);
+                Color bas = Appui ? Color.FromArgb(48, 48, 52) : Survol ? Color.FromArgb(58, 58, 63) : Color.FromArgb(46, 46, 50);
+                Theme.Verre(g, zone, rayon, haut, bas, Color.FromArgb(60, 255, 255, 255));
                 texte = Enabled ? Theme.Texte : Theme.TexteDoux;
-                bord = Theme.Bordure;
             }
-            float rayon = Theme.S(10);
-            using (var chemin = Theme.Arrondi(zone, rayon))
-            using (var pinceau = new SolidBrush(fond))
-            using (var crayon = new Pen(bord))
-            {
-                g.FillPath(pinceau, chemin);
-                g.DrawPath(crayon, chemin);
-            }
-            TextRenderer.DrawText(g, Text, Font, Rectangle.Round(zone), texte, fond,
+            TextRenderer.DrawText(g, Text, Font, Rectangle.Round(zone), texte,
                 TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
             if (Focused && ShowFocusCues)
-                DessinerFocus(g, new RectangleF(0.5f, 0.5f, Width - 2, Height - 2), rayon + Theme.S(2));
+                DessinerFocus(g, new RectangleF(1.5f, 1.5f, Width - 4, Height - 4), (Height - 4) / 2f);
         }
     }
 
+    // interrupteur façon iOS : vert quand il est activé
     class Case : Dessine
     {
         bool coche;
-        public bool Coche { get { return coche; } set { coche = value; Invalidate(); } }
+        float position;                       // 0 = éteint, 1 = allumé (animé)
+        readonly System.Windows.Forms.Timer anime = new System.Windows.Forms.Timer { Interval = 15 };
+        public bool Coche { get { return coche; } set { coche = value; position = value ? 1 : 0; Invalidate(); } }
 
         public Case(string texte, bool cochee)
         {
             Text = texte;
             coche = cochee;
+            position = cochee ? 1 : 0;
             Font = Theme.Police(10f, false);
-            Size = new Size(Theme.S(390), Theme.S(30));
+            Size = new Size(Theme.S(390), Theme.S(32));
+            anime.Tick += delegate
+            {
+                float cible = coche ? 1 : 0;
+                position += (cible - position) * 0.35f;
+                if (Math.Abs(cible - position) < 0.02f) { position = cible; anime.Stop(); }
+                Invalidate();
+            };
         }
 
-        protected override void OnClick(EventArgs e) { Coche = !Coche; base.OnClick(e); }
+        protected override void OnClick(EventArgs e) { coche = !coche; anime.Start(); base.OnClick(e); }
+
+        protected override void Dispose(bool disposing) { if (disposing) anime.Dispose(); base.Dispose(disposing); }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = Preparer(e);
             g.Clear(BackColor);
-            float cote = Theme.S(18), y = (Height - cote) / 2f;
-            var boite = new RectangleF(Theme.S(2), y, cote, cote);
-            using (var chemin = Theme.Arrondi(boite, Theme.S(5)))
-            {
-                using (var pinceau = new SolidBrush(coche ? Theme.Texte : (Survol ? Theme.SurfaceForte : Theme.Surface)))
-                    g.FillPath(pinceau, chemin);
-                using (var crayon = new Pen(coche ? Theme.Texte : Theme.Bordure, Theme.S(1.2f)))
-                    g.DrawPath(crayon, chemin);
-            }
-            if (coche)
-            {
-                using (var crayon = new Pen(Theme.Fond, Theme.S(2.2f)) { StartCap = LineCap.Round, EndCap = LineCap.Round, LineJoin = LineJoin.Round })
-                    g.DrawLines(crayon, new[]
-                    {
-                        new PointF(boite.X + cote * 0.25f, boite.Y + cote * 0.52f),
-                        new PointF(boite.X + cote * 0.43f, boite.Y + cote * 0.70f),
-                        new PointF(boite.X + cote * 0.76f, boite.Y + cote * 0.32f),
-                    });
-            }
-            var texte = new Rectangle((int)(boite.Right + Theme.S(12)), 0, Width - (int)boite.Right - Theme.S(14), Height);
+            float largeur = Theme.S(40), hauteur = Theme.S(24), y = (Height - hauteur) / 2f;
+            var piste = new RectangleF(Theme.S(2), y, largeur, hauteur);
+            Color eteint = Survol ? Color.FromArgb(72, 72, 78) : Color.FromArgb(58, 58, 62);
+            Color fond = Color.FromArgb(
+                (int)(eteint.R + (Theme.Vert.R - eteint.R) * position),
+                (int)(eteint.G + (Theme.Vert.G - eteint.G) * position),
+                (int)(eteint.B + (Theme.Vert.B - eteint.B) * position));
+            using (var chemin = Theme.Arrondi(piste, hauteur / 2f))
+            using (var pinceau = new SolidBrush(fond)) g.FillPath(pinceau, chemin);
+            float d = hauteur - Theme.S(4);
+            float x = piste.X + Theme.S(2) + (largeur - d - Theme.S(4)) * position;
+            var pastille = new RectangleF(x, y + Theme.S(2), d, d);
+            using (var ombre = new SolidBrush(Color.FromArgb(60, 0, 0, 0)))
+                g.FillEllipse(ombre, pastille.X, pastille.Y + Theme.S(1), d, d);
+            using (var blanc = new SolidBrush(Color.White)) g.FillEllipse(blanc, pastille);
+            var texte = new Rectangle((int)(piste.Right + Theme.S(12)), 0, Width - (int)piste.Right - Theme.S(14), Height);
             TextRenderer.DrawText(g, Text, Font, texte, Enabled ? Theme.Texte : Theme.TexteDoux, BackColor,
                 TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis);
             if (Focused && ShowFocusCues)
-                DessinerFocus(g, new RectangleF(boite.X - Theme.S(2), boite.Y - Theme.S(2), cote + Theme.S(4), cote + Theme.S(4)), Theme.S(7));
+                DessinerFocus(g, new RectangleF(piste.X - Theme.S(1.5f), piste.Y - Theme.S(1.5f), largeur + Theme.S(3), hauteur + Theme.S(3)), hauteur / 2f + Theme.S(1.5f));
         }
     }
 
@@ -611,7 +662,7 @@ namespace LaCigale
             var g = Preparer(e);
             g.Clear(BackColor);
             using (var police = new Font(Font, Survol ? FontStyle.Underline : FontStyle.Regular))
-                TextRenderer.DrawText(g, Text, police, ClientRectangle, Survol ? Theme.Texte : Theme.TexteDoux, BackColor,
+                TextRenderer.DrawText(g, Text, police, ClientRectangle, Survol ? Theme.AccentSurvol : Theme.Accent, BackColor,
                     TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
             if (Focused && ShowFocusCues)
                 DessinerFocus(g, new RectangleF(0.5f, 0.5f, Width - 2, Height - 2), Theme.S(4));
@@ -632,59 +683,89 @@ namespace LaCigale
         {
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.Clear(Theme.Fond);
-            using (var chemin = Theme.Arrondi(new RectangleF(0, 0, Width - 1, Height - 1), Theme.S(10)))
-            using (var pinceau = new SolidBrush(Theme.Surface))
-            using (var crayon = new Pen(Theme.Bordure))
+            var zone = new RectangleF(0.5f, 0.5f, Width - 2, Height - 2);
+            using (var chemin = Theme.Arrondi(zone, Theme.S(12)))
             {
-                g.FillPath(pinceau, chemin);
-                g.DrawPath(crayon, chemin);
+                using (var pinceau = new LinearGradientBrush(zone, Color.FromArgb(18, 18, 20), Color.FromArgb(30, 30, 33), 90f))
+                    g.FillPath(pinceau, chemin);
+                using (var crayon = new Pen(Color.FromArgb(50, 255, 255, 255))) g.DrawPath(crayon, chemin);
             }
-            var zone = new Rectangle(Theme.S(12), 0, Width - Theme.S(24), Height);
-            TextRenderer.DrawText(g, Text, Font, zone, Theme.Texte, Theme.Surface,
+            var texte = new Rectangle(Theme.S(14), 0, Width - Theme.S(28), Height);
+            TextRenderer.DrawText(g, Text, Font, texte, Theme.Texte,
                 TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.PathEllipsis | TextFormatFlags.NoPrefix);
         }
     }
 
+    // barre de progression : piste sombre, remplissage bleu dégradé, reflet qui glisse
     class Barre : Control
     {
         double valeur;
+        float reflet;
+        readonly System.Windows.Forms.Timer anime = new System.Windows.Forms.Timer { Interval = 30 };
         public double Valeur { get { return valeur; } set { valeur = Math.Max(0, Math.Min(1, value)); Invalidate(); } }
 
         public Barre()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
             Size = new Size(Theme.S(390), Theme.S(8));
+            anime.Tick += delegate { reflet = (reflet + 0.012f) % 1.4f; Invalidate(); };
+            anime.Start();
         }
+
+        protected override void Dispose(bool disposing) { if (disposing) anime.Dispose(); base.Dispose(disposing); }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.Clear(Theme.Fond);
-            float rayon = (Height - 1) / 2f;
-            using (var chemin = Theme.Arrondi(new RectangleF(0, 0, Width - 1, Height - 1), rayon))
-            using (var pinceau = new SolidBrush(Theme.SurfaceForte)) g.FillPath(pinceau, chemin);
-            float largeur = (float)((Width - 1) * valeur);
-            if (largeur >= Height)
-                using (var chemin = Theme.Arrondi(new RectangleF(0, 0, largeur, Height - 1), rayon))
-                using (var pinceau = new SolidBrush(Theme.Texte)) g.FillPath(pinceau, chemin);
+            float rayon = Height / 2f;
+            using (var chemin = Theme.Arrondi(new RectangleF(0, 0, Width, Height), rayon))
+            using (var pinceau = new SolidBrush(Color.FromArgb(52, 52, 56))) g.FillPath(pinceau, chemin);
+            float largeur = (float)(Width * valeur);
+            if (largeur < Height) return;
+            var plein = new RectangleF(0, 0, largeur, Height);
+            using (var chemin = Theme.Arrondi(plein, rayon))
+            {
+                using (var pinceau = new LinearGradientBrush(new RectangleF(0, 0, Width, Height), Color.FromArgb(94, 92, 230), Theme.Accent, 0f))
+                    g.FillPath(pinceau, chemin);
+                var clip = g.Clip;
+                g.SetClip(chemin);
+                float x = (reflet - 0.2f) * Width;
+                using (var brille = new LinearGradientBrush(new RectangleF(x, 0, Width * 0.2f + 1, Height), Color.FromArgb(0, 255, 255, 255), Color.FromArgb(90, 255, 255, 255), 0f))
+                {
+                    brille.InterpolationColors = new ColorBlend
+                    {
+                        Colors = new[] { Color.FromArgb(0, 255, 255, 255), Color.FromArgb(90, 255, 255, 255), Color.FromArgb(0, 255, 255, 255) },
+                        Positions = new[] { 0f, 0.5f, 1f },
+                    };
+                    g.FillRectangle(brille, x, 0, Width * 0.2f, Height);
+                }
+                g.Clip = clip;
+            }
         }
     }
 
+    // fermer : un rond discret qui rougit au survol
     class Fermer : Dessine
     {
-        public Fermer() { Size = new Size(Theme.S(40), Theme.S(32)); TabStop = false; }
+        public Fermer() { Size = new Size(Theme.S(44), Theme.S(44)); TabStop = false; }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = Preparer(e);
-            g.Clear(Survol ? Color.FromArgb(196, 43, 28) : BackColor);
-            float c = Width / 2f, m = Height / 2f, d = Theme.S(5);
-            using (var crayon = new Pen(Survol ? Color.White : Theme.TexteDoux, Theme.S(1.2f)))
+            g.Clear(BackColor);
+            float d = Theme.S(26), x = (Width - d) / 2f, y = (Height - d) / 2f;
+            using (var pinceau = new SolidBrush(Survol ? Color.FromArgb(255, 69, 58) : Color.FromArgb(48, 48, 52)))
+                g.FillEllipse(pinceau, x, y, d, d);
+            float c = Width / 2f, m = Height / 2f, t = Theme.S(4);
+            using (var crayon = new Pen(Survol ? Color.White : Theme.TexteDoux, Theme.S(1.6f)) { StartCap = LineCap.Round, EndCap = LineCap.Round })
             {
-                g.DrawLine(crayon, c - d, m - d, c + d, m + d);
-                g.DrawLine(crayon, c + d, m - d, c - d, m + d);
+                g.DrawLine(crayon, c - t, m - t, c + t, m + t);
+                g.DrawLine(crayon, c + t, m - t, c - t, m + t);
             }
         }
     }
@@ -721,7 +802,7 @@ namespace LaCigale
             try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (Exception) { }
 
             var fermer = new Fermer();
-            fermer.Location = new Point(ClientSize.Width - fermer.Width, 0);
+            fermer.Location = new Point(ClientSize.Width - fermer.Width - Theme.S(6), Theme.S(6));
             fermer.Click += delegate { Quitter(); };
             Controls.Add(fermer);
 
@@ -777,42 +858,67 @@ namespace LaCigale
 
         void Quitter() { if (!occupe) Close(); }
 
-        // panneau de gauche
+        // panneau de gauche : une carte de verre posée dans la fenêtre, l'illustration dedans
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
             var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-            var panneau = new Rectangle(0, 0, Theme.S(Gauche), ClientSize.Height);
-            if (fond != null)
+            int m = Theme.S(12);
+            var carte = new RectangleF(m, m, Theme.S(Gauche) - m, ClientSize.Height - m * 2);
+            float rayon = Theme.S(22);
+            using (var chemin = Theme.Arrondi(carte, rayon))
             {
-                float ratio = Math.Max((float)panneau.Width / fond.Width, (float)panneau.Height / fond.Height);
-                float l = panneau.Width / ratio, h = panneau.Height / ratio;
-                g.DrawImage(fond, panneau, new RectangleF((fond.Width - l) / 2, (fond.Height - h) / 2, l, h), GraphicsUnit.Pixel);
+                var clip = g.Clip;
+                g.SetClip(chemin);
+                if (fond != null)
+                {
+                    float ratio = Math.Max(carte.Width / fond.Width, carte.Height / fond.Height);
+                    float l = carte.Width / ratio, h = carte.Height / ratio;
+                    g.DrawImage(fond, carte, new RectangleF((fond.Width - l) / 2, (fond.Height - h) / 2, l, h), GraphicsUnit.Pixel);
+                }
+                using (var voile = new LinearGradientBrush(carte, Color.FromArgb(40, 255, 255, 255), Color.FromArgb(170, 8, 8, 10), 90f))
+                    g.FillRectangle(voile, carte);
+                // halo bleu discret derrière la cigale
+                using (var halo = new GraphicsPath())
+                {
+                    var zone = new RectangleF(carte.X + carte.Width * 0.1f, Theme.S(40), carte.Width * 0.8f, Theme.S(230));
+                    halo.AddEllipse(zone);
+                    using (var lueur = new PathGradientBrush(halo) { CenterColor = Color.FromArgb(70, 10, 132, 255), SurroundColors = new[] { Color.FromArgb(0, 10, 132, 255) } })
+                        g.FillPath(lueur, halo);
+                }
+                g.Clip = clip;
+                using (var contour = new Pen(Color.FromArgb(46, 255, 255, 255))) g.DrawPath(contour, chemin);
             }
-            using (var pinceau = new LinearGradientBrush(panneau, Color.FromArgb(0, 10, 10, 11), Color.FromArgb(150, 10, 10, 11), 90f))
-                g.FillRectangle(pinceau, panneau);
+            float centre = carte.X + carte.Width / 2f;
             if (symbole != null)
             {
-                float largeur = Theme.S(170), hauteur = largeur * symbole.Height / symbole.Width;
-                g.DrawImage(symbole, (panneau.Width - largeur) / 2, Theme.S(150) - hauteur / 2, largeur, hauteur);
+                float largeur = Theme.S(160), hauteur = largeur * symbole.Height / symbole.Width;
+                g.DrawImage(symbole, centre - largeur / 2, Theme.S(150) - hauteur / 2, largeur, hauteur);
             }
-            using (var titre = Theme.Police(22f, true))
-                TextRenderer.DrawText(g, "La Cigale", titre, new Rectangle(0, Theme.S(236), panneau.Width, Theme.S(44)),
-                    Theme.Texte, TextFormatFlags.HorizontalCenter | TextFormatFlags.NoPadding);
+            var colonne = new Rectangle((int)carte.X, 0, (int)carte.Width, 0);
+            using (var titre = Theme.PoliceTitre(24f))
+                TextRenderer.DrawText(g, "La Cigale", titre, new Rectangle(colonne.X, Theme.S(234), colonne.Width, Theme.S(46)),
+                    Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.NoPadding);
             using (var petit = Theme.Police(9f, false))
             {
                 string version = Moteur.VersionCigale != "" ? "Version " + Moteur.VersionCigale : "";
                 if (modeDesinstallation && Moteur.VersionInstallee != null) version = "Version " + Moteur.VersionInstallee;
-                TextRenderer.DrawText(g, version, petit, new Rectangle(0, Theme.S(284), panneau.Width, Theme.S(22)),
-                    Theme.TexteDoux, TextFormatFlags.HorizontalCenter);
+                if (version != "")
+                {
+                    var taille = TextRenderer.MeasureText(version, petit);
+                    var pastille = new RectangleF(centre - taille.Width / 2f - Theme.S(10), Theme.S(286), taille.Width + Theme.S(20), Theme.S(24));
+                    Theme.Verre(g, pastille, pastille.Height / 2f, Color.FromArgb(60, 255, 255, 255), Color.FromArgb(25, 255, 255, 255), Color.FromArgb(50, 255, 255, 255));
+                    TextRenderer.DrawText(g, version, petit, Rectangle.Round(pastille), Color.FromArgb(225, 225, 230),
+                        TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
+                }
                 TextRenderer.DrawText(g, Langue.T("Navigateur libre · basé sur Firefox", "Free browser · based on Firefox"), petit,
-                    new Rectangle(0, ClientSize.Height - Theme.S(44), panneau.Width, Theme.S(22)),
-                    Color.FromArgb(110, 110, 114), TextFormatFlags.HorizontalCenter);
+                    new Rectangle(colonne.X, ClientSize.Height - Theme.S(52), colonne.Width, Theme.S(22)),
+                    Color.FromArgb(150, 150, 156), TextFormatFlags.HorizontalCenter);
             }
-            using (var crayon = new Pen(Theme.Bordure)) g.DrawLine(crayon, panneau.Right, 0, panneau.Right, panneau.Bottom);
         }
 
         void Vider()
@@ -832,8 +938,8 @@ namespace LaCigale
         {
             return Ajouter(new Label
             {
-                Text = texte, Font = Theme.Police(20f, true), ForeColor = Theme.Texte, BackColor = Theme.Fond,
-                Location = new Point(X0 - Theme.S(2), Theme.S(y)), Size = new Size(LargeurContenu, Theme.S(44)),
+                Text = texte, Font = Theme.PoliceTitre(22f), ForeColor = Theme.Texte, BackColor = Theme.Fond,
+                Location = new Point(X0 - Theme.S(3), Theme.S(y - 4)), Size = new Size(LargeurContenu, Theme.S(50)),
                 UseMnemonic = false,
             });
         }
@@ -1106,7 +1212,7 @@ namespace LaCigale
             {
                 boite.Controls.Add(new Label
                 {
-                    Text = titre, Font = Theme.Police(13f, true), ForeColor = Theme.Texte, BackColor = Theme.Surface,
+                    Text = titre, Font = Theme.PoliceTitre(14f), ForeColor = Theme.Texte, BackColor = Theme.Surface,
                     Location = new Point(Theme.S(28), Theme.S(24)), Size = new Size(Theme.S(364), Theme.S(30)),
                 });
                 boite.Controls.Add(new Label
