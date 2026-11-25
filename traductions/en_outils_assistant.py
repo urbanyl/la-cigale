@@ -209,6 +209,5 @@ PAIRES["apparence/assistant/assistant.sys.mjs"] += [
 ]
 
 PAIRES["accueil/index.html"] += [
-    ("<span><b>Assistant IA</b><small>la cigale, sur cet ordinateur</small></span>",
-     "<span><b>AI assistant</b><small>La Cigale, on this computer</small></span>"),
+    ("        Assistant IA</a>", "        AI assistant</a>"),
 ]

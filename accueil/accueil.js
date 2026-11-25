@@ -292,7 +292,7 @@ function appliquerReglages() {
   document.body.dataset.mode = clair ? "clair" : "sombre";
   document.body.dataset.olive = String(reglages.mode === "olive");
   document.body.dataset.fond = reglages.fond;
-  $("symbole").src = $("symbole-ia").src = clair ? "img/symbole-noir.webp" : "img/symbole-blanc.webp";
+  $("symbole").src = clair ? "img/symbole-noir.webp" : "img/symbole-blanc.webp";
   $("citation").hidden = !reglages.citation;
   $("heure").hidden = !reglages.horloge;
   document.body.dataset.bilan = String(reglages.bilan);
