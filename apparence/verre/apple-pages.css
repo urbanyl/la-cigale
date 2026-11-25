@@ -1,0 +1,162 @@
+/* La Cigale 1.8 : style Apple (Réglages Système de macOS) pour les pages internes :
+   about:cigale, about:assistant, about:nouveautes, about:bienvenue, panneau du bouton cigale.
+   Aplats, pas de verre ni de reflets, petits arrondis, accent bleu, une seule police système.
+   Chargée après la feuille propre à chaque page. */
+:root {
+  --a-fond: #1e1e1e;
+  --a-barre: #282828;
+  --a-groupe: #2b2b2b;
+  --a-trait: rgba(255, 255, 255, 0.09);
+  --a-trait-fort: rgba(255, 255, 255, 0.16);
+  --a-texte: #e8e8ea;
+  --a-doux: #98989d;
+  --a-survol: rgba(255, 255, 255, 0.06);
+  --a-bouton: #4a4a4c;
+  --a-bouton-survol: #545456;
+  --a-champ: #1c1c1e;
+  --a-accent: #0a84ff;
+  --a-sur-accent: #ffffff;
+  --a-police: "SF Pro Text", "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", Inter, Cantarell, system-ui, sans-serif;
+  --a-police-titre: "SF Pro Display", "Segoe UI Variable Display", "Segoe UI Variable", "Segoe UI", Inter, Cantarell, system-ui, sans-serif;
+}
+:root.olive {
+  --a-fond: #171e1a;
+  --a-barre: #1e2721;
+  --a-groupe: #222c25;
+  --a-trait: rgba(214, 228, 196, 0.10);
+  --a-trait-fort: rgba(214, 228, 196, 0.18);
+  --a-texte: #e9e6dc;
+  --a-doux: #97a293;
+  --a-survol: rgba(214, 228, 196, 0.07);
+  --a-bouton: #3a463d;
+  --a-bouton-survol: #435046;
+  --a-champ: #141a16;
+  --a-accent: #a9b89a;
+  --a-sur-accent: #121815;
+}
+@media (prefers-color-scheme: light) {
+  :root:not(.olive):not(.sombre-seul) {
+    --a-fond: #f5f5f5;
+    --a-barre: #e8e8ea;
+    --a-groupe: #ffffff;
+    --a-trait: rgba(0, 0, 0, 0.08);
+    --a-trait-fort: rgba(0, 0, 0, 0.16);
+    --a-texte: #1d1d1f;
+    --a-doux: #6e6e73;
+    --a-survol: rgba(0, 0, 0, 0.05);
+    --a-bouton: #ffffff;
+    --a-bouton-survol: #f2f2f2;
+    --a-champ: #ffffff;
+    --a-accent: #007aff;
+  }
+}
+
+/* ---------- Base ---------- */
+body { font-family: var(--a-police); }
+h1, h2, h3, .titre, .marque, .hero h1, .atout h2, .etape h2, .tete h1, .vide .grand,
+.bilan-grand b, .bilan-quatre b, .mini-bilan b, .chiffres b, .note b, .choix-carte b,
+.numero, .entreprises li::before, .mini-etapes span, .notes span, .vignette .bas, .tuile .lettre {
+  font-family: var(--a-police-titre);
+  font-stretch: normal;
+}
+h1, .hero h1, .etape h2, .tete h1, .installation h2, .reglages h2 { letter-spacing: -0.02em; }
+.hero h1 { line-height: 1.04; font-weight: 700; margin-bottom: 18px; }
+.atout h2, .choix-carte b { letter-spacing: -0.01em; font-weight: 600; }
+.bilan-grand b, .mini-bilan b { font-weight: 700; letter-spacing: -0.04em; }
+.bilan-quatre b, .chiffres b, .note b { font-weight: 600; letter-spacing: -0.02em; }
+::selection { background: color-mix(in srgb, var(--a-accent) 40%, transparent); }
+input[type="radio"], input[type="checkbox"], .option input { accent-color: var(--a-accent); }
+
+/* ---------- Groupes : aplats, petits arrondis, filets fins ---------- */
+.carte, .atout, .choix-carte, .option, .tuile, .modele, .rapport, .saisie {
+  background: var(--a-groupe);
+  border: 1px solid var(--a-trait);
+  border-radius: 10px;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.apercu { border-radius: 8px; border-color: var(--a-trait); background: var(--a-fond); }
+.choix-carte:hover, .tuile:hover, .modele:hover:not(:disabled) { background: var(--a-groupe); border-color: var(--a-trait-fort); }
+.choix-carte[aria-checked="true"], .tuile[aria-pressed="true"], .modele[aria-checked="true"] {
+  border-color: var(--a-accent);
+  background: var(--a-groupe);
+  box-shadow: 0 0 0 1px var(--a-accent);
+}
+.choix-carte[aria-checked="true"] .coche { background: var(--a-accent); border-color: var(--a-accent); }
+.choix-carte[aria-checked="true"] .coche::after { border-color: var(--a-sur-accent); }
+
+/* ---------- Boutons : boutons poussoirs de macOS ---------- */
+button, .bouton { transition: background-color 0.1s; }
+.carte button, .action button:not(.principal):not(.discret), .outils button:not(.discret), .suggestions button, .tete button:not(.discret), .bouton:not(.plein) {
+  padding: 4px 14px;
+  border: 1px solid var(--a-trait-fort);
+  border-radius: 6px;
+  background: var(--a-bouton);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
+  color: var(--a-texte);
+  font-size: 13px;
+}
+.carte button:hover:not(:disabled), .bouton:not(.plein):hover, .outils button:hover:not(:disabled), .suggestions button:hover {
+  background: var(--a-bouton-survol);
+  border-color: var(--a-trait-fort);
+}
+.bouton.plein, button.principal {
+  padding: 4px 14px;
+  background: var(--a-accent);
+  border: 1px solid var(--a-accent);
+  border-radius: 6px;
+  color: var(--a-sur-accent);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+  font-size: 13px;
+}
+.bouton.plein:hover, button.principal:hover:not(:disabled) { background: var(--a-accent); filter: brightness(1.08); }
+button:focus-visible, .bouton:focus-visible, a:focus-visible, select:focus-visible, .categorie:focus-visible {
+  outline: 2px solid var(--a-accent);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+/* ---------- Champs ---------- */
+input:not([type]), input[type="text"], input[type="password"], input[type="url"], input[type="search"], select, textarea#proxy-texte, .essai input, .choix .nombre {
+  border: 1px solid var(--a-trait-fort);
+  border-radius: 5px;
+  background: var(--a-champ);
+  color: var(--a-texte);
+}
+input:not([type]):focus, input[type="text"]:focus, input[type="password"]:focus, textarea#proxy-texte:focus, .essai input:focus, select:focus {
+  outline: 2px solid color-mix(in srgb, var(--a-accent) 70%, transparent);
+  outline-offset: 0;
+  border-color: var(--a-accent);
+}
+.saisie:focus-within { border-color: var(--a-accent); }
+
+/* ---------- Pages de présentation ---------- */
+.surtitre { color: var(--a-accent); letter-spacing: 0.04em; }
+.atout { border-radius: 12px; }
+.etapes li.faite, .etapes li.actuelle { border-top-color: var(--a-accent); }
+.mini-bilan b, .notes span.grande { color: var(--a-accent); }
+.mini-barres i:last-child, .mini-etapes span:first-child, .niveau i.plein, .mini-pensee li.fin::before { background: var(--a-accent); border-color: var(--a-accent); color: var(--a-sur-accent); }
+.mini-discussion .question, .mini-traduction .apres, .mini-menu li.titre, .essai output { background: var(--a-accent); color: var(--a-sur-accent); }
+.mini-fenetre .cote { border-color: var(--a-accent); }
+.mini-fenetre .cote i { background: var(--a-accent); }
+.mini-petits li { border-left-color: var(--a-accent); background: var(--a-groupe); }
+.mini-menu, .mini-onglets span { background: var(--a-groupe); border-color: var(--a-trait); }
+
+/* ---------- about:assistant ---------- */
+.statut { background: var(--a-groupe); border-color: var(--a-trait); }
+.message.utilisateur { background: var(--a-accent); color: var(--a-sur-accent); border: 0; border-radius: 16px 16px 4px 16px; }
+.message.utilisateur .piece { color: inherit; opacity: 0.75; }
+.message.assistant pre { background: var(--a-champ); border-color: var(--a-trait); border-radius: 8px; }
+#barre-plein { background: var(--a-accent); }
+.tete { border-bottom-color: var(--a-trait); }
+
+/* ---------- Panneau du bouton cigale ---------- */
+nav button { border-color: var(--a-trait); background: var(--a-groupe); border-radius: 8px; box-shadow: none; }
+nav button:hover, nav button:focus-visible { background: var(--a-bouton-survol); border-color: var(--a-trait-fort); }
+nav button.actif { border-color: var(--a-accent); }
+nav button svg { color: var(--a-accent); }
+.etat { color: var(--a-accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

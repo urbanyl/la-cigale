@@ -6,75 +6,79 @@
 <title>Quoi de neuf</title>
 <link rel="icon" href="chrome://browser/content/cigale/bouton.png">
 <link rel="stylesheet" href="chrome://browser/content/cigale/pages.css">
-<link rel="stylesheet" href="chrome://browser/content/cigale/verre/verre-pages.css">
+<link rel="stylesheet" href="chrome://browser/content/cigale/verre/apple-pages.css">
 </head>
 <body>
 <main class="page">
   <header class="hero">
     <p class="marque"><img src="chrome://browser/content/cigale/bouton-barre.png" alt=""><span class="surtitre">Quoi de neuf</span></p>
     <h1>La Cigale <span id="version">1.8</span></h1>
-    <p class="chapeau">Une refonte complète, façon verre liquide : onglets en capsules, barre d'adresse et menus translucides,
-      pages en verre, une seule police et des gestes qui répondent. Vos réglages et vos protections ne changent pas.</p>
+    <p class="chapeau">Un style Apple, sobre et en aplats : des réglages organisés comme sur un Mac, des pages épurées,
+      une seule police et un installeur refait. Vos réglages et vos protections ne changent pas.</p>
   </header>
 
   <div class="grille">
     <article class="atout tres-large">
       <div class="apercu">
-        <div class="mini-verre" aria-hidden="true">
-          <div class="barre-onglets"><span class="onglet actif">La Cigale</span><span class="onglet">Wikipédia</span><span class="plus">+</span></div>
-          <div class="barre-adresse"><i></i><span>Rechercher ou saisir une adresse</span></div>
+        <div class="mini-reglages" aria-hidden="true">
+          <ul class="cote">
+            <li class="actif"><i class="c-bleu"></i>Vue d'ensemble</li>
+            <li><i class="c-orange"></i>Qui vous suivait</li>
+            <li><i class="c-vert"></i>Boucliers et confort</li>
+            <li><i class="c-rose"></i>Sites conservés</li>
+          </ul>
+          <div class="contenu">
+            <b>Vue d'ensemble</b>
+            <div class="groupe"><span>HTTPS obligatoire<small>oui</small></span><span>DNS chiffré<small>Quad9</small></span><span>WebRTC coupé<small>oui</small></span></div>
+          </div>
         </div>
       </div>
       <div class="texte">
         <p class="numero">01</p>
-        <h2>Le cadre en verre liquide</h2>
-        <p>L'onglet ouvert devient une capsule de verre, la barre d'adresse s'entoure d'un anneau bleu quand vous tapez,
-          la page repose dans un cadre aux coins arrondis. Le thème clair a son verre blanc, le thème olive son verre vert.</p>
-        <div class="actions"><button class="bouton" id="verre"></button></div>
+        <h2>Des réglages comme sur un Mac</h2>
+        <p>Protection et les Paramètres prennent la mise en page des Réglages Système : barre latérale avec une icône
+          de couleur par rubrique, sélection en bleu, réglages rangés en groupes de lignes.</p>
+        <div class="actions"><button class="bouton plein" id="ouvrir-protection">Ouvrir Protection</button></div>
       </div>
     </article>
 
     <article class="atout large">
       <div class="apercu">
-        <div class="mini-cartes" aria-hidden="true"><span></span><span></span><span class="accent"></span></div>
+        <div class="mini-aplats" aria-hidden="true"><span></span><span></span><span class="accent"></span></div>
       </div>
       <p class="numero">02</p>
-      <h2>Des pages en verre</h2>
-      <p>L'accueil, Protection, l'assistant et ces pages passent au verre dépoli : cartes translucides, liseré clair,
-        ombres douces, bouton principal en bleu. Avec le thème olive, l'accent reste olive.</p>
-      <div class="actions"><button class="bouton plein" id="voir-accueil">Voir mon accueil</button></div>
+      <h2>Un style Apple, en aplats</h2>
+      <p>L'accueil, l'assistant, le panneau du bouton cigale et ces pages passent aux aplats : petits arrondis,
+        filets fins, bouton principal en bleu. Avec le thème olive, l'accent reste olive.</p>
+      <div class="actions"><button class="bouton" id="voir-accueil">Voir mon accueil</button></div>
     </article>
 
     <article class="atout large">
       <div class="apercu">
-        <div class="mini-gestes" aria-hidden="true"><span class="pastille-g">Valider</span><span class="champ-g">la cigale|</span></div>
+        <div class="mini-gestes" aria-hidden="true"><span class="pastille-g">Mettre à jour</span><span class="interrupteur-g"><i></i>Raccourci sur le Bureau</span></div>
       </div>
       <p class="numero">03</p>
-      <h2>Des gestes qui répondent</h2>
-      <p>Les onglets s'ouvrent en glissant, les boutons s'enfoncent sous le clic, les cartes arrivent en douceur.
-        Si Windows est réglé pour réduire les animations, elles s'arrêtent.</p>
+      <h2>Installeur et mise à jour refaits</h2>
+      <p>La fenêtre d'installation et de mise à jour prend le même style : bouton bleu,
+        interrupteurs à la place des cases à cocher, titres plus nets.</p>
     </article>
 
     <article class="atout">
       <div class="apercu"><p class="mini-police" aria-hidden="true">Aa</p></div>
       <p class="numero">04</p>
       <h2>La police du système</h2>
-      <p>Titres, chiffres et textes utilisent la police de Windows, serrée comme sur un Mac.
+      <p>Titres, chiffres et textes utilisent la police de Windows.
         Plus de mélange de deux familles.</p>
     </article>
 
     <article class="atout">
       <div class="apercu">
-        <ul class="mini-menu" aria-hidden="true">
-          <li class="titre">Nouvel onglet</li>
-          <li>Nouvelle fenêtre</li>
-          <li>Fenêtre Tor</li>
-        </ul>
+        <div class="mini-themes" aria-hidden="true"><span class="sombre"></span><span class="clair"></span><span class="olive"></span></div>
       </div>
       <p class="numero">05</p>
-      <h2>Menus translucides</h2>
-      <p>Menus et panneaux ont des coins arrondis et un reflet en haut. Sous Windows 11, ils laissent deviner
-        ce qu'il y a derrière.</p>
+      <h2>Clair, sombre, olive</h2>
+      <p>Les pages suivent le thème choisi : groupes blancs sur fond gris avec le thème clair,
+        tons verts avec le thème olive. Les Paramètres suivent aussi.</p>
     </article>
 
     <article class="atout">

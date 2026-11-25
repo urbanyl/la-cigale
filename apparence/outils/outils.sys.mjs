@@ -617,35 +617,11 @@ export function installer() {
   });
 }
 
-// Apparence « Verre » (Liquid Glass) : une feuille pour toute la fenêtre, teintée selon le thème choisi.
-const VERRE = DOSSIER.replace(/outils\/$/, "verre/") + "verre-fenetre.css";
-function habillerVerre(win) {
-  const racine = win.document.documentElement;
-  const olive = () => racine.toggleAttribute("cigale-olive", P.getStringPref("extensions.activeThemeID", "") == THEMES.olive);
-  const appliquer = () => {
-    const oui = P.getBoolPref("cigale.verre", true);
-    try {
-      if (oui && !win.cigaleVerre) win.windowUtils.loadSheetUsingURIString(VERRE, win.windowUtils.AUTHOR_SHEET);
-      if (!oui && win.cigaleVerre) win.windowUtils.removeSheetUsingURIString(VERRE, win.windowUtils.AUTHOR_SHEET);
-      win.cigaleVerre = oui;
-    } catch (e) { console.error(e); }
-    olive();
-  };
-  appliquer();
-  P.addObserver("cigale.verre", appliquer);
-  P.addObserver("extensions.activeThemeID", olive);
-  win.addEventListener("unload", () => {
-    P.removeObserver("cigale.verre", appliquer);
-    P.removeObserver("extensions.activeThemeID", olive);
-  }, { once: true });
-}
-
 export function fenetre(win) {
   if (win.cigaleOutils || !win.gBrowser) return;
   win.cigaleOutils = true;
   const doc = win.document;
   try { win.windowUtils.loadSheetUsingURIString(DOSSIER + "outils.css", win.windowUtils.AUTHOR_SHEET); } catch (e) { console.error(e); }
-  try { habillerVerre(win); } catch (e) { console.error("La Cigale : verre", e); }
 
   try {
     // Ctrl+Maj+C copiait l'inspecteur des outils de développement : il reste sur F12 et Ctrl+Maj+I

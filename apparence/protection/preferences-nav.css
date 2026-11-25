@@ -1,0 +1,28 @@
+/* Paramètres : boutons de la barre latérale (dans leur shadow DOM), façon Réglages Système de macOS.
+   Icône blanche dans un carré de couleur (--cigale-carre, posé sur chaque bouton par preferences.css),
+   ligne sélectionnée en bleu plein, pas de barre d'indicateur. */
+button, a[href] {
+  gap: 10px;
+  min-height: 32px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: normal;
+  transition: none;
+}
+button::before { display: none; }
+button:hover:not([selected]), a[href]:hover { background-color: rgba(127, 127, 127, 0.12); color: inherit; }
+button[selected] {
+  background-color: var(--a-accent, #0a84ff);
+  color: #fff;
+  font-weight: normal;
+}
+.page-nav-icon {
+  box-sizing: border-box;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+  border-radius: 6px;
+  background-color: var(--cigale-carre, #8e8e93);
+  fill: #fff;
+}

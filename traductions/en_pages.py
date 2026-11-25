@@ -26,7 +26,6 @@ PAIRES["apparence/protection/bienvenue.js"] = [
 ]
 
 PAIRES["apparence/protection/nouveautes.js"] = [
-    ("\"Revenir à l'ancien cadre\" : \"Remettre le verre liquide\"", '"Back to the old frame" : "Bring back liquid glass"'),
 ]
 
 PAIRES["apparence/protection/popup.html"] = [

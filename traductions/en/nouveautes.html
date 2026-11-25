@@ -6,75 +6,79 @@
 <title>What's new</title>
 <link rel="icon" href="chrome://browser/content/cigale/bouton.png">
 <link rel="stylesheet" href="chrome://browser/content/cigale/pages.css">
-<link rel="stylesheet" href="chrome://browser/content/cigale/verre/verre-pages.css">
+<link rel="stylesheet" href="chrome://browser/content/cigale/verre/apple-pages.css">
 </head>
 <body>
 <main class="page">
   <header class="hero">
     <p class="marque"><img src="chrome://browser/content/cigale/bouton-barre.png" alt=""><span class="surtitre">What's new</span></p>
     <h1>La Cigale <span id="version">1.8</span></h1>
-    <p class="chapeau">A complete redesign in liquid glass: capsule tabs, a translucent address bar and menus,
-      glass pages, a single typeface and controls that respond. Your settings and protections stay the same.</p>
+    <p class="chapeau">An Apple style, clean and flat: settings organized like on a Mac, uncluttered pages,
+      a single typeface and a redesigned installer. Your settings and protections stay the same.</p>
   </header>
 
   <div class="grille">
     <article class="atout tres-large">
       <div class="apercu">
-        <div class="mini-verre" aria-hidden="true">
-          <div class="barre-onglets"><span class="onglet actif">La Cigale</span><span class="onglet">Wikipedia</span><span class="plus">+</span></div>
-          <div class="barre-adresse"><i></i><span>Search or enter address</span></div>
+        <div class="mini-reglages" aria-hidden="true">
+          <ul class="cote">
+            <li class="actif"><i class="c-bleu"></i>Overview</li>
+            <li><i class="c-orange"></i>Who was tracking you</li>
+            <li><i class="c-vert"></i>Shields and comfort</li>
+            <li><i class="c-rose"></i>Kept sites</li>
+          </ul>
+          <div class="contenu">
+            <b>Overview</b>
+            <div class="groupe"><span>HTTPS only<small>yes</small></span><span>Encrypted DNS<small>Quad9</small></span><span>WebRTC off<small>yes</small></span></div>
+          </div>
         </div>
       </div>
       <div class="texte">
         <p class="numero">01</p>
-        <h2>A liquid glass frame</h2>
-        <p>The open tab becomes a glass capsule, the address bar gets a blue ring while you type,
-          and the page sits in a frame with rounded corners. The light theme has white glass, the olive theme green glass.</p>
-        <div class="actions"><button class="bouton" id="verre"></button></div>
+        <h2>Settings like on a Mac</h2>
+        <p>Protection and Settings take the layout of System Settings: a sidebar with a coloured icon
+          for each section, blue selection, settings arranged in groups of rows.</p>
+        <div class="actions"><button class="bouton plein" id="ouvrir-protection">Open Protection</button></div>
       </div>
     </article>
 
     <article class="atout large">
       <div class="apercu">
-        <div class="mini-cartes" aria-hidden="true"><span></span><span></span><span class="accent"></span></div>
+        <div class="mini-aplats" aria-hidden="true"><span></span><span></span><span class="accent"></span></div>
       </div>
       <p class="numero">02</p>
-      <h2>Glass pages</h2>
-      <p>The home page, Protection, the assistant and these pages move to frosted glass: translucent cards, a light edge,
-        soft shadows, a blue main button. With the olive theme, the accent stays olive.</p>
-      <div class="actions"><button class="bouton plein" id="voir-accueil">See my home page</button></div>
+      <h2>An Apple style, flat</h2>
+      <p>The home page, the assistant, the cigale button panel and these pages go flat: small rounded corners,
+        thin lines, a blue main button. With the olive theme, the accent stays olive.</p>
+      <div class="actions"><button class="bouton" id="voir-accueil">See my home page</button></div>
     </article>
 
     <article class="atout large">
       <div class="apercu">
-        <div class="mini-gestes" aria-hidden="true"><span class="pastille-g">Confirm</span><span class="champ-g">la cigale|</span></div>
+        <div class="mini-gestes" aria-hidden="true"><span class="pastille-g">Update</span><span class="interrupteur-g"><i></i>Desktop shortcut</span></div>
       </div>
       <p class="numero">03</p>
-      <h2>Controls that respond</h2>
-      <p>Tabs slide open, buttons press in under the click, cards ease into place.
-        If Windows is set to reduce animations, they stop.</p>
+      <h2>A redesigned installer and updater</h2>
+      <p>The install and update window gets the same style: a blue button,
+        switches instead of checkboxes, sharper titles.</p>
     </article>
 
     <article class="atout">
       <div class="apercu"><p class="mini-police" aria-hidden="true">Aa</p></div>
       <p class="numero">04</p>
       <h2>The system typeface</h2>
-      <p>Titles, numbers and text use the Windows typeface, set tight like on a Mac.
+      <p>Titles, numbers and text use the Windows typeface.
         No more mix of two families.</p>
     </article>
 
     <article class="atout">
       <div class="apercu">
-        <ul class="mini-menu" aria-hidden="true">
-          <li class="titre">New tab</li>
-          <li>New window</li>
-          <li>Tor window</li>
-        </ul>
+        <div class="mini-themes" aria-hidden="true"><span class="sombre"></span><span class="clair"></span><span class="olive"></span></div>
       </div>
       <p class="numero">05</p>
-      <h2>Translucent menus</h2>
-      <p>Menus and panels have rounded corners and a highlight along the top. On Windows 11, they let
-        what is behind them show through.</p>
+      <h2>Light, dark, olive</h2>
+      <p>Pages follow the chosen theme: white groups on a grey background with the light theme,
+        green tones with the olive theme. Settings follow too.</p>
     </article>
 
     <article class="atout">
