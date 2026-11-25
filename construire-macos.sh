@@ -146,5 +146,13 @@ ln -s /Applications "$TRAVAIL/image/Applications"
 mkdir -p "$RACINE/dist"
 SORTIE="$RACINE/dist/LaCigale-$VERSION_CIGALE-macos.dmg"
 rm -f "$SORTIE"
-hdiutil create -volname "La Cigale" -srcfolder "$TRAVAIL/image" -fs HFS+ -format UDZO -imagekey zlib-level=9 "$SORTIE" >/dev/null
+# hdiutil échoue parfois avec « Resource busy » (analyse antivirus de macOS en cours) : on réessaie.
+for essai in 1 2 3 4 5 6; do
+  if hdiutil create -volname "La Cigale" -srcfolder "$TRAVAIL/image" -fs HFS+ -format UDZO -imagekey zlib-level=9 "$SORTIE" >/dev/null; then
+    break
+  fi
+  [ "$essai" -eq 6 ] && erreur "hdiutil n'a pas pu créer l'image disque."
+  echo "hdiutil occupé, nouvel essai dans 15 s ($essai/6)"
+  rm -f "$SORTIE"; sleep 15
+done
 echo "-> $SORTIE"
