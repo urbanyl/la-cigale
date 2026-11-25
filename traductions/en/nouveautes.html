@@ -11,104 +11,115 @@
 <main class="page">
   <header class="hero">
     <p class="marque"><img src="chrome://browser/content/cigale/bouton-barre.png" alt=""><span class="surtitre">What's new</span></p>
-    <h1>La Cigale <span id="version">1.5</span></h1>
-    <p class="chapeau">See what La Cigale blocks for you, judge a site at a glance, and wipe everything in a second.
-      Seven new features, all ready to try from this page.</p>
+    <h1>La Cigale <span id="version">1.7</span></h1>
+    <p class="chapeau">An AI assistant that runs on your computer, with no account and without sending your pages to anyone.
+      It summarizes, explains, translates, and can now stay open next to your tabs.</p>
   </header>
 
   <div class="grille">
     <article class="atout tres-large">
       <div class="apercu">
-        <div class="mini-bilan">
-          <div><b id="apercu-total">0</b><small>tracking attempts blocked this week</small></div>
-          <div class="mini-barres" id="apercu-barres" aria-hidden="true"></div>
+        <div class="mini-discussion" aria-hidden="true">
+          <p class="question">Summarize this page in three points</p>
+          <p class="reponse"><i class="l1"></i><i class="l2"></i><i class="l3"></i></p>
+          <small>On this computer</small>
         </div>
       </div>
       <div class="texte">
         <p class="numero">01</p>
-        <h2>Your summary, on the home page</h2>
-        <p>Every new tab shows what La Cigale blocked this week: trackers, uBlock requests,
-          fingerprint reads and links cleaned, day by day. Only numbers are kept, never the sites you visit.</p>
-        <div class="actions"><button class="bouton plein" id="voir-accueil">See my home page</button></div>
+        <h2>A local AI assistant</h2>
+        <p>The model downloads once (2.5 to 5 GB depending on your choice), then everything happens on your computer:
+          no question and no page goes out to the Internet. It can read the open tab and, if you allow it,
+          your tabs, notes and bookmarks.</p>
+        <div class="actions"><button class="bouton plein" id="ouvrir-assistant">Open the assistant</button></div>
       </div>
     </article>
 
     <article class="atout large">
       <div class="apercu">
-        <div class="notes" aria-hidden="true"><span class="grande">A</span><span>B</span><span>C</span><span class="f">F</span></div>
+        <ul class="mini-menu" aria-hidden="true">
+          <li class="titre">Ask La Cigale</li>
+          <li>Summarize this page</li>
+          <li>Analyze the links</li>
+          <li>Translate the page</li>
+          <li>Explain the selection</li>
+        </ul>
       </div>
       <p class="numero">02</p>
-      <h2>A grade for every site</h2>
-      <p>The cicada button gives the open site a letter from A to F: encryption, trackers, fingerprint reads,
-        third-party cookies, certificate age. Hover over the letter to see what cost points.</p>
-      <div class="actions"><button class="bouton" id="ouvrir-panneau">Open the cicada panel</button></div>
+      <h2>Ask La Cigale</h2>
+      <p>Right-clicking a page or a tab replaces the old "Ask an AI chatbot": the request goes
+        to your local assistant, not to an online service.</p>
     </article>
 
     <article class="atout large">
       <div class="apercu">
-        <ol class="mini-classement" id="apercu-classement" aria-hidden="true">
-          <li><span>Google</span><i class="l1"></i></li>
-          <li><span>Meta</span><i class="l2"></i></li>
-          <li><span>Amazon</span><i class="l3"></i></li>
-          <li><span>Criteo</span><i class="l4"></i></li>
-        </ol>
+        <div class="mini-fenetre" aria-hidden="true">
+          <div class="cote"><i></i><i class="court"></i><i></i></div>
+          <div class="site"><i></i><i></i><i class="court"></i><i></i></div>
+        </div>
       </div>
       <p class="numero">03</p>
-      <h2>Who was following you</h2>
-      <p>The ranking of the companies behind blocked trackers, over 7, 30 or 90 days, with the number of pages
-        where each one tried its luck.</p>
-      <div class="actions"><button class="bouton" id="voir-classement">See my ranking</button></div>
+      <h2>The assistant beside the page</h2>
+      <p>It opens in a panel on the side of the window and follows the tab you are looking at.
+        It has its own icon in the sidebar.</p>
+      <div class="actions"><button class="bouton" id="ouvrir-panneau-ia">Open the panel</button></div>
     </article>
 
     <article class="atout">
       <div class="apercu">
-        <div class="essai">
-          <input id="essai-lien" aria-label="Paste a link" value="https://example.com/article?id=42&amp;utm_source=newsletter&amp;fbclid=IwAR3x9">
-          <output id="essai-propre"></output>
-          <span class="retire" id="essai-retire"></span>
+        <div class="mini-traduction" aria-hidden="true">
+          <span class="avant">La cigale chante tout l'été</span>
+          <span class="apres">The cicada sings all summer</span>
         </div>
       </div>
       <p class="numero">04</p>
-      <h2>Clean link</h2>
-      <p>A button in the cicada panel and a right-click "Copy link without tracking". Paste a link above to try it.</p>
+      <h2>Local translation</h2>
+      <p>"Translate the page" replaces the text in place, top of the page first, keeping links and formatting.
+        One button brings back the original. It is slower than an online service, but nothing leaves.</p>
     </article>
 
     <article class="atout">
       <div class="apercu">
-        <div class="mini-panique">
-          <span class="rouge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 2.5 20h19z"/><path d="M12 10v4.5M12 17.2v.3"/></svg>Panic</span>
-          <span><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F12</kbd></span>
-        </div>
+        <ol class="mini-pensee" aria-hidden="true">
+          <li>Thinking</li>
+          <li>Checking</li>
+          <li class="fin">Answer</li>
+        </ol>
       </div>
       <p class="numero">05</p>
-      <h2>Panic button</h2>
-      <p>All tabs closed, cookies, cache and history erased, proxy switched. In the cicada panel
-        (two clicks) or from the keyboard (instant).</p>
+      <h2>A model that thinks</h2>
+      <p>"Thinker" (Qwen3 4B) reasons before answering, and you can read its thinking step by step.</p>
     </article>
 
     <article class="atout">
       <div class="apercu">
-        <div class="mini-onglets" aria-hidden="true">
-          <span class="c-bleu">Bank</span><span class="c-orange">Taxes</span><span>Wikipedia</span>
-        </div>
+        <ul class="mini-historique" aria-hidden="true">
+          <li><b>Bread recipe</b><small>yesterday</small></li>
+          <li><b>Letter to the landlord</b><small>Monday</small></li>
+          <li><b>Article summary</b><small>Nov 12</small></li>
+        </ul>
       </div>
       <p class="numero">06</p>
-      <h2>Vaults</h2>
-      <p>A site in a vault always opens separately, with its own cookies and its own login.
-        The tab wears its vault's color.</p>
-      <div class="actions"><button class="bouton" id="coffres-sensibles"></button></div>
+      <h2>History, if you want it</h2>
+      <p>Off by default. When on, it keeps your last 50 conversations on this computer.
+        The panic button wipes them along with everything else.</p>
+      <div class="actions"><button class="bouton" id="historique"></button></div>
     </article>
 
     <article class="atout tres-large">
       <div class="apercu">
-        <div class="mini-etapes" aria-hidden="true"><span>1</span><i></i><span>2</span><i></i><span>3</span></div>
+        <ul class="mini-petits" aria-hidden="true">
+          <li>Seyra at the bottom of the sidebar</li>
+          <li>AI assistant button on the home page</li>
+          <li>Cigale button next to extensions</li>
+        </ul>
       </div>
       <div class="texte">
         <p class="numero">07</p>
-        <h2>A real welcome</h2>
-        <p>On first launch, three steps: appearance (Dark, Light or Olive), protection level,
-          and home page shortcuts. You can go through it again whenever you like.</p>
-        <div class="actions"><button class="bouton" id="revoir-bienvenue">Redo the welcome</button></div>
+        <h2>And small touches</h2>
+        <p>Seyra stays at the bottom of the sidebar, the home page gets an assistant button next to Tor,
+          and the cigale button sits just before the extensions button.</p>
+        <div class="actions"><button class="bouton" id="voir-accueil">See my home page</button></div>
       </div>
     </article>
   </div>

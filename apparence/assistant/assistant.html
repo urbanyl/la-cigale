@@ -47,6 +47,7 @@
     <div class="outils">
       <button id="montrer-page" class="discret" type="button" aria-expanded="false" aria-controls="outils-page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>Utiliser une page</button>
       <span class="espace"></span>
+      <button id="historique" class="discret" type="button" aria-expanded="false" aria-controls="liste-conversations" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>Conversations</button>
       <button id="effacer" class="discret" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nouvelle conversation</button>
     </div>
     <div id="outils-page" class="outils outils-page" hidden>
@@ -56,6 +57,7 @@
       <button id="liens" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>Analyser les liens</button>
       <button id="selection" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14M5 20h14M9 9h6M9 15h6"/></svg>Expliquer la sélection</button>
     </div>
+    <div id="liste-conversations" class="liste-conversations" hidden></div>
     <div id="fil" class="fil" aria-live="polite">
       <div id="vide" class="vide">
         <img class="mascotte" src="chrome://browser/content/cigale/bouton.png" alt="" width="64" height="64">
@@ -79,7 +81,7 @@
         <button id="envoyer" class="principal" type="submit">Envoyer</button>
       </div>
     </form>
-    <p class="pied">Tout est calculé sur cet ordinateur. La conversation n'est pas enregistrée : elle disparaît en fermant l'onglet ou avec le bouton panique. Un modèle peut se tromper : vérifiez ce qui compte.</p>
+    <p class="pied"><span id="pied-sans">Tout est calculé sur cet ordinateur. La conversation n'est pas enregistrée : elle disparaît en fermant l'onglet ou avec le bouton panique.</span><span id="pied-avec" hidden>Tout est calculé sur cet ordinateur. Les conversations sont gardées dans votre profil (réglages) ; le bouton panique les efface.</span> Un modèle peut se tromper : vérifiez ce qui compte.</p>
   </section>
 
   <section id="reglages" class="reglages" hidden>
@@ -94,6 +96,12 @@
       <label><input id="contexte-favoris" type="checkbox"> Mes favoris récents</label>
       <label><input id="contexte-historique" type="checkbox"> Mon historique récent (20 dernières pages)</label>
     </div>
+    <h3 class="titre-section">Conversations</h3>
+    <div class="contextes">
+      <label><input id="historique-actif" type="checkbox"> Garder mes conversations sur cet ordinateur (50 au plus)</label>
+    </div>
+    <p class="gris">Désactivé par défaut. Elles restent dans votre profil, ne sont envoyées nulle part, et le bouton panique les efface.</p>
+    <div class="action"><button id="effacer-conversations" class="danger" type="button">Effacer toutes les conversations</button></div>
     <h3 class="titre-section">Modèles</h3>
     <div id="liste-modeles" class="liste-modeles"></div>
     <p class="gris">Espace utilisé : <b id="espace-utilise">…</b></p>

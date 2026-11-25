@@ -58,6 +58,19 @@ export const MODELES = [
     licence: "Licence communautaire Llama 3.1",
     licenceUrl: "https://www.llama.com/llama3_1/license/",
   },
+  {
+    id: "reflechi",
+    nom: "Réfléchi",
+    detail: "Qwen3 4B, version sans filtre (abliterated), qui réfléchit avant de répondre",
+    conseil: "Montre sa vraie réflexion pas à pas (elle est en anglais, la réponse en français). Plus lent, 8 Go de mémoire suffisent.",
+    fichier: "mlabonne_Qwen3-4B-abliterated-Q4_K_M.gguf",
+    url: "https://huggingface.co/bartowski/mlabonne_Qwen3-4B-abliterated-GGUF/resolve/main/mlabonne_Qwen3-4B-abliterated-Q4_K_M.gguf",
+    sha256: "004f7b8f59ccd5fa42258c52aa2087b89524cced84e955b9c8b115035ca073b2",
+    taille: 2497280544,
+    licence: "Apache 2.0",
+    licenceUrl: "https://www.apache.org/licenses/LICENSE-2.0",
+    reflechit: true,
+  },
 ];
 
 const dossier = () => PathUtils.join(PathUtils.profileDir, "cigale-assistant");
@@ -346,6 +359,8 @@ export async function demarrer() {
           "-m", cheminModele(modele), "--host", "127.0.0.1", "--port", String(port), "--api-key", cle,
           "-c", "16384", "--parallel", "1", "-fa", "off", "--no-webui", "--offline", "--log-disable",
           ...(P.getStringPref(PREF_CALCUL, "") == "cpu" ? ["-ngl", "0"] : []),
+          // modèle qui réfléchit : sa réflexion arrive à part (reasoning_content), bornée en longueur
+          ...(modele.reflechit ? ["--reasoning-format", "deepseek", "--reasoning-budget", "1024"] : ["--reasoning", "off"]),
         ],
         workdir: PathUtils.parent(exe),
         environment: { LLAMA_ARG_UI: null, HF_TOKEN: null },
@@ -399,16 +414,65 @@ export async function arreter() {
 
 Services.obs.addObserver(() => { arreter(); }, "quit-application");
 
+// ---------- historique des conversations (facultatif, désactivé par défaut) ----------
+// Gardé seulement dans le profil (cigale-assistant/conversations.json), 50 au plus.
+// Le bouton panique et « Tout supprimer » l'effacent.
+
+const PREF_HISTORIQUE = "cigale.assistant.historique";
+const MAX_CONVERSATIONS = 50;
+const fichierConversations = () => PathUtils.join(dossier(), "conversations.json");
+
+export function historiqueActif() { return P.getBoolPref(PREF_HISTORIQUE, false); }
+export async function activerHistorique(oui) {
+  P.setBoolPref(PREF_HISTORIQUE, !!oui);
+  if (!oui) await effacerConversations();
+}
+export async function conversations() {
+  if (!historiqueActif()) return [];
+  try {
+    const liste = JSON.parse(await IOUtils.readUTF8(fichierConversations()));
+    return Array.isArray(liste) ? liste : [];
+  } catch { return []; }
+}
+async function ecrireConversations(liste) {
+  await IOUtils.makeDirectory(dossier(), { ignoreExisting: true });
+  await IOUtils.writeUTF8(fichierConversations(), JSON.stringify(liste), { tmpPath: fichierConversations() + ".tmp" });
+}
+export async function enregistrerConversation(c) {
+  if (!historiqueActif() || !c?.id) return;
+  const liste = (await conversations()).filter((x) => x.id != c.id);
+  liste.unshift(c);
+  await ecrireConversations(liste.slice(0, MAX_CONVERSATIONS));
+}
+export async function supprimerConversation(id) {
+  await ecrireConversations((await conversations()).filter((x) => x.id != id));
+}
+export async function effacerConversations() {
+  await IOUtils.remove(fichierConversations(), { ignoreAbsent: true });
+}
+
 // Réponse en continu. `morceau(texte)` reçoit chaque bout de texte ; renvoie le texte complet.
+// Le modèle « Réfléchi » pense longuement (et en anglais, quoi qu'on lui demande) : on lui demande d'être bref.
+const CONSIGNE_REFLEXION = "Réfléchis brièvement et seulement sur ce qui aide à répondre.";
+
 export async function discuter(messages, morceau, signal, options = {}) {
   if (!serveur) options.etape?.("demarrage");
   const s = await demarrer();
   options.etape?.("envoi");
   reveiller();
+  const reflechit = !!MODELES.find((m) => m.id == s.modele)?.reflechit;
+  if (reflechit && !options.sansReflexion && messages[0]?.role == "system") {
+    messages = [{ role: "system", content: messages[0].content + "\n\n" + CONSIGNE_REFLEXION }, ...messages.slice(1)];
+  }
   const reponse = await fetch(`http://127.0.0.1:${s.port}/v1/chat/completions`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: "Bearer " + s.cle },
-    body: JSON.stringify({ messages, stream: true, return_progress: true, temperature: options.temperature ?? 0.7, max_tokens: options.max ?? 1500, cache_prompt: true }),
+    body: JSON.stringify({
+      messages, stream: true, return_progress: true, cache_prompt: true,
+      ...(options.sansReflexion ? { chat_template_kwargs: { enable_thinking: false } } : {}),
+      temperature: options.temperature ?? (reflechit ? 0.6 : 0.7),
+      max_tokens: (options.max ?? 1500) + (reflechit && !options.sansReflexion ? 1024 : 0),
+    }),
     signal,
     cache: "no-store",
   });
@@ -435,7 +499,9 @@ export async function discuter(messages, morceau, signal, options = {}) {
         const d = JSON.parse(donnees);
         // avancement de la lecture du texte par le modèle (avant le premier mot de la réponse)
         if (d.prompt_progress && options.progres) options.progres(d.prompt_progress);
-        const bout = d.choices?.[0]?.delta?.content;
+        const delta = d.choices?.[0]?.delta || {};
+        if (delta.reasoning_content) options.reflexion?.(delta.reasoning_content);
+        const bout = delta.content;
         if (bout) { complet += bout; morceau(bout); }
       } catch {}
     }
@@ -509,6 +575,71 @@ export async function contenu(browser) {
   const acteur = browser?.browsingContext?.currentWindowGlobal?.getActor("CigaleOutils");
   if (!acteur) throw new Error("Cette page ne peut pas être lue (page interne ou pas encore chargée).");
   return acteur.sendQuery("Contenu");
+}
+
+// ---------- traduction locale d'une page ----------
+// Les textes partent par petits paquets au modèle local ; rien ne sort de l'ordinateur.
+
+export function langueCible() {
+  const code = Services.locale.appLocaleAsBCP47 || "fr";
+  let nom = code;
+  try { nom = new Intl.DisplayNames([code], { type: "language" }).of(code.split("-")[0]); } catch {}
+  return { code, nom };
+}
+
+async function traduirePaquet(textes, cible, signal) {
+  const consignes = `Tu es un traducteur. On te donne un tableau JSON de textes tirés d'une page web. ` +
+    `Traduis chaque texte en ${cible}, fidèlement et naturellement, sans rien ajouter ni expliquer. ` +
+    `Garde tels quels les nombres, les noms propres, les noms scientifiques et la ponctuation. Si un texte est déjà en ${cible}, recopie-le tel quel. ` +
+    `Réponds uniquement avec un tableau JSON de chaînes, de même longueur (${textes.length}) et dans le même ordre.`;
+  const sortie = await discuter([{ role: "system", content: consignes }, { role: "user", content: JSON.stringify(textes) }],
+    () => {}, signal, { temperature: 0.2, max: Math.min(3000, 200 + Math.ceil(JSON.stringify(textes).length / 2)), sansReflexion: true });
+  const debut = sortie.indexOf("["), fin = sortie.lastIndexOf("]");
+  let liste = null;
+  try { liste = JSON.parse(sortie.slice(debut, fin + 1)); } catch {}
+  return Array.isArray(liste) && liste.length == textes.length && liste.every((x) => typeof x == "string") ? liste : null;
+}
+
+// `avancer(fait, total)` après chaque paquet ; s'arrête avec `signal`.
+export async function traduirePage(browser, { signal, avancer } = {}) {
+  const acteur = browser?.browsingContext?.currentWindowGlobal?.getActor("CigaleOutils");
+  if (!acteur) throw new Error("Cette page ne peut pas être traduite (page interne ou pas encore chargée).");
+  const { textes } = await acteur.sendQuery("TraduireLire");
+  const cible = langueCible().nom;
+  const paquets = [];
+  let courant = [], taille = 0;
+  textes.forEach((t, i) => {
+    if (courant.length && (courant.length >= 24 || taille + t.length > 1400)) { paquets.push(courant); courant = []; taille = 0; }
+    courant.push(i);
+    taille += t.length;
+  });
+  if (courant.length) paquets.push(courant);
+  let fait = 0;
+  avancer?.(0, textes.length);
+  const traiter = async (indices, profondeur = 0) => {
+    const resultat = await traduirePaquet(indices.map((i) => textes[i]), cible, signal);
+    if (resultat) {
+      await acteur.sendQuery("TraduireEcrire", indices.map((i, k) => [i, resultat[k]]));
+    } else if (indices.length > 1 && profondeur < 3) {
+      // réponse mal formée : on recommence en deux moitiés
+      const milieu = Math.ceil(indices.length / 2);
+      await traiter(indices.slice(0, milieu), profondeur + 1);
+      await traiter(indices.slice(milieu), profondeur + 1);
+      return;
+    }
+    fait += indices.length;
+    avancer?.(fait, textes.length);
+  };
+  for (const p of paquets) {
+    if (signal?.aborted) break;
+    await traiter(p);
+  }
+  return { total: textes.length, fait };
+}
+
+export async function pageOriginale(browser) {
+  const acteur = browser?.browsingContext?.currentWindowGlobal?.getActor("CigaleOutils");
+  if (acteur) await acteur.sendQuery("TraduireOriginal");
 }
 
 // Demande transmise par le menu contextuel avant l'ouverture de about:assistant

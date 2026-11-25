@@ -36,8 +36,15 @@ PAIRES["apparence/assistant/assistant.html"] = [
     ("> Avec le contenu de la page<", "> Include the page content<"),
     (">Arrêter<", ">Stop<"),
     (">Envoyer<", ">Send<"),
-    ("Tout est calculé sur cet ordinateur. La conversation n'est pas enregistrée : elle disparaît en fermant l'onglet ou avec le bouton panique. Un modèle peut se tromper : vérifiez ce qui compte.",
-     "Everything is computed on this computer. The conversation is not saved: it disappears when you close the tab or press the panic button. A model can be wrong: check what matters."),
+    ("<span id=\"pied-sans\">Tout est calculé sur cet ordinateur. La conversation n'est pas enregistrée : elle disparaît en fermant l'onglet ou avec le bouton panique.</span>",
+     "<span id=\"pied-sans\">Everything is computed on this computer. The conversation is not saved: it disappears when you close the tab or press the panic button.</span>"),
+    ("<span id=\"pied-avec\" hidden>Tout est calculé sur cet ordinateur. Les conversations sont gardées dans votre profil (réglages) ; le bouton panique les efface.</span> Un modèle peut se tromper : vérifiez ce qui compte.",
+     "<span id=\"pied-avec\" hidden>Everything is computed on this computer. Conversations are kept in your profile (settings); the panic button wipes them.</span> A model can be wrong: check what matters."),
+    ("<h3 class=\"titre-section\">Conversations</h3>", "<h3 class=\"titre-section\">Conversations</h3>"),
+    ("> Garder mes conversations sur cet ordinateur (50 au plus)<", "> Keep my conversations on this computer (50 at most)<"),
+    ("Désactivé par défaut. Elles restent dans votre profil, ne sont envoyées nulle part, et le bouton panique les efface.",
+     "Off by default. They stay in your profile, are sent nowhere, and the panic button wipes them."),
+    (">Effacer toutes les conversations<", ">Delete all conversations<"),
     ("<h2>Réglages de l'assistant</h2>", "<h2>Assistant settings</h2>"),
     ("Espace utilisé : <b", "Disk space used: <b"),
     (">Retour à la conversation<", ">Back to the conversation<"),
@@ -210,4 +217,46 @@ PAIRES["apparence/assistant/assistant.sys.mjs"] += [
 
 PAIRES["accueil/index.html"] += [
     ("        Assistant IA</a>", "        AI assistant</a>"),
+]
+
+# 1.7 : modèle Réfléchi, historique, panneau latéral, traduction locale
+PAIRES["apparence/assistant/assistant.sys.mjs"] += [
+    ('nom: "Réfléchi"', 'nom: "Thinker"'),
+    ('"Qwen3 4B, version sans filtre (abliterated), qui réfléchit avant de répondre"', '"Qwen3 4B, uncensored version (abliterated), thinks before answering"'),
+    ('"Montre sa vraie réflexion pas à pas (elle est en anglais, la réponse en français). Plus lent, 8 Go de mémoire suffisent."',
+     '"Shows its real thinking step by step. Slower; 8 GB of memory is enough."'),
+    ('"Réfléchis brièvement et seulement sur ce qui aide à répondre."', '"Think briefly, and only about what helps answer."'),
+    ("`Tu es un traducteur. On te donne un tableau JSON de textes tirés d'une page web. `",
+     "`You are a translator. You are given a JSON array of texts taken from a web page. `"),
+    ("`Traduis chaque texte en ${cible}, fidèlement et naturellement, sans rien ajouter ni expliquer. `",
+     "`Translate each text into ${cible}, faithfully and naturally, without adding or explaining anything. `"),
+    ("`Garde tels quels les nombres, les noms propres, les noms scientifiques et la ponctuation. Si un texte est déjà en ${cible}, recopie-le tel quel. `",
+     "`Keep numbers, proper nouns, scientific names and punctuation unchanged. If a text is already in ${cible}, copy it as is. `"),
+    ("`Réponds uniquement avec un tableau JSON de chaînes, de même longueur (${textes.length}) et dans le même ordre.`",
+     "`Answer only with a JSON array of strings, of the same length (${textes.length}) and in the same order.`"),
+    ('"Cette page ne peut pas être traduite (page interne ou pas encore chargée)."', '"This page cannot be translated (internal page or not loaded yet)."'),
+]
+
+PAIRES["apparence/assistant/assistant.js"] += [
+    ("`Réflexion du modèle (après ${secondes()} s) :`", "`Model's thinking (after ${secondes()} s):`"),
+    ('`${x.hote} « ${x.texte} » : ${x.raisons.join(" ; ")}`', '`${x.hote} "${x.texte}": ${x.raisons.join("; ")}`'),
+    ('"Aucune conversation gardée pour l\'instant."', '"No saved conversations yet."'),
+    ('"Effacer toutes les conversations gardées ?"', '"Delete all saved conversations?"'),
+]
+
+PAIRES["apparence/outils/outils.sys.mjs"] += [
+    ('["Assistant : traduire cette page", ""', '["Assistant: translate this page", ""'),
+    ('["Assistant dans le panneau latéral", ""', '["Assistant in the side panel", ""'),
+    ('nom: "Assistant IA", basculer: basculerAssistant', 'nom: "AI assistant", basculer: basculerAssistant'),
+    ('iaTraduire.setAttribute("label", "Traduire la page");', 'iaTraduire.setAttribute("label", "Translate the page");'),
+    ('traduireOnglet.setAttribute("label", "Traduire l\'onglet");', 'traduireOnglet.setAttribute("label", "Translate the tab");'),
+    ('label: "Revenir à l\'original"', 'label: "Show the original"'),
+    ('label: "Arrêter", callback: () => { controleur.abort()', 'label: "Stop", callback: () => { controleur.abort()'),
+    ('"La Cigale traduit la page sur cet ordinateur…"', '"La Cigale is translating the page on this computer…"'),
+    ("`La Cigale traduit la page sur cet ordinateur : ${Math.round((n / Math.max(1, tout)) * 100)} % (le haut de la page d'abord)`",
+     "`La Cigale is translating the page on this computer: ${Math.round((n / Math.max(1, tout)) * 100)}% (top of the page first)`"),
+    ('`Traduction arrêtée (${fait} textes sur ${total}).` : "Page traduite par La Cigale, sur cet ordinateur."',
+     '`Translation stopped (${fait} of ${total} texts).` : "Page translated by La Cigale, on this computer."'),
+    ('"Traduction arrêtée."', '"Translation stopped."'),
+    ('"Traduction impossible : "', '"Translation failed: "'),
 ]

@@ -76,6 +76,53 @@ export class CigaleOutilsChild extends JSWindowActorChild {
         liens,
         selection: (this.contentWindow.getSelection()?.toString() || "").trim().slice(0, 12000),
       };
+    } else if (message.name == "TraduireLire") {
+      // Traduction locale : les morceaux de texte visibles, du haut de l'écran vers le bas.
+      // Le texte est remplacé nœud par nœud : liens, gras et mise en page restent en place.
+      const doc = this.document;
+      const exclus = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "CODE", "PRE", "TEXTAREA", "KBD", "SAMP", "svg", "math"]);
+      const marcheur = doc.createTreeWalker(doc.body || doc.documentElement, 4 /* SHOW_TEXT */);
+      const trouves = [];
+      for (let n; (n = marcheur.nextNode()) && trouves.length < 2500;) {
+        const t = n.nodeValue;
+        if (!t || t.trim().length < 2 || !/\p{L}/u.test(t)) continue;
+        const parent = n.parentElement;
+        if (!parent || parent.closest("[contenteditable=''], [contenteditable=true], [translate=no], .notranslate, .IPA")) continue;
+        // passage marqué dans une autre langue que la page (nom latin, phonétique…) : on le laisse
+        const autre = parent.closest("[lang]");
+        if (autre && autre != doc.documentElement && autre.lang.split("-")[0] != (doc.documentElement.lang || "").split("-")[0]) continue;
+        let el = parent, exclu = false;
+        for (; el; el = el.parentElement) if (exclus.has(el.localName.toUpperCase()) || exclus.has(el.localName)) { exclu = true; break; }
+        if (exclu || !parent.checkVisibility?.()) continue;
+        const r = parent.getBoundingClientRect();
+        trouves.push({ n, y: r.top });
+      }
+      // d'abord ce qui est à l'écran et juste en dessous, puis le reste de la page
+      const hauteur = this.contentWindow.innerHeight;
+      const rang = (y) => y >= -50 ? y : hauteur * 1000 - y;
+      trouves.sort((a, b) => rang(a.y) - rang(b.y));
+      this.traduction = { noeuds: trouves.map((x) => x.n), originaux: this.traduction?.originaux || new Map() };
+      return {
+        langue: doc.documentElement.lang || "",
+        textes: this.traduction.noeuds.map((n) => n.nodeValue.trim().replace(/\s+/g, " ").slice(0, 600)),
+      };
+    } else if (message.name == "TraduireEcrire") {
+      const t = this.traduction;
+      if (!t) return 0;
+      let fait = 0;
+      for (const [i, texte] of message.data || []) {
+        const n = t.noeuds[i];
+        if (!n?.isConnected || typeof texte != "string" || !texte.trim()) continue;
+        if (!t.originaux.has(n)) t.originaux.set(n, n.nodeValue);
+        const avant = n.nodeValue.match(/^\s*/)[0], apres = n.nodeValue.match(/\s*$/)[0];
+        n.nodeValue = avant + texte.trim() + apres;
+        fait++;
+      }
+      return fait;
+    } else if (message.name == "TraduireOriginal") {
+      for (const [n, texte] of this.traduction?.originaux || []) if (n.isConnected) n.nodeValue = texte;
+      this.traduction = null;
+      return true;
     } else if (message.name == "Selecteur") {
       const el = this.cibleMenu;
       if (!el || !el.isConnected) return "";

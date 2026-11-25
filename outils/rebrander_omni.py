@@ -47,7 +47,7 @@ for _f in (RACINE / "accueil").rglob("*"):
         AJOUTS_BROWSER[CIGALE + "accueil/" + _f.relative_to(RACINE / "accueil").as_posix()] = _f.read_bytes()
 AJOUTS_BROWSER[CIGALE + "bouton.png"] = (BRANDING / "png" / "logo-128.png").read_bytes()
 # petits outils (palette, notes, mini-lecteur, aperçu des liens, gestes, retouches)
-for _f in ("outils.sys.mjs", "outils-enfant.sys.mjs", "outils.css", "notes.html", "notes.js", "notes.css", "notes.svg"):
+for _f in ("outils.sys.mjs", "outils-enfant.sys.mjs", "outils.css", "notes.html", "notes.js", "notes.css", "notes.svg", "assistant.svg"):
     AJOUTS_BROWSER[CIGALE + "outils/" + _f] = (RACINE / "apparence" / "outils" / _f).read_bytes()
 # about:assistant : IA locale (le moteur et le modèle ne sont jamais dans l'installeur)
 for _f in ("assistant.html", "assistant.css", "assistant.js", "assistant.sys.mjs"):

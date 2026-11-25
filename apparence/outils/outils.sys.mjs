@@ -117,6 +117,8 @@ function actions(win) {
     ["Assistant IA local", "", () => win.switchToTabHavingURI("about:assistant", true)],
     ["Assistant : résumer cette page", "", () => assistant(win, "resumer", g.selectedTab)],
     ["Assistant : analyser les liens de la page", "", () => assistant(win, "liens", g.selectedTab)],
+    ["Assistant : traduire cette page", "", () => traduire(win, g.selectedBrowser)],
+    ["Assistant dans le panneau latéral", "", () => basculerAssistant(win)],
     ["Protection et profils", "", () => win.switchToTabHavingURI("about:cigale", true)],
     ["Qui vous suivait", "", () => win.switchToTabHavingURI("about:cigale#bilan", true, { ignoreFragment: "whenComparingAndReplace" })],
     ["Paramètres", "", () => win.openPreferences()],
@@ -429,16 +431,47 @@ export function basculerNotes(win) {
   doc.getElementById("browser").append(separateur, boite);
 }
 
+// Assistant IA dans un panneau à droite de la page : il lit l'onglet affiché.
+export function basculerAssistant(win) {
+  const doc = win.document;
+  let boite = doc.getElementById("cigale-assistant-panneau");
+  if (boite) {
+    const cache = !boite.hidden;
+    boite.hidden = cache;
+    doc.getElementById("cigale-assistant-separateur").hidden = cache;
+    if (!cache) lazy.setTimeout(() => doc.getElementById("cigale-assistant-cadre")?.contentDocument?.getElementById("question")?.focus(), 50);
+    return;
+  }
+  const separateur = doc.createXULElement("splitter");
+  separateur.id = "cigale-assistant-separateur";
+  separateur.setAttribute("resizebefore", "sibling");
+  separateur.setAttribute("resizeafter", "sibling");
+  boite = doc.createXULElement("vbox");
+  boite.id = "cigale-assistant-panneau";
+  boite.style.cssText = "width: 420px; min-width: 300px; max-width: 60vw;";
+  const cadre = html(doc, "iframe", { id: "cigale-assistant-cadre", src: DOSSIER.replace(/outils\/$/, "") + "assistant/assistant.html?panneau=1", flex: "1" });
+  cadre.style.cssText = "border: 0; flex: 1; width: 100%;";
+  boite.append(cadre);
+  doc.getElementById("browser").append(separateur, boite);
+}
+
+const OUTILS_BARRE = {
+  "cigale-notes": { icone: "notes.svg", nom: "Notes", basculer: basculerNotes },
+  "cigale-assistant-ia": { icone: "assistant.svg", nom: "Assistant IA", basculer: basculerAssistant },
+};
+
 function notesBarreLaterale(win) {
   const sc = win.SidebarController;
   if (!sc?.toolsAndExtensions || sc.toolsAndExtensions.has("cigale-notes")) return;
-  sc.toolsAndExtensions.set("cigale-notes", {
-    commandID: "cigale-notes", view: "cigale-notes", name: "cigale-notes",
-    iconUrl: DOSSIER + "notes.svg", tooltiptext: "Notes", disabled: false,
-  });
+  for (const [id, o] of Object.entries(OUTILS_BARRE)) {
+    sc.toolsAndExtensions.set(id, {
+      commandID: id, view: id, name: id,
+      iconUrl: DOSSIER + o.icone, tooltiptext: o.nom, disabled: false,
+    });
+  }
   for (const nom of ["toggle", "recordIconClick"]) {
     const orig = sc[nom].bind(sc);
-    sc[nom] = (id, ...r) => id == "cigale-notes" ? (nom == "toggle" ? basculerNotes(win) : undefined) : orig(id, ...r);
+    sc[nom] = (id, ...r) => OUTILS_BARRE[id] ? (nom == "toggle" ? OUTILS_BARRE[id].basculer(win) : undefined) : orig(id, ...r);
   }
   // Seyra reste le dernier bouton de la barre latérale, quel que soit l'ordre d'installation
   const seyra = sc.toolsAndExtensions.get("cigale-seyra");
@@ -673,6 +706,11 @@ export function fenetre(win) {
     };
     iaEntree("Résumer cette page", "resumer", "cigale-assistant-resumer");
     iaEntree("Analyser les liens", "liens", "cigale-assistant-liens");
+    const iaTraduire = doc.createXULElement("menuitem");
+    iaTraduire.id = "cigale-assistant-traduire";
+    iaTraduire.setAttribute("label", "Traduire la page");
+    iaTraduire.addEventListener("command", () => traduire(win, win.gContextMenu?.browser || win.gBrowser.selectedBrowser));
+    iaPopup.append(iaTraduire);
     const iaSelection = iaEntree("Expliquer la sélection", "selection", "cigale-assistant-selection");
     iaPopup.append(doc.createXULElement("menuseparator"));
     const iaOuvrir = doc.createXULElement("menuitem");
@@ -727,6 +765,10 @@ function menuOngletAssistant(win) {
   };
   entree("Résumer l'onglet", "resumer");
   entree("Analyser les liens", "liens");
+  const traduireOnglet = doc.createXULElement("menuitem");
+  traduireOnglet.setAttribute("label", "Traduire l'onglet");
+  traduireOnglet.addEventListener("command", () => traduire(win, win.TabContextMenu.contextTab?.linkedBrowser));
+  popup.append(traduireOnglet);
   popup.append(doc.createXULElement("menuseparator"));
   entree("Ouvrir l'assistant", "ouvrir");
   ia.append(popup);
@@ -739,6 +781,43 @@ function menuOngletAssistant(win) {
     ia.hidden = onglets.length > 1 || !/^https?:/.test(onglet?.linkedBrowser?.currentURI?.spec || "");
     if (chatbot) chatbot.collapsed = true;
   });
+}
+
+// Traduction locale de la page, avec une barre en haut de l'onglet : avancement, Arrêter, Revenir à l'original
+const traductions = new WeakMap(); // browser -> AbortController
+async function traduire(win, browser) {
+  if (!browser || !/^https?:/.test(browser.currentURI?.spec || "")) return;
+  const A = ChromeUtils.importESModule("chrome://browser/content/cigale/assistant/assistant.sys.mjs");
+  if (!(await A.estPret())) {
+    // pas encore installé : la page de l'assistant propose le téléchargement
+    win.openTrustedLinkIn("about:assistant", "tab");
+    return;
+  }
+  if (traductions.has(browser)) return;
+  const boite = win.gBrowser.getNotificationBox(browser);
+  const controleur = new AbortController();
+  traductions.set(browser, controleur);
+  const montrer = async (label, boutons, priorite = boite.PRIORITY_INFO_MEDIUM) => {
+    boite.getNotificationWithValue("cigale-traduction")?.close();
+    return boite.appendNotification("cigale-traduction", { label, priority: priorite }, boutons);
+  };
+  const original = { label: "Revenir à l'original", callback: () => { A.pageOriginale(browser).catch(console.error); } };
+  const arreter = { label: "Arrêter", callback: () => { controleur.abort(); return true; } };
+  let barre = await montrer("La Cigale traduit la page sur cet ordinateur…", [arreter]);
+  try {
+    const { total, fait } = await A.traduirePage(browser, {
+      signal: controleur.signal,
+      avancer: (n, tout) => {
+        if (barre?.isConnected) barre.label = `La Cigale traduit la page sur cet ordinateur : ${Math.round((n / Math.max(1, tout)) * 100)} % (le haut de la page d'abord)`;
+      },
+    });
+    barre = await montrer(controleur.signal.aborted ? `Traduction arrêtée (${fait} textes sur ${total}).` : "Page traduite par La Cigale, sur cet ordinateur.", [original]);
+  } catch (e) {
+    if (e.name == "AbortError") await montrer("Traduction arrêtée.", [original]);
+    else await montrer("Traduction impossible : " + (e.message || e), [], boite.PRIORITY_WARNING_MEDIUM);
+  } finally {
+    traductions.delete(browser);
+  }
 }
 
 // Ouvre about:assistant et lui confie l'onglet à lire

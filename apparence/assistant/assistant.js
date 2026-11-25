@@ -4,6 +4,9 @@
 const A = ChromeUtils.importESModule("chrome://browser/content/cigale/assistant/assistant.sys.mjs");
 const $ = (id) => document.getElementById(id);
 const fenetre = window.browsingContext.topChromeWindow;
+// ouvert dans le panneau à droite de la page : l'assistant suit l'onglet affiché
+const PANNEAU = new URLSearchParams(location.search).has("panneau");
+if (PANNEAU) document.documentElement.classList.add("panneau");
 
 const SYSTEME = "Tu es La Cigale : une cigale, l'assistante du navigateur La Cigale. Tu le sais et tu l'assumes avec un brin d'humour " +
   "(le chant, l'été, la fourmi de La Fontaine), sans en faire trop. Tu fonctionnes entièrement sur l'ordinateur de l'utilisateur : " +
@@ -17,6 +20,8 @@ const LIMITE_PAGE = 8000; // caractères de page envoyés au modèle : au-delà,
 
 let conversation = [];      // messages envoyés au modèle (hors système)
 let pageJointe = "";        // adresse de la page déjà fournie au modèle dans cette conversation
+let affichage = [];         // ce qui est montré dans le fil (pour l'historique) : { role, texte, piece }
+let idConversation = "";    // identifiant de la conversation gardée (historique facultatif)
 let enCours = null;         // AbortController de la réponse en cours
 let choixInstallation = "leger";
 
@@ -42,6 +47,7 @@ async function rafraichir() {
   statut.classList.toggle("attente", e.demarrage || !!e.telechargement);
   $("statut-texte").textContent = e.telechargement ? "Téléchargement" : e.demarrage ? "Démarrage du moteur…"
     : e.enMarche ? "Local · en marche" : pret ? "Local · en veille" : "Local";
+  $("statut").title = $("statut-texte").textContent;
 
   if (!e.plateforme) {
     $("installer").disabled = true;
@@ -160,6 +166,7 @@ async function dessinerReglages(e) {
   }
   $("espace-utilise").textContent = octets(await A.espaceUtilise());
   $("apropos").value = A.aPropos();
+  $("historique-actif").checked = A.historiqueActif();
   for (const nom of A.CONTEXTE) $("contexte-" + nom).checked = A.contexteAutorise(nom);
 }
 
@@ -207,9 +214,10 @@ function remplirOnglets(prefere) {
     o.textContent = "Aucune page web ouverte";
     choix.append(o);
   }
-  // par défaut : le dernier onglet web consulté avant celui-ci
-  const parDefaut = avant && ongletsConnus.includes(avant) ? avant
-    : [...ongletsConnus].sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0];
+  // dans le panneau : l'onglet affiché ; sinon le dernier onglet web consulté avant celui-ci
+  const affiche = PANNEAU && ongletsConnus.includes(fenetre.gBrowser.selectedTab) ? fenetre.gBrowser.selectedTab : null;
+  const parDefaut = affiche || (avant && ongletsConnus.includes(avant) ? avant
+    : [...ongletsConnus].sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0]);
   for (const t of ongletsConnus) {
     const o = document.createElement("option");
     const titre = t.label || t.linkedBrowser.currentURI.spec;
@@ -311,8 +319,9 @@ function defiler() {
   fil.scrollTop = fil.scrollHeight;
 }
 
-function bulleUtilisateur(texte, piece) {
+function bulleUtilisateur(texte, piece, restauration = false) {
   $("vide").hidden = true;
+  if (!restauration) affichage.push({ role: "user", texte, piece: piece || "" });
   const b = document.createElement("div");
   b.className = "message utilisateur";
   b.textContent = texte;
@@ -386,10 +395,25 @@ function bulleAssistant(etapesInitiales = [], lecture = false) {
   const minuterie = setInterval(() => { i++; dire(); }, 2400);
   const horloge = setInterval(() => { chrono.textContent = secondes() + " s"; }, 1000);
   let ligneLecture = null;
+  let reflexion = null;
   defiler();
 
   return {
     reponse,
+    // vraie réflexion du modèle (modèle « Réfléchi ») : elle s'écrit au fur et à mesure dans le détail
+    reflechit(bout) {
+      if (!reflexion) {
+        mode = "pensee";
+        pourcent = "";
+        ajouter(`Réflexion du modèle (après ${secondes()} s) :`);
+        const li = document.createElement("li");
+        li.className = "reflexion";
+        etapes.append(li);
+        reflexion = li;
+      }
+      reflexion.textContent += bout;
+      if (!etapes.hidden) defiler();
+    },
     etape(nom) {
       if (nom == "demarrage") ajouter("Réveil du moteur local");
       if (nom == "envoi") ajouter(`Modèle : ${A.nomModele(etatCourant.modele)}, sur cet ordinateur`);
@@ -461,11 +485,13 @@ async function repondre(contenu, options = {}, etapes = [], lecture = false) {
         markdown(bulle, texte);
         defiler();
       }
-    }, enCours.signal, { ...options, etape: (n) => vue.etape(n), progres: (p) => vue.progres(p) });
+    }, enCours.signal, { ...options, etape: (n) => vue.etape(n), progres: (p) => vue.progres(p), reflexion: (b) => vue.reflechit(b) });
     markdown(bulle, texte);
     vue.fin(texte, false);
     conversation.push({ role: "assistant", content: texte });
     actionsMessage(bulle.parentNode, texte);
+    affichage.push({ role: "assistant", texte });
+    garderConversation();
   } catch (e) {
     vue.fin(texte, true);
     if (e.name == "AbortError") {
@@ -607,9 +633,98 @@ async function analyserLiens(onglet) {
     [`Liens lus sur la page : ${a.total}`, `Règles locales appliquées : ${a.alertes.length} lien(s) à surveiller`], true);
 }
 
+// ---------- historique (facultatif) ----------
+
+function garderConversation() {
+  if (!A.historiqueActif()) return;
+  if (!idConversation) idConversation = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const premier = affichage.find((x) => x.role == "user");
+  A.enregistrerConversation({
+    id: idConversation,
+    titre: (premier?.texte || "Conversation").slice(0, 80),
+    date: Date.now(),
+    conversation, affichage, pageJointe,
+  }).then(() => { if (!$("liste-conversations").hidden) dessinerConversations(); }).catch(console.error);
+}
+
+async function dessinerConversations() {
+  const boite = $("liste-conversations");
+  boite.textContent = "";
+  const liste = await A.conversations();
+  if (!liste.length) {
+    const p = document.createElement("p");
+    p.className = "gris";
+    p.textContent = "Aucune conversation gardée pour l'instant.";
+    boite.append(p);
+    return;
+  }
+  for (const c of liste) {
+    const ligne = document.createElement("div");
+    ligne.className = "ligne-conversation" + (c.id == idConversation ? " actuelle" : "");
+    const ouvrir = document.createElement("button");
+    ouvrir.type = "button";
+    ouvrir.className = "discret";
+    const titre = document.createElement("b");
+    titre.textContent = c.titre;
+    const date = document.createElement("small");
+    date.textContent = new Date(c.date).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+    ouvrir.append(titre, date);
+    ouvrir.addEventListener("click", () => restaurer(c));
+    const suppr = document.createElement("button");
+    suppr.type = "button";
+    suppr.className = "discret supprimer";
+    suppr.textContent = "Supprimer";
+    suppr.addEventListener("click", async () => {
+      await A.supprimerConversation(c.id);
+      if (c.id == idConversation) idConversation = "";
+      dessinerConversations();
+    });
+    ligne.append(ouvrir, suppr);
+    boite.append(ligne);
+  }
+}
+
+function basculerConversations(montrer = $("liste-conversations").hidden) {
+  $("liste-conversations").hidden = !montrer;
+  $("historique").setAttribute("aria-expanded", String(montrer));
+  if (montrer) dessinerConversations();
+}
+
+function restaurer(c) {
+  if (enCours) return;
+  nouvelleConversation();
+  conversation = c.conversation || [];
+  affichage = c.affichage || [];
+  pageJointe = c.pageJointe || "";
+  idConversation = c.id;
+  for (const m of affichage) {
+    if (m.role == "user") { bulleUtilisateur(m.texte, m.piece, true); continue; }
+    const b = document.createElement("div");
+    b.className = "message assistant";
+    const reponse = document.createElement("div");
+    reponse.className = "reponse";
+    b.append(reponse);
+    $("fil").append(b);
+    markdown(reponse, m.texte);
+    actionsMessage(b, m.texte);
+  }
+  basculerConversations(false);
+  defiler();
+}
+
+function montrerHistorique() {
+  const actif = A.historiqueActif();
+  $("historique").hidden = !actif;
+  $("pied-sans").hidden = actif;
+  $("pied-avec").hidden = !actif;
+  if (!actif) basculerConversations(false);
+}
+
 function nouvelleConversation() {
   enCours?.abort();
   conversation = [];
+  affichage = [];
+  idConversation = "";
   pageJointe = "";
   for (const el of [...$("fil").children]) if (el.id != "vide") el.remove();
   $("vide").hidden = false;
@@ -636,6 +751,19 @@ $("resumer").addEventListener("click", () => resumer());
 $("liens").addEventListener("click", () => analyserLiens());
 $("selection").addEventListener("click", () => expliquerSelection());
 $("effacer").addEventListener("click", nouvelleConversation);
+$("historique").addEventListener("click", () => basculerConversations());
+$("historique-actif").addEventListener("change", async (e) => {
+  await A.activerHistorique(e.target.checked);
+  if (e.target.checked && affichage.length) garderConversation();
+  montrerHistorique();
+});
+$("effacer-conversations").addEventListener("click", async () => {
+  if (!Services.prompt.confirm(window, "Assistant", "Effacer toutes les conversations gardées ?")) return;
+  await A.effacerConversations();
+  idConversation = "";
+  if (!$("liste-conversations").hidden) dessinerConversations();
+});
+montrerHistorique();
 $("montrer-page").addEventListener("click", () => {
   const ouvert = $("outils-page").hidden;
   $("outils-page").hidden = !ouvert;
@@ -673,7 +801,10 @@ for (const b of document.querySelectorAll("[data-suggestion], [data-action]")) {
 
 const arreterSurveillance = A.surveiller(() => rafraichir());
 window.addEventListener("unload", () => { arreterSurveillance(); enCours?.abort(); });
-fenetre?.gBrowser?.tabContainer.addEventListener("TabSelect", () => remplirOnglets());
+const surOnglet = () => remplirOnglets(PANNEAU ? fenetre.gBrowser.selectedTab : undefined);
+fenetre?.gBrowser?.tabContainer.addEventListener("TabSelect", surOnglet);
+window.addEventListener("unload", () => fenetre?.gBrowser?.tabContainer.removeEventListener("TabSelect", surOnglet));
+if (PANNEAU) $("joindre").checked = true;
 
 // demande venue du clic droit (« Résumer avec l'assistant »…)
 async function traiterDemande() {
@@ -686,13 +817,16 @@ async function traiterDemande() {
     else if (d.action == "selection") expliquerSelection(d.onglet);
   }
 }
+// (le panneau ne prend pas ces demandes : elles vont à l'onglet about:assistant)
 const observateur = { observe: () => traiterDemande() };
-Services.obs.addObserver(observateur, "cigale-assistant-demande");
-window.addEventListener("unload", () => Services.obs.removeObserver(observateur, "cigale-assistant-demande"));
+if (!PANNEAU) {
+  Services.obs.addObserver(observateur, "cigale-assistant-demande");
+  window.addEventListener("unload", () => Services.obs.removeObserver(observateur, "cigale-assistant-demande"));
+}
 async function demarrerPage() {
   await rafraichir();
   remplirOnglets();
-  await traiterDemande();
+  if (!PANNEAU) await traiterDemande();
   if (await A.estPret()) $("question").focus();
 }
 demarrerPage();

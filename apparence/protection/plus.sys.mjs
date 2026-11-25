@@ -475,7 +475,11 @@ export function ouvrirEphemere(win, url) {
 
 export function panique(win) {
   // l'assistant local s'arrête aussi : sa mémoire de conversation disparaît avec lui
-  try { ChromeUtils.importESModule("chrome://browser/content/cigale/assistant/assistant.sys.mjs").arreter(); } catch {}
+  try {
+    const A = ChromeUtils.importESModule("chrome://browser/content/cigale/assistant/assistant.sys.mjs");
+    A.arreter();
+    A.effacerConversations().catch(console.error);
+  } catch {}
   return nouvelleIdentite(win, { confirmer: false, message: "Panique : onglets fermés, cookies, cache et historique effacés." });
 }
 

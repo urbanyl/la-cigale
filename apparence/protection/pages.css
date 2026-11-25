@@ -214,3 +214,34 @@ kbd { font: 600 12px ui-monospace, Consolas, monospace; padding: 2px 7px; border
 @media (max-width: 760px) { .cartes { grid-template-columns: 1fr; } .tuiles { grid-template-columns: 1fr 1fr; } }
 .mini-classement i.l1 { width: 100%; } .mini-classement i.l2 { width: 64%; } .mini-classement i.l3 { width: 41%; } .mini-classement i.l4 { width: 27%; }
 .mini-onglets .c-bleu { --c: #37adff; } .mini-onglets .c-orange { --c: #ff9f00; }
+
+/* ---------- Quoi de neuf 1.7 : aperçus de l'assistant ---------- */
+.mini-discussion { width: 100%; display: grid; gap: 10px; }
+.mini-discussion .question { justify-self: end; margin: 0; padding: 10px 14px; border-radius: 14px 14px 4px 14px; background: var(--accent); color: var(--sur-accent); font-weight: 600; font-size: 14px; }
+.mini-discussion .reponse { display: grid; gap: 7px; width: 78%; margin: 0; padding: 12px 14px; border: 1px solid var(--trait); border-radius: 14px 14px 14px 4px; }
+.mini-discussion .reponse i { display: block; height: 8px; border-radius: 4px; background: var(--doux); opacity: 0.5; }
+.mini-discussion .reponse i.l1 { width: 92%; } .mini-discussion .reponse i.l2 { width: 74%; } .mini-discussion .reponse i.l3 { width: 58%; }
+.mini-discussion small { color: var(--doux); font-size: 12.5px; }
+.mini-menu { width: 100%; max-width: 260px; margin: 0; padding: 6px; list-style: none; border: 1px solid var(--trait-fort); border-radius: 12px; background: var(--carte); font-size: 13.5px; }
+.mini-menu li { padding: 6px 10px; border-radius: 7px; }
+.mini-menu li.titre { font-weight: 700; background: var(--accent); color: var(--sur-accent); }
+.mini-fenetre { width: 100%; height: 120px; display: flex; gap: 6px; }
+.mini-fenetre > div { display: flex; flex-direction: column; gap: 7px; padding: 12px; border: 1px solid var(--trait); border-radius: 10px; }
+.mini-fenetre .cote { flex: 0 0 34%; border-color: var(--accent); }
+.mini-fenetre .site { flex: 1; }
+.mini-fenetre i { display: block; height: 8px; border-radius: 4px; background: var(--doux); opacity: 0.45; }
+.mini-fenetre .cote i { background: var(--accent); opacity: 0.8; }
+.mini-fenetre i.court { width: 60%; }
+.mini-traduction { width: 100%; display: grid; gap: 8px; font-size: 14px; }
+.mini-traduction span { padding: 9px 12px; border-radius: 10px; }
+.mini-traduction .avant { border: 1px solid var(--trait); color: var(--doux); text-decoration: line-through; text-decoration-color: var(--trait-fort); }
+.mini-traduction .apres { background: var(--accent); color: var(--sur-accent); font-weight: 600; }
+.mini-pensee { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; font-size: 14px; }
+.mini-pensee li { display: flex; align-items: center; gap: 10px; color: var(--doux); }
+.mini-pensee li::before { content: ""; width: 10px; height: 10px; border: 1.5px solid var(--trait-fort); border-radius: 50%; }
+.mini-pensee li.fin { color: var(--texte); font-weight: 700; }
+.mini-pensee li.fin::before { background: var(--accent); border-color: var(--accent); }
+.mini-historique, .mini-petits { width: 100%; display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; font-size: 13.5px; }
+.mini-historique li { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid var(--trait); border-radius: 9px; }
+.mini-historique small { color: var(--doux); white-space: nowrap; }
+.mini-petits li { padding: 9px 12px; border-left: 3px solid var(--accent); border-radius: 4px; background: var(--carte); font-weight: 600; }

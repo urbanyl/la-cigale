@@ -26,10 +26,7 @@ PAIRES["apparence/protection/bienvenue.js"] = [
 ]
 
 PAIRES["apparence/protection/nouveautes.js"] = [
-    ('"fr-FR"', '"en-US"'),
-    ('"Collez un lien au-dessus"', '"Paste a link above"'),
-    ('`${retire} caractères de pistage retirés` : "Ce lien était déjà propre."', '`${retire} tracking characters removed` : "This link was already clean."'),
-    ('"Banques et impôts au coffre : activé" : "Mettre mes banques et impôts au coffre"', '"Banks and taxes in vaults: on" : "Put my banks and taxes in vaults"'),
+    ('"Conversations gardées : activé" : "Garder mes conversations"', '"Conversations kept: on" : "Keep my conversations"'),
 ]
 
 PAIRES["apparence/protection/popup.html"] = [
