@@ -1,0 +1,183 @@
+{
+  "policies": {
+    "DisableAppUpdate": true,
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true,
+    "DisableFeedbackCommands": true,
+    "DisableDefaultBrowserAgent": true,
+    "DontCheckDefaultBrowser": true,
+    "NoDefaultBookmarks": true,
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": "",
+    "CaptivePortal": false,
+    "NetworkPrediction": false,
+    "DisableFirefoxAccounts": true,
+    "DisableFormHistory": true,
+    "DisableProfileImport": true,
+    "PasswordManagerEnabled": false,
+    "OfferToSaveLogins": false,
+    "HttpsOnlyMode": "force_enabled",
+    "PostQuantumKeyAgreementEnabled": true,
+    "PrimaryPassword": false,
+    "EnableTrackingProtection": {
+      "Value": true,
+      "Locked": true,
+      "Cryptomining": true,
+      "Fingerprinting": true,
+      "EmailTracking": true
+    },
+    "DNSOverHTTPS": {
+      "Enabled": true,
+      "ProviderURL": "https://dns.quad9.net/dns-query",
+      "Fallback": false,
+      "Locked": false
+    },
+    "FirefoxHome": {
+      "Search": true,
+      "TopSites": true,
+      "SponsoredTopSites": false,
+      "Highlights": false,
+      "Pocket": false,
+      "SponsoredPocket": false,
+      "Snippets": false,
+      "Locked": false
+    },
+    "FirefoxSuggest": {
+      "WebSuggestions": false,
+      "SponsoredSuggestions": false,
+      "ImproveSuggest": false,
+      "Locked": false
+    },
+    "UserMessaging": {
+      "ExtensionRecommendations": false,
+      "FeatureRecommendations": false,
+      "UrlbarInterventions": false,
+      "SkipOnboarding": true,
+      "MoreFromMozilla": false,
+      "FirefoxLabs": false,
+      "Locked": false
+    },
+    "SearchEngines": {
+      "Add": [
+        {
+          "Name": "Qwant",
+          "Description": "Privacy-respecting European search engine",
+          "Alias": "q",
+          "Method": "GET",
+          "URLTemplate": "https://www.qwant.com/?q={searchTerms}",
+          "SuggestURLTemplate": "https://api.qwant.com/v3/suggest?q={searchTerms}&client=opensearch",
+          "IconURL": "https://www.qwant.com/favicon.ico"
+        },
+        {
+          "Name": "Startpage",
+          "Description": "Google results without tracking",
+          "Alias": "s",
+          "Method": "GET",
+          "URLTemplate": "https://www.startpage.com/sp/search?query={searchTerms}&language=english",
+          "IconURL": "https://www.startpage.com/favicon.ico"
+        },
+        {
+          "Name": "Wikipedia",
+          "Description": "The free encyclopedia",
+          "Alias": "w",
+          "Method": "GET",
+          "URLTemplate": "https://en.wikipedia.org/w/index.php?search={searchTerms}",
+          "SuggestURLTemplate": "https://en.wikipedia.org/w/api.php?action=opensearch&search={searchTerms}",
+          "IconURL": "https://en.wikipedia.org/static/favicon/wikipedia.ico"
+        },
+        {
+          "Name": "Wiktionary",
+          "Description": "The free dictionary",
+          "Alias": "dict",
+          "Method": "GET",
+          "URLTemplate": "https://en.wiktionary.org/w/index.php?search={searchTerms}",
+          "IconURL": "https://en.wiktionary.org/static/favicon/wiktionary/en.ico"
+        },
+        {
+          "Name": "OpenStreetMap",
+          "Description": "Free maps",
+          "Alias": "osm",
+          "Method": "GET",
+          "URLTemplate": "https://www.openstreetmap.org/search?query={searchTerms}",
+          "IconURL": "https://www.openstreetmap.org/favicon.ico"
+        },
+        {
+          "Name": "Internet Archive",
+          "Description": "Free digital library",
+          "Alias": "ia",
+          "Method": "GET",
+          "URLTemplate": "https://archive.org/search?query={searchTerms}",
+          "IconURL": "https://archive.org/favicon.ico"
+        }
+      ],
+      "Default": "DuckDuckGo",
+      "PreventInstalls": false,
+      "Remove": [
+        "Google",
+        "Bing",
+        "Amazon.com",
+        "eBay",
+        "Perplexity",
+        "Ecosia",
+        "Wikipedia (en)"
+      ]
+    },
+    "ExtensionSettings": {
+      "uBlock0@raymondhill.net": {
+        "installation_mode": "force_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi",
+        "private_browsing": true
+      },
+      "@testpilot-containers": {
+        "installation_mode": "normal_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/multi-account-containers/latest.xpi"
+      }
+    },
+    "Permissions": {
+      "Notifications": {
+        "BlockNewRequests": false,
+        "Locked": false
+      },
+      "Autoplay": {
+        "Default": "block-audio-video",
+        "Locked": false
+      }
+    },
+    "SupportMenu": {
+      "Title": "Assistance La Cigale (Discord)",
+      "URL": "https://discord.gg/YFrPQEaQEK",
+      "AccessKey": "C"
+    },
+    "EncryptedMediaExtensions": {
+      "Enabled": false,
+      "Locked": false
+    },
+    "3rdparty": {
+      "Extensions": {
+        "uBlock0@raymondhill.net": {
+          "toOverwrite": {
+            "filterLists": [
+              "user-filters",
+              "ublock-filters",
+              "ublock-badware",
+              "ublock-privacy",
+              "ublock-quick-fixes",
+              "ublock-unbreak",
+              "easylist",
+              "easyprivacy",
+              "urlhaus-1",
+              "plowe-0",
+              "FRA-0",
+              "fanboy-cookiemonster",
+              "ublock-cookies-easylist",
+              "adguard-cookies",
+              "ublock-cookies-adguard",
+              "ublock-annoyances"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

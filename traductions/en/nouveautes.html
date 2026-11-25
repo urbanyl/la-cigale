@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src chrome:; img-src chrome: data:; object-src 'none'">
+<title>What's new</title>
+<link rel="icon" href="chrome://browser/content/cigale/bouton.png">
+<link rel="stylesheet" href="chrome://browser/content/cigale/pages.css">
+</head>
+<body>
+<main class="page">
+  <header class="hero">
+    <p class="marque"><img src="chrome://browser/content/cigale/bouton-barre.png" alt=""><span class="surtitre">What's new</span></p>
+    <h1>La Cigale <span id="version">1.5</span></h1>
+    <p class="chapeau">See what La Cigale blocks for you, judge a site at a glance, and wipe everything in a second.
+      Seven new features, all ready to try from this page.</p>
+  </header>
+
+  <div class="grille">
+    <article class="atout tres-large">
+      <div class="apercu">
+        <div class="mini-bilan">
+          <div><b id="apercu-total">0</b><small>tracking attempts blocked this week</small></div>
+          <div class="mini-barres" id="apercu-barres" aria-hidden="true"></div>
+        </div>
+      </div>
+      <div class="texte">
+        <p class="numero">01</p>
+        <h2>Your summary, on the home page</h2>
+        <p>Every new tab shows what La Cigale blocked this week: trackers, uBlock requests,
+          fingerprint reads and links cleaned, day by day. Only numbers are kept, never the sites you visit.</p>
+        <div class="actions"><button class="bouton plein" id="voir-accueil">See my home page</button></div>
+      </div>
+    </article>
+
+    <article class="atout large">
+      <div class="apercu">
+        <div class="notes" aria-hidden="true"><span class="grande">A</span><span>B</span><span>C</span><span class="f">F</span></div>
+      </div>
+      <p class="numero">02</p>
+      <h2>A grade for every site</h2>
+      <p>The cicada button gives the open site a letter from A to F: encryption, trackers, fingerprint reads,
+        third-party cookies, certificate age. Hover over the letter to see what cost points.</p>
+      <div class="actions"><button class="bouton" id="ouvrir-panneau">Open the cicada panel</button></div>
+    </article>
+
+    <article class="atout large">
+      <div class="apercu">
+        <ol class="mini-classement" id="apercu-classement" aria-hidden="true">
+          <li><span>Google</span><i class="l1"></i></li>
+          <li><span>Meta</span><i class="l2"></i></li>
+          <li><span>Amazon</span><i class="l3"></i></li>
+          <li><span>Criteo</span><i class="l4"></i></li>
+        </ol>
+      </div>
+      <p class="numero">03</p>
+      <h2>Who was following you</h2>
+      <p>The ranking of the companies behind blocked trackers, over 7, 30 or 90 days, with the number of pages
+        where each one tried its luck.</p>
+      <div class="actions"><button class="bouton" id="voir-classement">See my ranking</button></div>
+    </article>
+
+    <article class="atout">
+      <div class="apercu">
+        <div class="essai">
+          <input id="essai-lien" aria-label="Paste a link" value="https://example.com/article?id=42&amp;utm_source=newsletter&amp;fbclid=IwAR3x9">
+          <output id="essai-propre"></output>
+          <span class="retire" id="essai-retire"></span>
+        </div>
+      </div>
+      <p class="numero">04</p>
+      <h2>Clean link</h2>
+      <p>A button in the cicada panel and a right-click "Copy link without tracking". Paste a link above to try it.</p>
+    </article>
+
+    <article class="atout">
+      <div class="apercu">
+        <div class="mini-panique">
+          <span class="rouge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 2.5 20h19z"/><path d="M12 10v4.5M12 17.2v.3"/></svg>Panic</span>
+          <span><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>F12</kbd></span>
+        </div>
+      </div>
+      <p class="numero">05</p>
+      <h2>Panic button</h2>
+      <p>All tabs closed, cookies, cache and history erased, proxy switched. In the cicada panel
+        (two clicks) or from the keyboard (instant).</p>
+    </article>
+
+    <article class="atout">
+      <div class="apercu">
+        <div class="mini-onglets" aria-hidden="true">
+          <span class="c-bleu">Bank</span><span class="c-orange">Taxes</span><span>Wikipedia</span>
+        </div>
+      </div>
+      <p class="numero">06</p>
+      <h2>Vaults</h2>
+      <p>A site in a vault always opens separately, with its own cookies and its own login.
+        The tab wears its vault's color.</p>
+      <div class="actions"><button class="bouton" id="coffres-sensibles"></button></div>
+    </article>
+
+    <article class="atout tres-large">
+      <div class="apercu">
+        <div class="mini-etapes" aria-hidden="true"><span>1</span><i></i><span>2</span><i></i><span>3</span></div>
+      </div>
+      <div class="texte">
+        <p class="numero">07</p>
+        <h2>A real welcome</h2>
+        <p>On first launch, three steps: appearance (Dark, Light or Olive), protection level,
+          and home page shortcuts. You can go through it again whenever you like.</p>
+        <div class="actions"><button class="bouton" id="revoir-bienvenue">Redo the welcome</button></div>
+      </div>
+    </article>
+  </div>
+</main>
+<script src="chrome://browser/content/cigale/nouveautes.js"></script>
+</body>
+</html>

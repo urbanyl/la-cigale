@@ -1,10 +1,11 @@
-# Compile installeur\Installeur.cs autour du zip portable.
+﻿# Compile installeur\Installeur.cs autour du zip portable.
 # csc.exe (.NET Framework 4) est déjà présent sur Windows, rien à installer.
 param(
   [Parameter(Mandatory)] [string]$Charge,          # LaCigale-…-portable.zip
   [Parameter(Mandatory)] [string]$VersionCigale,
   [Parameter(Mandatory)] [string]$VersionFirefox,
-  [Parameter(Mandatory)] [string]$Sortie           # chemin du .exe à produire
+  [Parameter(Mandatory)] [string]$Sortie,          # chemin du .exe à produire
+  [string]$ChargeEn                                # zip anglais : l'installeur propose alors Français / English
 )
 $ErrorActionPreference = 'Stop'
 $Ici = $PSScriptRoot
@@ -35,6 +36,8 @@ $desinstalleur = Join-Path $travail 'desinstaller.exe'
 & $csc @communs "/out:$desinstalleur" $source
 if ($LASTEXITCODE -ne 0) { throw 'Échec de la compilation du désinstalleur.' }
 
-& $csc @communs "/out:$Sortie" "/resource:$desinstalleur,desinstaller.exe" "/resource:$Charge,charge.zip" $source
+$charges = @("/resource:$Charge,charge.zip")
+if ($ChargeEn) { $charges += "/resource:$ChargeEn,charge-en.zip" }
+& $csc @communs "/out:$Sortie" "/resource:$desinstalleur,desinstaller.exe" @charges $source
 if ($LASTEXITCODE -ne 0) { throw 'Échec de la compilation de l''installeur.' }
 Write-Host "-> $Sortie"

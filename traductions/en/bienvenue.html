@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src chrome:; img-src chrome: data:; object-src 'none'">
+<title>Welcome</title>
+<link rel="icon" href="chrome://browser/content/cigale/bouton.png">
+<link rel="stylesheet" href="chrome://browser/content/cigale/pages.css">
+</head>
+<body>
+<main class="page">
+  <header class="hero">
+    <p class="marque"><img src="chrome://browser/content/cigale/bouton-barre.png" alt=""><span class="surtitre">Welcome</span></p>
+    <h1>La Cigale is ready.</h1>
+    <p class="chapeau">Three choices and you're off. You can change everything later at any time.</p>
+  </header>
+
+  <ol class="etapes" id="etapes">
+    <li>1 · Appearance</li>
+    <li>2 · Protection</li>
+    <li>3 · Shortcuts</li>
+  </ol>
+
+  <section class="etape" data-etape="0">
+    <h2>Your appearance</h2>
+    <p>The whole browser changes: tabs, address bar, home page and La Cigale's pages.</p>
+    <div class="cartes" role="radiogroup" aria-label="Appearance" id="themes">
+      <button class="choix-carte" role="radio" data-theme="firefox-compact-dark@mozilla.org">
+        <span class="coche"></span>
+        <span class="vignette v-sombre"><span class="haut"><i></i><i></i></span><span class="bas">Aa</span></span>
+        <b>Dark</b><small>Black and white, the original theme.</small>
+      </button>
+      <button class="choix-carte" role="radio" data-theme="firefox-compact-light@mozilla.org">
+        <span class="coche"></span>
+        <span class="vignette v-clair"><span class="haut"><i></i><i></i></span><span class="bas">Aa</span></span>
+        <b>Light</b><small>Ink on paper, for broad daylight.</small>
+      </button>
+      <button class="choix-carte" role="radio" data-theme="firefox-alpenglow@mozilla.org">
+        <span class="coche"></span>
+        <span class="vignette v-olive"><span class="haut"><i></i><i></i></span><span class="bas">Aa</span></span>
+        <b>Olive</b><small>La Cigale's green, with the cicada in the background.</small>
+      </button>
+    </div>
+  </section>
+
+  <section class="etape" data-etape="1" hidden>
+    <h2>Your protection</h2>
+    <p>The same tracker blocking and the same anti-fingerprinting in all three. What changes: what is kept, and JavaScript.</p>
+    <div class="cartes" role="radiogroup" aria-label="Protection profile" id="profils">
+      <button class="choix-carte" role="radio" data-profil="confort">
+        <span class="coche"></span>
+        <span class="niveau"><i class="plein"></i><i></i><i></i></span>
+        <b>Comfort</b><small>Sites display in your language and you stay signed in from one session to the next.</small>
+      </button>
+      <button class="choix-carte" role="radio" data-profil="standard">
+        <span class="coche"></span>
+        <span class="niveau"><i class="plein"></i><i class="plein"></i><i></i></span>
+        <b>Standard</b><small>Recommended. Everything is erased when you close La Cigale.</small>
+      </button>
+      <button class="choix-carte" role="radio" data-profil="renforce">
+        <span class="coche"></span>
+        <span class="niveau"><i class="plein"></i><i class="plein"></i><i class="plein"></i></span>
+        <b>Hardened</b><small>JavaScript off and margins around pages. Many sites will stop working.</small>
+      </button>
+    </div>
+    <label class="option"><input type="checkbox" id="coffres-sensibles">
+      <span>Put banks, tax sites, health insurance, PayPal and online doctors in vaults
+        <small>Each opens separately, with its own cookies: no other site can see them.</small></span></label>
+  </section>
+
+  <section class="etape" data-etape="2" hidden>
+    <h2>Your shortcuts</h2>
+    <p>The tiles on your home page. Twelve at most; you can edit them from the home page.</p>
+    <div class="tuiles" id="tuiles"></div>
+  </section>
+
+  <nav class="navigation">
+    <button class="bouton" id="precedent">Back</button>
+    <span class="discret" id="compte"></span>
+    <button class="bouton plein" id="suivant">Continue</button>
+  </nav>
+</main>
+<script src="chrome://browser/content/cigale/bienvenue.js"></script>
+</body>
+</html>

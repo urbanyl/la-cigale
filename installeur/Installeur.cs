@@ -1,8 +1,8 @@
-// Installeur de La Cigale pour Windows, compilé par installeur/compiler.ps1.
+﻿// Installeur de La Cigale pour Windows, compilé par installeur/compiler.ps1.
 // Le même fichier donne aussi desinstaller.exe : sans la ressource charge.zip,
 // le programme démarre en mode désinstallation.
 //
-// Options : /silencieux, /dossier "chemin", /sansbureau
+// Options : /silencieux, /dossier "chemin", /sansbureau, /langue fr|en
 
 using System;
 using System.Collections.Generic;
@@ -52,6 +52,13 @@ namespace LaCigale
             if (!Existe(nom)) return null;
             using (var flux = Flux(nom)) return new Bitmap(flux);
         }
+    }
+
+    static class Langue
+    {
+        public static bool En;
+        public static string T(string fr, string en) { return En ? en : fr; }
+        public static string Charge { get { return En && Ressources.Existe("charge-en.zip") ? "charge-en.zip" : "charge.zip"; } }
     }
 
     static class Moteur
@@ -130,7 +137,7 @@ namespace LaCigale
             try { Directory.Delete(Path.Combine(Profil, "startupCache"), true); } catch (Exception) { }
 
             var fichiers = new List<string>();
-            using (var archive = new ZipArchive(Ressources.Flux("charge.zip"), ZipArchiveMode.Read))
+            using (var archive = new ZipArchive(Ressources.Flux(Langue.Charge), ZipArchiveMode.Read))
             {
                 var entrees = archive.Entries.Where(e => e.Name != "").ToList();
                 long total = Math.Max(1, entrees.Sum(e => e.Length)), fait = 0;
@@ -161,7 +168,7 @@ namespace LaCigale
                 }
             }
 
-            progres(0.97, "Désinstalleur");
+            progres(0.97, Langue.T("Désinstalleur", "Uninstaller"));
             string desinstalleur = Path.Combine(dossier, "desinstaller.exe");
             using (var source = Ressources.Flux("desinstaller.exe"))
             using (var destination = File.Create(desinstalleur)) source.CopyTo(destination);
@@ -170,7 +177,7 @@ namespace LaCigale
             File.WriteAllLines(Path.Combine(dossier, Manifeste), fichiers, Encoding.UTF8);
             Directory.CreateDirectory(Profil);
 
-            progres(0.98, "Raccourcis");
+            progres(0.98, Langue.T("Raccourcis", "Shortcuts"));
             using (var cle = Registry.CurrentUser.CreateSubKey(CleTaskBarIDs))
                 cle.SetValue(Path.GetFullPath(dossier).TrimEnd('\\'), IdBarreDesTaches);
             string exe = Path.Combine(dossier, "lacigale.exe");
@@ -178,31 +185,32 @@ namespace LaCigale
             var raccourcis = new List<string>
             {
                 Path.Combine(MenuDemarrer, "La Cigale.lnk"),
-                Path.Combine(MenuDemarrer, "La Cigale (navigation privée).lnk"),
+                Path.Combine(MenuDemarrer, Langue.T("La Cigale (navigation privée).lnk", "La Cigale (private browsing).lnk")),
             };
-            Raccourci(raccourcis[0], exe, Arguments(""), icone, "Naviguer avec La Cigale", IdBarreDesTaches);
+            Raccourci(raccourcis[0], exe, Arguments(""), icone, Langue.T("Naviguer avec La Cigale", "Browse with La Cigale"), IdBarreDesTaches);
             // Firefox donne aux fenêtres privées l'identifiant suivi de ";PrivateBrowsingAUMID"
-            Raccourci(raccourcis[1], exe, Arguments("-private-window"), icone, "Ouvrir une fenêtre de navigation privée",
+            Raccourci(raccourcis[1], exe, Arguments("-private-window"), icone, Langue.T("Ouvrir une fenêtre de navigation privée", "Open a private browsing window"),
                 IdBarreDesTaches + ";PrivateBrowsingAUMID");
             if (raccourciBureau)
             {
                 raccourcis.Add(Path.Combine(Bureau, "La Cigale.lnk"));
-                Raccourci(raccourcis[2], exe, Arguments(""), icone, "Naviguer avec La Cigale", IdBarreDesTaches);
+                Raccourci(raccourcis[2], exe, Arguments(""), icone, Langue.T("Naviguer avec La Cigale", "Browse with La Cigale"), IdBarreDesTaches);
             }
 
-            progres(0.99, "Inscription auprès de Windows");
+            progres(0.99, Langue.T("Inscription auprès de Windows", "Registering with Windows"));
             long taille = fichiers.Select(f => Path.Combine(dossier, f)).Where(File.Exists).Sum(f => new FileInfo(f).Length);
             using (var cle = Registry.CurrentUser.CreateSubKey(CleDesinstallation))
             {
                 cle.SetValue("DisplayName", Nom);
                 cle.SetValue("DisplayVersion", VersionCigale);
                 cle.SetValue("Publisher", Editeur);
+                cle.SetValue("Langue", Langue.En ? "en" : "fr");
                 cle.SetValue("DisplayIcon", icone);
                 cle.SetValue("InstallLocation", dossier);
                 cle.SetValue("UninstallString", "\"" + desinstalleur + "\"");
                 cle.SetValue("QuietUninstallString", "\"" + desinstalleur + "\" /silencieux");
                 cle.SetValue("URLInfoAbout", "https://github.com/urbanyl/la-cigale");
-                cle.SetValue("Comments", "Navigateur basé sur Firefox ESR " + VersionFirefox);
+                cle.SetValue("Comments", Langue.T("Navigateur basé sur Firefox ESR ", "Browser based on Firefox ESR ") + VersionFirefox);
                 cle.SetValue("EstimatedSize", (int)(taille / 1024), RegistryValueKind.DWord);
                 cle.SetValue("NoModify", 1, RegistryValueKind.DWord);
                 cle.SetValue("NoRepair", 1, RegistryValueKind.DWord);
@@ -292,8 +300,8 @@ namespace LaCigale
             {
                 using (var cle = Registry.CurrentUser.CreateSubKey(@"Software\Classes\" + progId))
                 {
-                    cle.SetValue("", progId == ProgIdPage ? "Document La Cigale" : "Lien La Cigale");
-                    cle.SetValue("FriendlyTypeName", progId == ProgIdPage ? "Document La Cigale" : "Lien La Cigale");
+                    cle.SetValue("", progId == ProgIdPage ? Langue.T("Document La Cigale", "La Cigale Document") : Langue.T("Lien La Cigale", "La Cigale Link"));
+                    cle.SetValue("FriendlyTypeName", progId == ProgIdPage ? Langue.T("Document La Cigale", "La Cigale Document") : Langue.T("Lien La Cigale", "La Cigale Link"));
                     if (progId == ProgIdLien)
                     {
                         cle.SetValue("URL Protocol", "");
@@ -323,7 +331,7 @@ namespace LaCigale
                     c.SetValue("ApplicationName", Nom);
                     c.SetValue("ApplicationIcon", icone + ",0");
                     c.SetValue("ApplicationDescription",
-                        "Navigateur français, sombre et minimaliste, pensé pour l'anonymat et la sécurité.");
+                        Langue.T("Navigateur français, sombre et minimaliste, pensé pour l'anonymat et la sécurité.", "A dark, minimalist browser built for anonymity and security."));
                     using (var s = c.CreateSubKey("StartMenu")) s.SetValue("StartMenuInternet", "LaCigale");
                     using (var u = c.CreateSubKey("URLAssociations"))
                         foreach (var protocole in new[] { "http", "https" }) u.SetValue(protocole, ProgIdLien);
@@ -354,7 +362,7 @@ namespace LaCigale
         public static void Desinstaller(string dossier, bool supprimerProfil, Action<double, string> progres)
         {
             dossier = Path.GetFullPath(dossier).TrimEnd('\\');
-            progres(0.05, "Raccourcis");
+            progres(0.05, Langue.T("Raccourcis", "Shortcuts"));
             using (var cle = Registry.CurrentUser.OpenSubKey(CleDesinstallation))
             {
                 var raccourcis = cle == null ? null : cle.GetValue("Raccourcis") as string[];
@@ -364,12 +372,12 @@ namespace LaCigale
                             try { File.Delete(lien); } catch (Exception) { }
             }
 
-            progres(0.1, "Fichiers");
+            progres(0.1, Langue.T("Fichiers", "Files"));
             SupprimerFichiersListes(dossier, progres);
             try { if (!Directory.EnumerateFileSystemEntries(dossier).Any()) Directory.Delete(dossier); }
             catch (Exception) { }
 
-            progres(0.92, "Inscription auprès de Windows");
+            progres(0.92, Langue.T("Inscription auprès de Windows", "Unregistering from Windows"));
             using (var cle = Registry.CurrentUser.OpenSubKey(CleTaskBarIDs, true))
                 if (cle != null) cle.DeleteValue(dossier, false);
             Registry.CurrentUser.DeleteSubKeyTree(CleClient, false);
@@ -385,7 +393,7 @@ namespace LaCigale
 
             if (supprimerProfil)
             {
-                progres(0.96, "Profil");
+                progres(0.96, Langue.T("Profil", "Profile"));
                 try { Directory.Delete(DossierDonnees, true); } catch (Exception) { }
             }
             progres(1, "");
@@ -701,7 +709,7 @@ namespace LaCigale
             fond = Ressources.Image("fond.jpg");
             symbole = Ressources.Image("symbole.png");
 
-            Text = desinstallation ? "Désinstaller La Cigale" : "Installer La Cigale";
+            Text = desinstallation ? Langue.T("Désinstaller La Cigale", "Uninstall La Cigale") : Langue.T("Installer La Cigale", "Install La Cigale");
             FormBorderStyle = FormBorderStyle.None;
             StartPosition = FormStartPosition.CenterScreen;
             AutoScaleMode = AutoScaleMode.None;
@@ -717,7 +725,10 @@ namespace LaCigale
             fermer.Click += delegate { Quitter(); };
             Controls.Add(fermer);
 
-            if (desinstallation) PageConfirmationDesinstallation(); else PageAccueil();
+            if (desinstallation) PageConfirmationDesinstallation();
+            else if (!Ressources.Existe("charge-en.zip")) { Langue.En = false; PageAccueil(); }
+            else if (Moteur.VersionInstallee != null && Moteur.DossierInstalle != null) PageAccueil();
+            else PageLangue();
         }
 
         protected override CreateParams CreateParams
@@ -797,7 +808,7 @@ namespace LaCigale
                 if (modeDesinstallation && Moteur.VersionInstallee != null) version = "Version " + Moteur.VersionInstallee;
                 TextRenderer.DrawText(g, version, petit, new Rectangle(0, Theme.S(284), panneau.Width, Theme.S(22)),
                     Theme.TexteDoux, TextFormatFlags.HorizontalCenter);
-                TextRenderer.DrawText(g, "Navigateur libre · basé sur Firefox", petit,
+                TextRenderer.DrawText(g, Langue.T("Navigateur libre · basé sur Firefox", "Free browser · based on Firefox"), petit,
                     new Rectangle(0, ClientSize.Height - Theme.S(44), panneau.Width, Theme.S(22)),
                     Color.FromArgb(110, 110, 114), TextFormatFlags.HorizontalCenter);
             }
@@ -854,19 +865,46 @@ namespace LaCigale
             return primaire;
         }
 
+        void PageLangue()
+        {
+            Vider();
+            Titre("Langue · Language", 52);
+            Paragraphe("Choisissez la langue de La Cigale.\nChoose La Cigale's language.", 104, 48, Theme.TexteDoux);
+            var francais = Ajouter(new Bouton("Français", !Langue.En));
+            francais.Location = new Point(X0, Theme.S(184));
+            var anglais = Ajouter(new Bouton("English", Langue.En));
+            anglais.Location = new Point(francais.Right + Theme.S(12), Theme.S(184));
+            francais.Click += delegate { Choisir(false); };
+            anglais.Click += delegate { Choisir(true); };
+            AcceptButton = Langue.En ? anglais : francais;
+            (Langue.En ? anglais : francais).Focus();
+        }
+
+        void Choisir(bool anglais)
+        {
+            Langue.En = anglais;
+            Text = Langue.T("Installer La Cigale", "Install La Cigale");
+            Invalidate();
+            PageAccueil();
+        }
+
         void PageAccueil()
         {
             Vider();
             string installee = Moteur.VersionInstallee;
             bool miseAJour = installee != null && Moteur.DossierInstalle != null;
-            Titre(miseAJour ? "Mettre à jour La Cigale" : "Installer La Cigale", 52);
+            Titre(miseAJour ? Langue.T("Mettre à jour La Cigale", "Update La Cigale") : Langue.T("Installer La Cigale", "Install La Cigale"), 52);
             Paragraphe(miseAJour
-                ? "La version " + installee + " est installée. Elle sera remplacée par la " + Moteur.VersionCigale +
-                  " ; vos favoris, extensions et réglages sont conservés."
-                : "Un navigateur français, sombre et minimaliste, pensé pour l'anonymat et la sécurité. " +
-                  "Basé sur Firefox ESR " + Moteur.VersionFirefox + ".", 104, 48, Theme.TexteDoux);
+                ? Langue.T("La version " + installee + " est installée. Elle sera remplacée par la " + Moteur.VersionCigale +
+                  " ; vos favoris, extensions et réglages sont conservés.",
+                  "Version " + installee + " is installed. It will be replaced by " + Moteur.VersionCigale +
+                  "; your bookmarks, extensions and settings are kept.")
+                : Langue.T("Un navigateur français, sombre et minimaliste, pensé pour l'anonymat et la sécurité. " +
+                  "Basé sur Firefox ESR " + Moteur.VersionFirefox + ".",
+                  "A dark, minimalist browser built for anonymity and security. " +
+                  "Based on Firefox ESR " + Moteur.VersionFirefox + "."), 104, 48, Theme.TexteDoux);
 
-            Paragraphe("Dossier d'installation", 172, 22, Theme.TexteDoux, 9f);
+            Paragraphe(Langue.T("Dossier d'installation", "Install folder"), 172, 22, Theme.TexteDoux, 9f);
             var chemin = Ajouter(new Chemin
             {
                 Text = dossier, Font = Theme.Police(9.5f, false),
@@ -874,12 +912,12 @@ namespace LaCigale
             });
             if (!miseAJour)
             {
-                var modifier = Ajouter(new Bouton("Modifier…", false));
+                var modifier = Ajouter(new Bouton(Langue.T("Modifier…", "Change…"), false));
                 modifier.Size = new Size(Theme.S(96), Theme.S(40));
                 modifier.Location = new Point(chemin.Right + Theme.S(8), chemin.Top - Theme.S(2));
                 modifier.Click += delegate
                 {
-                    using (var choix = new FolderBrowserDialog { Description = "Dossier où installer La Cigale", SelectedPath = dossier })
+                    using (var choix = new FolderBrowserDialog { Description = Langue.T("Dossier où installer La Cigale", "Folder to install La Cigale in"), SelectedPath = dossier })
                     {
                         if (choix.ShowDialog(this) != DialogResult.OK) return;
                         string cible = choix.SelectedPath;
@@ -891,24 +929,24 @@ namespace LaCigale
                 };
             }
 
-            var bureau = Ajouter(new Case("Créer un raccourci sur le Bureau", !miseAJour));
+            var bureau = Ajouter(new Case(Langue.T("Créer un raccourci sur le Bureau", "Create a desktop shortcut"), !miseAJour));
             bureau.Location = new Point(X0 - Theme.S(2), Theme.S(252));
-            var parDefaut = Ajouter(new Case("Choisir La Cigale comme navigateur par défaut", !miseAJour));
+            var parDefaut = Ajouter(new Case(Langue.T("Choisir La Cigale comme navigateur par défaut", "Make La Cigale the default browser"), !miseAJour));
             parDefaut.Location = new Point(X0 - Theme.S(2), Theme.S(286));
 
-            Paragraphe("En installant, vous acceptez la licence publique Mozilla 2.0.", 342, 22, Theme.TexteDoux, 9f);
-            var licence = Ajouter(new Lien("Lire la licence", 9f));
+            Paragraphe(Langue.T("En installant, vous acceptez la licence publique Mozilla 2.0.", "By installing, you accept the Mozilla Public License 2.0."), 342, 22, Theme.TexteDoux, 9f);
+            var licence = Ajouter(new Lien(Langue.T("Lire la licence", "Read the license"), 9f));
             licence.Location = new Point(X0 - Theme.S(2), Theme.S(364));
             licence.Click += delegate { PageLicence(); };
 
-            Boutons(miseAJour ? "Mettre à jour" : "Installer", "Annuler",
+            Boutons(miseAJour ? Langue.T("Mettre à jour", "Update") : Langue.T("Installer", "Install"), Langue.T("Annuler", "Cancel"),
                 delegate { Installer(bureau.Coche, parDefaut.Coche); }, delegate { Quitter(); });
         }
 
         void PageLicence()
         {
             Vider();
-            Titre("Licence", 52);
+            Titre(Langue.T("Licence", "License"), 52);
             var cadre = Ajouter(new Panel
             {
                 BackColor = Theme.Surface, Padding = new Padding(Theme.S(14), Theme.S(12), Theme.S(4), Theme.S(12)),
@@ -922,7 +960,7 @@ namespace LaCigale
             };
             cadre.Controls.Add(texte);
             SetWindowTheme(texte.Handle, "DarkMode_Explorer", null);
-            Boutons("Retour", null, delegate { PageAccueil(); }, null);
+            Boutons(Langue.T("Retour", "Back"), null, delegate { PageAccueil(); }, null);
         }
 
         // LICENCE.txt est coupé à 80 colonnes, on recolle les paragraphes
@@ -944,7 +982,7 @@ namespace LaCigale
         {
             Vider();
             Titre(titre, 52);
-            Paragraphe("Cela ne prend que quelques secondes.", 104, 24, Theme.TexteDoux);
+            Paragraphe(Langue.T("Cela ne prend que quelques secondes.", "This only takes a few seconds."), 104, 24, Theme.TexteDoux);
             barre = Ajouter(new Barre());
             barre.Location = new Point(X0, Theme.S(200));
             barre.Width = LargeurContenu;
@@ -965,8 +1003,8 @@ namespace LaCigale
         {
             while (Moteur.EnCours(dossierCible))
             {
-                var resultat = MessageDialogue("La Cigale est ouverte",
-                    "Fermez toutes les fenêtres de La Cigale, puis cliquez sur Réessayer.", "Réessayer", "Annuler");
+                var resultat = MessageDialogue(Langue.T("La Cigale est ouverte", "La Cigale is open"),
+                    Langue.T("Fermez toutes les fenêtres de La Cigale, puis cliquez sur Réessayer.", "Close all La Cigale windows, then click Retry."), Langue.T("Réessayer", "Retry"), Langue.T("Annuler", "Cancel"));
                 if (!resultat) return false;
             }
             return true;
@@ -995,7 +1033,7 @@ namespace LaCigale
         {
             if (!AttendreFermeture(dossier)) return;
             string cible = dossier;
-            Executer(Moteur.VersionInstallee != null ? "Mise à jour…" : "Installation…",
+            Executer(Moteur.VersionInstallee != null ? Langue.T("Mise à jour…", "Updating…") : Langue.T("Installation…", "Installing…"),
                 delegate { Moteur.Installer(cible, bureau, Progres); },
                 delegate { PageFinInstallation(parDefaut); });
         }
@@ -1003,13 +1041,13 @@ namespace LaCigale
         void PageFinInstallation(bool parDefaut)
         {
             Vider();
-            Titre("C'est prêt.", 52);
-            Paragraphe("La Cigale est installée. Vous la retrouverez dans le menu Démarrer." +
-                (parDefaut ? "\n\nWindows va ouvrir ses réglages : choisissez La Cigale comme navigateur web." : ""),
+            Titre(Langue.T("C'est prêt.", "All set."), 52);
+            Paragraphe(Langue.T("La Cigale est installée. Vous la retrouverez dans le menu Démarrer.", "La Cigale is installed. You will find it in the Start menu.") +
+                (parDefaut ? Langue.T("\n\nWindows va ouvrir ses réglages : choisissez La Cigale comme navigateur web.", "\n\nWindows will open its settings: choose La Cigale as your web browser.") : ""),
                 104, 96, Theme.TexteDoux);
-            var lancer = Ajouter(new Case("Lancer La Cigale maintenant", true));
+            var lancer = Ajouter(new Case(Langue.T("Lancer La Cigale maintenant", "Launch La Cigale now"), true));
             lancer.Location = new Point(X0 - Theme.S(2), Theme.S(214));
-            Boutons("Terminer", null, delegate
+            Boutons(Langue.T("Terminer", "Finish"), null, delegate
             {
                 if (parDefaut) Moteur.OuvrirReglagesNavigateurParDefaut();
                 if (lancer.Coche) Moteur.Lancer(dossier);
@@ -1020,10 +1058,10 @@ namespace LaCigale
         void PageErreur(Exception erreur)
         {
             Vider();
-            Titre("Une erreur est survenue", 52);
+            Titre(Langue.T("Une erreur est survenue", "Something went wrong"), 52);
             Paragraphe(erreur is UnauthorizedAccessException || erreur is IOException
-                ? "Un fichier n'a pas pu être écrit. Vérifiez que La Cigale est fermée et que le dossier est accessible, puis réessayez."
-                : "L'opération n'a pas pu aller à son terme.", 104, 48, Theme.TexteDoux);
+                ? Langue.T("Un fichier n'a pas pu être écrit. Vérifiez que La Cigale est fermée et que le dossier est accessible, puis réessayez.", "A file could not be written. Check that La Cigale is closed and the folder is accessible, then try again.")
+                : Langue.T("L'opération n'a pas pu aller à son terme.", "The operation could not be completed."), 104, 48, Theme.TexteDoux);
             Paragraphe(erreur.Message, 164, 120, Theme.Erreur, 9f);
             Boutons("Fermer", null, delegate { Close(); }, null);
         }
@@ -1031,17 +1069,19 @@ namespace LaCigale
         void PageConfirmationDesinstallation()
         {
             Vider();
-            Titre("Désinstaller La Cigale", 52);
-            Paragraphe("La Cigale sera retirée de cet ordinateur, avec ses raccourcis et son inscription " +
-                "comme navigateur. Votre profil est conservé, sauf si vous cochez la case ci-dessous.", 104, 72, Theme.TexteDoux);
-            var profil = Ajouter(new Case("Supprimer aussi mon profil", false));
+            Titre(Langue.T("Désinstaller La Cigale", "Uninstall La Cigale"), 52);
+            Paragraphe(Langue.T("La Cigale sera retirée de cet ordinateur, avec ses raccourcis et son inscription " +
+                "comme navigateur. Votre profil est conservé, sauf si vous cochez la case ci-dessous.",
+                "La Cigale will be removed from this computer, along with its shortcuts and its registration " +
+                "as a browser. Your profile is kept unless you tick the box below."), 104, 72, Theme.TexteDoux);
+            var profil = Ajouter(new Case(Langue.T("Supprimer aussi mon profil", "Also delete my profile"), false));
             profil.Location = new Point(X0 - Theme.S(2), Theme.S(196));
-            Paragraphe("Favoris, mots de passe, extensions et réglages.", 226, 22, Theme.TexteDoux, 9f).Left = X0 + Theme.S(28);
-            Boutons("Désinstaller", "Annuler", delegate
+            Paragraphe(Langue.T("Favoris, mots de passe, extensions et réglages.", "Bookmarks, passwords, extensions and settings."), 226, 22, Theme.TexteDoux, 9f).Left = X0 + Theme.S(28);
+            Boutons(Langue.T("Désinstaller", "Uninstall"), Langue.T("Annuler", "Cancel"), delegate
             {
                 if (!AttendreFermeture(dossierDesinstallation)) return;
                 bool supprimer = profil.Coche;
-                Executer("Désinstallation…",
+                Executer(Langue.T("Désinstallation…", "Uninstalling…"),
                     delegate { Moteur.Desinstaller(dossierDesinstallation, supprimer, Progres); },
                     PageFinDesinstallation);
             }, delegate { Quitter(); });
@@ -1050,8 +1090,8 @@ namespace LaCigale
         void PageFinDesinstallation()
         {
             Vider();
-            Titre("Au revoir.", 52);
-            Paragraphe("La Cigale a été désinstallée. Merci de l'avoir utilisée.", 104, 48, Theme.TexteDoux);
+            Titre(Langue.T("Au revoir.", "Goodbye."), 52);
+            Paragraphe(Langue.T("La Cigale a été désinstallée. Merci de l'avoir utilisée.", "La Cigale has been uninstalled. Thank you for using it."), 104, 48, Theme.TexteDoux);
             Boutons("Fermer", null, delegate { Close(); }, null);
         }
 
@@ -1108,6 +1148,9 @@ namespace LaCigale
             bool silencieux = args.Any(a => a.Equals("/silencieux", StringComparison.OrdinalIgnoreCase));
             bool desinstallation = !Ressources.Existe("charge.zip");
             string dossier = Option(args, "/dossier");
+            string langue = Option(args, "/langue") ?? Moteur.LireInstallation("Langue")
+                ?? (Moteur.VersionInstallee != null ? "fr" : (System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "fr" ? "fr" : "en"));
+            Langue.En = langue.Equals("en", StringComparison.OrdinalIgnoreCase);
 
             if (desinstallation)
             {
