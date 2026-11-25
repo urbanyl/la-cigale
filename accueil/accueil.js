@@ -35,13 +35,13 @@ const stockage = {
 // Logos fournis avec La Cigale (le site ne les publie pas aux adresses habituelles)
 const LOGOS_LOCAUX = { "https://seyra.website": "img/seyra.png" };
 
-// Logos des raccourcis : demandés au site lui-même (jamais à Google ou à un service tiers).
-// Tant que le logo n'est pas chargé, ou s'il n'existe pas, la pastille garde la lettre.
+// Logos des raccourcis : seulement ceux fournis avec La Cigale. L'accueil ne contacte aucun site
+// (pas de chargement en boucle dans la barre d'état) ; sans logo local, la pastille garde la lettre.
 function chargerLogo(pastille, adresse) {
   let origine;
   try { origine = new URL(adresse).origin; } catch { return; }
-  const essais = [origine + "/apple-touch-icon.png", origine + "/favicon.ico", origine + "/favicon.png"];
-  if (LOGOS_LOCAUX[origine]) essais.unshift(LOGOS_LOCAUX[origine]);
+  if (!LOGOS_LOCAUX[origine]) return;
+  const essais = [LOGOS_LOCAUX[origine]];
   const img = new Image();
   img.alt = "";
   img.decoding = "async";
