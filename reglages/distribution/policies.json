@@ -14,12 +14,8 @@
     "NetworkPrediction": false,
     "DisableFirefoxAccounts": true,
     "DisableFormHistory": true,
-    "DisableProfileImport": true,
-    "PasswordManagerEnabled": false,
-    "OfferToSaveLogins": false,
     "HttpsOnlyMode": "force_enabled",
     "PostQuantumKeyAgreementEnabled": true,
-    "PrimaryPassword": false,
     "EnableTrackingProtection": {
       "Value": true,
       "Locked": true,

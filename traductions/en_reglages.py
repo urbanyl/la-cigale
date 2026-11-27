@@ -23,6 +23,16 @@ PAIRES["reglages/cigale.cfg"] = [
     ('"La mise à jour a échoué (téléchargement ou empreinte non vérifiée). Téléchargez-la depuis la page des versions."',
      '"The update failed (download or checksum not verified). Download it from the releases page."'),
     ('"https://check.torproject.org/?lang=fr"', '"https://check.torproject.org/?lang=en"'),
+    ('"Pour enregistrer vos mots de passe, La Cigale les chiffre avec un mot de passe principal. "',
+     '"To save your passwords, La Cigale encrypts them with a primary password. "'),
+    ('"Choisissez-le maintenant : il vous sera demandé une fois par session pour les utiliser."',
+     '"Choose it now: you will be asked for it once per session to use them."'),
+    ('"Sans mot de passe principal, La Cigale n\'enregistre pas vos mots de passe."',
+     '"Without a primary password, La Cigale does not save your passwords."'),
+    ('"Des mots de passe viennent d\'être enregistrés dans La Cigale. "',
+     '"Passwords have just been saved in La Cigale. "'),
+    ('"Protégez-les avec un mot de passe principal : sans lui, ils sont lisibles par quiconque accède à votre profil."',
+     '"Protect them with a primary password: without it, anyone with access to your profile can read them."'),
 ]
 
 PAIRES["outils/rebrander_omni.py"] = [

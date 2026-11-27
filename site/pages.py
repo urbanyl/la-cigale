@@ -186,7 +186,7 @@ SECURITE = {
             "Anti-empreinte de Tor Browser (<code>resistFingerprinting</code>) ; WebGL, WebGPU et WebRTC coupés.",
             "HTTPS imposé, TLS 1.2 minimum, pas de 0-RTT, OCSP obligatoire et CRLite.",
             "Cookies et cache isolés par site ; tout est effacé à la fermeture, rien n'est écrit dans un cache disque.",
-            "Pas de mots de passe enregistrés, pas de JavaScript dans les PDF, pas de DRM.",
+            "Mots de passe enregistrés seulement si vous l'activez, et alors chiffrés par un mot de passe principal ; pas de JavaScript dans les PDF, pas de DRM.",
             "Les extensions installées en douce par d'autres programmes sont refusées.",
         ]),
         ("paquet", "Des versions vérifiables", [
@@ -220,7 +220,7 @@ SECURITE = {
             "Tor Browser's fingerprinting protection (<code>resistFingerprinting</code>); WebGL, WebGPU and WebRTC off.",
             "HTTPS only, TLS 1.2 minimum, no 0-RTT, mandatory OCSP and CRLite.",
             "Cookies and cache isolated per site; everything is wiped on close, nothing goes to a disk cache.",
-            "No saved passwords, no JavaScript in PDFs, no DRM.",
+            "Passwords are saved only if you turn it on, and then encrypted with a primary password; no JavaScript in PDFs, no DRM.",
             "Extensions sideloaded by other programs are refused.",
         ]),
         ("paquet", "Verifiable releases", [
