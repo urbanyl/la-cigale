@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>La Cigale – navigateur web français, privé et anonyme (Windows, Linux)</title>
-<meta name="description" content="La Cigale : navigateur web libre et gratuit basé sur Firefox ESR, en français, sans télémétrie, avec uBlock Origin, anti-empreinte type Tor Browser, DNS chiffré et fenêtre Tor. Téléchargement pour Windows, Ubuntu et Debian.">
-<meta name="keywords" content="La Cigale, navigateur, navigateur web, navigateur français, navigateur privé, navigateur anonyme, vie privée, anonymat, Firefox, Firefox ESR, LibreWolf, Tor, uBlock Origin, anti-pistage, sans télémétrie, Windows, Linux, Ubuntu, Debian, privacy browser, private browser, French browser">
+<title>La Cigale – navigateur web français, privé et anonyme (Windows, macOS, Linux)</title>
+<meta name="description" content="La Cigale : navigateur web libre et gratuit basé sur Firefox ESR, en français, sans télémétrie, avec uBlock Origin, anti-empreinte type Tor Browser, DNS chiffré, fenêtre Tor et assistant IA local. Pour Windows, macOS, Ubuntu et Debian.">
+<meta name="keywords" content="La Cigale, navigateur, navigateur web, navigateur français, navigateur privé, navigateur anonyme, vie privée, anonymat, Firefox, Firefox ESR, LibreWolf, Tor, uBlock Origin, anti-pistage, sans télémétrie, Windows, macOS, Linux, Ubuntu, Debian, privacy browser, private browser, French browser">
 <meta name="author" content="urbanyl">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://urbanyl.github.io/la-cigale/">
@@ -13,13 +13,13 @@
 <link rel="alternate" hreflang="en" href="https://urbanyl.github.io/la-cigale/en/">
 <link rel="alternate" hreflang="x-default" href="https://urbanyl.github.io/la-cigale/">
 <link rel="icon" type="image/png" href="favicon.png">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#0a0a0b">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="La Cigale">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:locale:alternate" content="en_US">
 <meta property="og:title" content="La Cigale, le navigateur qui ne chante pas vos données">
-<meta property="og:description" content="Navigateur libre et gratuit basé sur Firefox ESR. Sans télémétrie, uBlock Origin intégré, anti-empreinte, DNS chiffré, fenêtre Tor et proxys. Windows et Linux.">
+<meta property="og:description" content="Navigateur libre et gratuit basé sur Firefox ESR. Sans télémétrie, uBlock Origin intégré, anti-empreinte, DNS chiffré, fenêtre Tor et assistant IA local. Windows, macOS et Linux.">
 <meta property="og:url" content="https://urbanyl.github.io/la-cigale/">
 <meta property="og:image" content="https://urbanyl.github.io/la-cigale/apercu.jpg">
 <meta property="og:image:type" content="image/jpeg">
@@ -28,7 +28,7 @@
 <meta property="og:image:alt" content="La Cigale, le navigateur qui ne chante pas vos données">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="La Cigale, le navigateur qui ne chante pas vos données">
-<meta name="twitter:description" content="Navigateur libre et gratuit basé sur Firefox ESR. Sans télémétrie, uBlock Origin intégré, anti-empreinte, DNS chiffré, fenêtre Tor et proxys. Windows et Linux.">
+<meta name="twitter:description" content="Navigateur libre et gratuit basé sur Firefox ESR. Sans télémétrie, uBlock Origin intégré, anti-empreinte, DNS chiffré, fenêtre Tor et assistant IA local. Windows, macOS et Linux.">
 <meta name="twitter:image" content="https://urbanyl.github.io/la-cigale/apercu.jpg">
 <meta name="twitter:image:alt" content="La Cigale, le navigateur qui ne chante pas vos données">
 <script type="application/ld+json">
@@ -38,10 +38,10 @@
   "name": "La Cigale",
   "alternateName": ["La Cigale browser", "Navigateur La Cigale"],
   "applicationCategory": "BrowserApplication",
-  "operatingSystem": "Windows 10, Windows 11, Ubuntu, Debian, Linux",
-  "softwareVersion": "1.7.0",
+  "operatingSystem": "Windows 10, Windows 11, macOS, Ubuntu, Debian, Linux",
+  "softwareVersion": "1.8.3",
   "inLanguage": ["fr", "en"],
-  "description": "Navigateur web libre et gratuit basé sur Firefox ESR, axé sur la vie privée et l'anonymat : sans télémétrie, uBlock Origin intégré, anti-empreinte, DNS chiffré, fenêtre Tor.",
+  "description": "Navigateur web libre et gratuit basé sur Firefox ESR, axé sur la vie privée et l'anonymat : sans télémétrie, uBlock Origin intégré, anti-empreinte, DNS chiffré, fenêtre Tor, assistant IA local.",
   "url": "https://urbanyl.github.io/la-cigale/",
   "downloadUrl": "https://github.com/urbanyl/la-cigale/releases/latest",
   "image": "https://urbanyl.github.io/la-cigale/logo.png",
@@ -51,13 +51,14 @@
   "sameAs": ["https://github.com/urbanyl/la-cigale"]
 }
 </script>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="accueil.css?v=1">
 </head>
-<body class="accueil">
+<body>
 <header class="nav">
   <nav class="nav-dedans" aria-label="Navigation">
-    <a class="marque" href="./"><img src="symbole.png" alt="" width="24" height="24">La Cigale</a>
+    <a class="marque" href="./"><img src="logo.png" alt="" width="22" height="22">La Cigale</a>
     <a class="cache-mobile" href="#fonctions">Fonctions</a>
+    <a class="cache-mobile" href="#themes">Thèmes</a>
     <a class="cache-mobile" href="#assistant">Assistant IA</a>
     <a class="cache-mobile" href="faq/">Questions</a>
     <a class="cache-mobile" href="comparaison/">Comparaison</a>
@@ -66,101 +67,220 @@
   </nav>
 </header>
 <main>
-  <section class="scene">
-    <p class="surtitre">Nouveau : La Cigale 1.7</p>
-    <h1 class="titre">La Cigale</h1>
-    <p class="devise">Le navigateur qui ne chante pas vos données.</p>
-    <div class="action">
-      <a class="telecharger" href="https://github.com/urbanyl/la-cigale/releases/download/v1.7.0/LaCigale-1.7.0-windows-x64-installeur.exe">Télécharger pour Windows</a>
-      <a class="lien-fleche" href="#telecharger">Autres versions</a>
+  <section class="ouverture">
+    <div class="halo" aria-hidden="true"></div>
+    <img class="cigale-fond" src="images/cigale.svg" alt="" aria-hidden="true">
+    <a class="surtitre apres" style="--d:.1s" href="#nouveau"><span class="point"></span>Nouveau : La Cigale 1.8.3</a>
+    <h1 class="titre brille">La Cigale</h1>
+    <p class="devise apres" style="--d:.75s">Le navigateur qui ne chante pas vos données.</p>
+    <div class="actions apres" style="--d:.95s">
+      <a class="bouton" href="https://github.com/urbanyl/la-cigale/releases/download/v1.8.3/LaCigale-1.8.3-windows-x64-installeur.exe"
+         data-mac="https://github.com/urbanyl/la-cigale/releases/download/v1.8.3/LaCigale-1.8.3-macos.dmg" data-mac-nom="Télécharger pour Mac"
+         data-linux="https://github.com/urbanyl/la-cigale/releases/download/v1.8.3/la-cigale_1.8.3_amd64.deb" data-linux-nom="Télécharger pour Linux">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg><span class="pour">Télécharger pour Windows</span>
+      </a>
+      <a class="fleche" href="#telecharger">Mac, Linux et versions portables</a>
     </div>
-    <p class="meta">Version 1.7.0 · Windows 10 et 11, Ubuntu, Debian · Gratuit</p>
-    <p class="sur-mobile">Pas de version pour téléphone : La Cigale s'installe sur un ordinateur Windows ou Linux.</p>
+    <p class="meta apres" style="--d:1.1s">Version 1.8.3 · Windows, macOS, Ubuntu et Debian · Libre et gratuit</p>
+    <p class="sur-mobile apres" style="--d:1.2s">Pas de version pour téléphone : La Cigale s'installe sur un ordinateur.</p>
+    <div class="scene-fenetre">
+      <figure class="fenetre" style="margin:0">
+        <img src="images/fr-sombre.webp" width="1384" height="872" alt="La page d'accueil de La Cigale, thème sombre : recherche, bilan des traqueurs bloqués, accès à la protection, à l'assistant et à la fenêtre Tor." fetchpriority="high">
+        <div class="reflet-verre" aria-hidden="true"></div>
+      </figure>
+    </div>
   </section>
 
-  <figure class="ecran">
-    <img src="images/accueil.webp" width="1586" height="993" alt="La page d'accueil de La Cigale : recherche, raccourcis, accès à la protection et à la fenêtre Tor." fetchpriority="high">
-  </figure>
+  <p class="declaration etroit centre">Firefox ESR réglé pour la vie privée, en français, libre et gratuit. <strong>Rien n'est envoyé à personne, et tout s'efface à la fermeture.</strong></p>
 
-  <p class="declaration apparait">Firefox ESR réglé pour la vie privée, en français, libre et gratuit. <strong>Rien n'est envoyé à personne, et tout s'efface à la fermeture.</strong></p>
+  <section class="large chiffres" aria-label="En chiffres">
+    <div class="chiffre monte"><b data-compte="0">0</b><span>télémétrie, publicité ou compte à créer</span></div>
+    <div class="chiffre monte" style="--d:.08s"><b data-compte="12">12</b><span>boucliers calculés sur votre ordinateur</span></div>
+    <div class="chiffre monte" style="--d:.16s"><b data-compte="3">3</b><span>systèmes : Windows, macOS et Linux</span></div>
+    <div class="chiffre monte" style="--d:.24s"><b data-compte="153">153</b><span>Firefox ESR 153, le moteur de Firefox et ses correctifs</span></div>
+  </section>
 
-  <section class="bloc-section large centre" id="fonctions">
-    <h2 class="apparait">Protégé dès le premier lancement.</h2>
-    <p class="chapeau apparait">Ce qu'elle fait sans qu'on lui demande.</p>
-    <ul class="tuiles apparait">
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V11M9 19V6M14 19v-5M19 19V9"/><path d="M3 3l18 18"/></svg><h3>Aucune télémétrie</h3><p>Pas de rapports, pas d'études, pas de publicité dans les nouveaux onglets.</p></li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.2 7.5 9.5 4.4-1.3 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg><h3>uBlock Origin intégré</h3><p>Traqueurs, publicités et bannières de cookies bloqués dès l'installation.</p></li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 10.5a4.5 4.5 0 0 1 9 0c0 3.6-.9 6.6-2.3 9"/><path d="M12 10.5c0 4-1 7.3-3 10"/><path d="M5 7.6A8 8 0 0 1 19.6 9M4.2 13.5c.2-1 .3-1.9.3-3M16.4 20.4c.6-1.6 1-3.4 1.2-5.4"/></svg><h3>Anti-empreinte</h3><p>Les réglages de Tor Browser : votre écran, vos polices et votre fuseau ne vous trahissent plus.</p></li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/><path d="M12 14.5v2.5"/></svg><h3>DNS chiffré</h3><p>Vos requêtes DNS passent par Quad9, chiffrées, au lieu de votre fournisseur d'accès.</p></li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12s3.3-6 9-6c1.6 0 3 .4 4.2 1M21 12s-3.3 6-9 6c-1.6 0-3-.4-4.2-1"/><path d="M9.9 14.1A3 3 0 0 1 14.1 9.9"/><path d="M4 20 20 4"/></svg><h3>Votre adresse IP cachée</h3><p>Avec la fenêtre Tor, ou votre propre liste de proxys, en rotation, avec coupe-circuit.</p></li>
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15M9.5 7V4.8h5V7M6.5 7l.9 12.2a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.2 11v6M13.8 11v6"/></svg><h3>Rien ne reste</h3><p>Cookies, historique et cache effacés à la fermeture, sauf pour les sites que vous gardez.</p></li>
-    </ul>
+  <section class="large" id="fonctions">
+    <div class="entete monte">
+      <p class="petit">Dès le premier lancement</p>
+      <h2>Protégé sans rien régler.</h2>
+      <p class="chapeau">Ce que La Cigale fait sans qu'on lui demande.</p>
+    </div>
+    <div class="grille">
+      <div class="tuile large-2 monte" style="--c:#8e8e93"><div class="ico"><svg viewBox="0 0 24 24"><path d="M4 19V11M9 19V6M14 19v-5M19 19V9"/><path d="M3 3l18 18"/></svg></div><h3>Aucune télémétrie</h3><p>Pas de rapports, pas d'études, pas de publicité dans les nouveaux onglets. Les programmes correspondants sont retirés du paquet.</p></div>
+      <div class="tuile large-2 monte" style="--c:#ff453a;--d:.08s"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.2 7.5 9.5 4.4-1.3 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg></div><h3>uBlock Origin intégré</h3><p>Traqueurs, publicités et bannières de cookies bloqués dès l'installation.</p></div>
+      <div class="tuile monte" style="--c:#bf5af2"><div class="ico"><svg viewBox="0 0 24 24"><path d="M7.5 10.5a4.5 4.5 0 0 1 9 0c0 3.6-.9 6.6-2.3 9"/><path d="M12 10.5c0 4-1 7.3-3 10"/><path d="M5 7.6A8 8 0 0 1 19.6 9M4.2 13.5c.2-1 .3-1.9.3-3M16.4 20.4c.6-1.6 1-3.4 1.2-5.4"/></svg></div><h3>Anti-empreinte</h3><p>Les réglages de Tor Browser.</p></div>
+      <div class="tuile monte" style="--c:#0a84ff;--d:.06s"><div class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg></div><h3>DNS chiffré</h3><p>Par Quad9, pas par votre fournisseur.</p></div>
+      <div class="tuile monte" style="--c:#5e5ce6;--d:.12s"><div class="ico"><svg viewBox="0 0 24 24"><path d="M3 12s3.3-6 9-6c1.6 0 3 .4 4.2 1M21 12s-3.3 6-9 6c-1.6 0-3-.4-4.2-1"/><path d="M4 20 20 4"/></svg></div><h3>Adresse IP cachée</h3><p>Fenêtre Tor ou vos proxys.</p></div>
+      <div class="tuile large-2 monte" style="--c:#30d158"><div class="ico"><svg viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.8h5V7M6.5 7l.9 12.2a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.2 11v6M13.8 11v6"/></svg></div><h3>Rien ne reste</h3><p>Cookies, historique et cache effacés à la fermeture, sauf pour les sites que vous gardez.</p></div>
+      <div class="tuile large-2 monte" style="--c:#ff9f0a;--d:.08s"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></div><h3>Arrivez avec vos affaires</h3><p>Marque-pages, historique et mots de passe importés de Chrome, Edge ou Firefox.</p></div>
+    </div>
+  </section>
+
+  <section class="themes" id="themes">
+    <div class="themes-colle">
+      <div class="entete large">
+        <p class="petit">Trois thèmes</p>
+        <h2>Sobre comme un Mac. Provençal dans l'âme.</h2>
+      </div>
+      <div class="pile">
+        <img class="actif" src="images/fr-sombre.webp" width="1384" height="872" alt="Thème sombre" loading="lazy">
+        <img src="images/fr-olive.webp" width="1384" height="872" alt="Thème olive" loading="lazy">
+        <img src="images/fr-clair.webp" width="1384" height="872" alt="Thème clair" loading="lazy">
+      </div>
+      <div class="choix" role="group" aria-label="Choisir un thème">
+        <button type="button" class="actif" aria-pressed="true" style="--pastille:#0a0a0b"><i></i>Sombre</button>
+        <button type="button" aria-pressed="false" style="--pastille:#3d4a35"><i></i>Olive</button>
+        <button type="button" aria-pressed="false" style="--pastille:#ece9e2"><i></i>Clair</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="protection large">
+    <div class="duo">
+      <div class="texte monte">
+        <p class="petit">Protection</p>
+        <h2>Tout est allumé. D'origine.</h2>
+        <p>La page Protection montre l'état de chaque défense, comme les Réglages Système. Trois profils, Confort, Standard ou Renforcé, et rien à configurer pour commencer.</p>
+      </div>
+      <div class="panneau monte" style="--d:.1s" aria-label="Défenses actives par défaut">
+        <div class="barre" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="ligne on" style="--c:#ff453a"><span class="carre"><svg viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.2 7.5 9.5 4.4-1.3 7.5-4.9 7.5-9.5V6z"/></svg></span><span class="nom">uBlock Origin</span><span class="val">actif</span><span class="interrupteur" aria-hidden="true"></span></div>
+        <div class="ligne on" style="--c:#bf5af2"><span class="carre"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 8v4l2.5 2"/></svg></span><span class="nom">Anti-empreinte</span><span class="val">comme Tor Browser</span><span class="interrupteur" aria-hidden="true"></span></div>
+        <div class="ligne on" style="--c:#30d158"><span class="carre"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg></span><span class="nom">HTTPS obligatoire</span><span class="val">oui</span><span class="interrupteur" aria-hidden="true"></span></div>
+        <div class="ligne on" style="--c:#0a84ff"><span class="carre"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c2.5 2.6 2.5 13.4 0 16M12 4c-2.5 2.6-2.5 13.4 0 16"/></svg></span><span class="nom">DNS chiffré</span><span class="val">Quad9</span><span class="interrupteur" aria-hidden="true"></span></div>
+        <div class="ligne on" style="--c:#5e5ce6"><span class="carre"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg></span><span class="nom">WebRTC coupé</span><span class="val">pas de fuite d'IP</span><span class="interrupteur" aria-hidden="true"></span></div>
+        <div class="ligne on" style="--c:#8e8e93"><span class="carre"><svg viewBox="0 0 24 24"><path d="M4 19V11M9 19V6M14 19v-5M19 19V9"/></svg></span><span class="nom">Télémétrie coupée</span><span class="val">oui</span><span class="interrupteur" aria-hidden="true"></span></div>
+        <div class="ligne on" style="--c:#ff9f0a"><span class="carre"><svg viewBox="0 0 24 24"><path d="M4.5 7h15M6.5 7l.9 12.2a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/></svg></span><span class="nom">Effacement à la fermeture</span><span class="val">tout</span><span class="interrupteur" aria-hidden="true"></span></div>
+      </div>
+    </div>
   </section>
 
   <section class="assistant large" id="assistant">
-    <div class="centre">
-      <p class="surtitre apparait">Nouveau dans la 1.7</p>
-      <h2 class="apparait">Une IA qui reste chez vous.</h2>
-      <p class="chapeau apparait">L'assistant de La Cigale tourne entièrement sur votre ordinateur. Pas de compte, pas de serveur : vos questions ne partent nulle part.</p>
+    <div class="entete monte">
+      <p class="petit">Assistant IA</p>
+      <h2>Une IA qui reste chez vous.</h2>
+      <p class="chapeau">Elle tourne entièrement sur votre ordinateur. Pas de compte, pas de serveur : vos questions ne partent nulle part.</p>
     </div>
-    <div class="carte-assistant apparait">
-      <div class="texte">
-        <ul>
-          <li><b>Résumer, expliquer, analyser</b><span>Un clic droit sur une page : « Demander à La Cigale ».</span></li>
-          <li><b>Traduire sur place</b><span>La page est traduite sur votre ordinateur, le haut d'abord, liens gardés.</span></li>
-          <li><b>Réfléchir avant de répondre</b><span>Le modèle Réfléchi montre son raisonnement pas à pas.</span></li>
-          <li><b>À côté de la page</b><span>Dans un panneau latéral qui suit l'onglet affiché.</span></li>
-        </ul>
+    <figure class="fenetre-plate monte" style="margin:0"><img src="images/fr-assistant.webp" width="1384" height="875" alt="L'assistant de La Cigale résume une page en trois points, avec la liste des conversations à gauche." loading="lazy"></figure>
+    <div class="points">
+      <div class="monte"><b>Résumer, expliquer</b><span>Clic droit sur une page : « Demander à La Cigale ».</span></div>
+      <div class="monte" style="--d:.06s"><b>Traduire sur place</b><span>La page est traduite sur votre ordinateur.</span></div>
+      <div class="monte" style="--d:.12s"><b>Réfléchir</b><span>Le modèle Réfléchi montre son raisonnement.</span></div>
+      <div class="monte" style="--d:.18s"><b>À côté de la page</b><span>Dans un panneau qui suit l'onglet.</span></div>
+    </div>
+    <p class="petite-note">Le moteur et le modèle se téléchargent une seule fois, à votre demande (de 2,5 à 5 Go).</p>
+  </section>
+
+  <section class="nouveau large" id="nouveau">
+    <div class="entete monte">
+      <p class="petit">Nouveau dans la 1.8.3</p>
+      <h2>Changez de navigateur sans rien perdre.</h2>
+    </div>
+    <div class="cartes-2">
+      <div class="carte-n monte">
+        <div class="dessin" aria-hidden="true">
+          <span class="appli"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.2"/><path d="M12 8.8h8M9.2 13.6 5.3 6.9M14.8 13.6l-4 6.9"/></svg></span>
+          <span class="flux"><i></i><i></i><i></i></span>
+          <span class="appli"><img src="logo.png" alt="" width="44" height="44"></span>
+        </div>
+        <h3>Importez depuis un autre navigateur</h3>
+        <p>Marque-pages, historique et mots de passe de Chrome, Edge ou Firefox, depuis Paramètres, « Importer les données d'un navigateur ».</p>
       </div>
-      <figure><img src="images/assistant.webp" width="952" height="806" alt="L'assistant de La Cigale montre sa réflexion avant de répondre qu'entre 9,11 et 9,9, le plus grand est 9,9." loading="lazy"></figure>
+      <div class="carte-n monte" style="--d:.08s">
+        <div class="dessin" aria-hidden="true">
+          <div class="coffre">
+            <span class="cadenas"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg></span>
+            <span class="champs"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          </div>
+        </div>
+        <h3>Mots de passe, si vous le voulez</h3>
+        <p>Désactivés par défaut. Activés, ils sont chiffrés par un mot de passe principal : sans lui, La Cigale n'enregistre rien.</p>
+      </div>
     </div>
-    <p class="petite-note">Le moteur et le modèle se téléchargent une seule fois, à votre demande (de 2,5 à 5 Go). Windows et Linux 64 bits.</p>
   </section>
 
-  <section class="bloc-section large centre" id="boucliers">
-    <h2 class="apparait">Ce qu'aucun autre navigateur ne réunit.</h2>
-    <p class="chapeau apparait">Tout est calculé sur votre ordinateur. Aucun de ces boucliers n'envoie quoi que ce soit à un service.</p>
-  </section>
-  <figure class="ecran moyen apparait">
-    <img src="images/protection.webp" width="1586" height="993" alt="La page Protection de La Cigale : profil Confort, Standard ou Renforcé, et l'état de chaque protection." loading="lazy">
-  </figure>
-  <section class="large">
-    <ul class="tuiles serrees apparait">
-      <li><h3>Nouvelle identité</h3><p>Un clic : tout est effacé, les onglets fermés, le proxy changé. Les sites ne peuvent plus vous relier à avant.</p></li>
-      <li><h3>Un proxy par site</h3><p>Chaque site voit sa propre adresse IP, toujours la même. Deux sites ne peuvent plus se recouper.</p></li>
-      <li><h3>Détecteur de sosies</h3><p>paypa1.com, lettres cyrilliques, amazon-remboursement.fr : alerte avant que vous ne tapiez quoi que ce soit.</p></li>
-      <li><h3>Bouclier de formulaires</h3><p>Votre mot de passe ne part pas sans chiffrement, ni vers un autre site, sans votre accord.</p></li>
-      <li><h3>Téléchargements vérifiés</h3><p>L'empreinte SHA-256 publiée sur la page est comparée au fichier reçu, automatiquement.</p></li>
-      <li><h3>Mode site inconnu</h3><p>JavaScript coupé sur les sites auxquels vous n'avez pas encore fait confiance.</p></li>
-      <li><h3>Lien via Tor</h3><p>Clic droit sur un lien : il s'ouvre dans la fenêtre Tor, sans rien emporter.</p></li>
-      <li><h3>Onglets éphémères</h3><p>Ils se ferment seuls quand vous les oubliez, et le site est effacé avec eux.</p></li>
-      <li><h3>Profils Travail, Perso, Banque</h3><p>Trois mondes séparés, chacun sa couleur et ses cookies.</p></li>
-      <li><h3>Panneau Seyra</h3><p>Votre messagerie chiffrée à côté de la page, toujours ouverte.</p></li>
-      <li><h3>Rapport de page</h3><p>Traqueurs, prises d'empreinte, sites tiers, âge du certificat : tout au clic sur la cigale.</p></li>
-      <li><h3>Liens partagés propres</h3><p>Copier un lien retire les pisteurs et raccourcit les liens Amazon.</p></li>
-    </ul>
+  <section class="boucliers" aria-labelledby="titre-boucliers">
+    <div class="entete large monte">
+      <p class="petit">Les boucliers</p>
+      <h2 id="titre-boucliers">Ce qu'aucun autre navigateur ne réunit.</h2>
+      <p class="chapeau">Tout est calculé sur votre ordinateur. Aucun de ces boucliers n'envoie quoi que ce soit à un service.</p>
+    </div>
+    <div class="ruban"><div class="piste">
+      <div class="bouclier"><h3>Nouvelle identité</h3><p>Un clic : tout est effacé, les onglets fermés, le proxy changé.</p></div>
+      <div class="bouclier"><h3>Un proxy par site</h3><p>Chaque site voit sa propre adresse IP, toujours la même.</p></div>
+      <div class="bouclier"><h3>Détecteur de sosies</h3><p>paypa1.com, lettres cyrilliques : alerte avant de taper quoi que ce soit.</p></div>
+      <div class="bouclier"><h3>Bouclier de formulaires</h3><p>Votre mot de passe ne part pas sans chiffrement, ni vers un autre site, sans votre accord.</p></div>
+      <div class="bouclier"><h3>Téléchargements vérifiés</h3><p>L'empreinte SHA-256 publiée est comparée au fichier reçu.</p></div>
+      <div class="bouclier"><h3>Mode site inconnu</h3><p>JavaScript coupé sur les sites auxquels vous n'avez pas encore fait confiance.</p></div>
+      <div class="bouclier double" aria-hidden="true"><h3>Nouvelle identité</h3><p>Un clic : tout est effacé, les onglets fermés, le proxy changé.</p></div>
+      <div class="bouclier double" aria-hidden="true"><h3>Un proxy par site</h3><p>Chaque site voit sa propre adresse IP, toujours la même.</p></div>
+      <div class="bouclier double" aria-hidden="true"><h3>Détecteur de sosies</h3><p>paypa1.com, lettres cyrilliques : alerte avant de taper quoi que ce soit.</p></div>
+      <div class="bouclier double" aria-hidden="true"><h3>Bouclier de formulaires</h3><p>Votre mot de passe ne part pas sans chiffrement, ni vers un autre site, sans votre accord.</p></div>
+      <div class="bouclier double" aria-hidden="true"><h3>Téléchargements vérifiés</h3><p>L'empreinte SHA-256 publiée est comparée au fichier reçu.</p></div>
+      <div class="bouclier double" aria-hidden="true"><h3>Mode site inconnu</h3><p>JavaScript coupé sur les sites auxquels vous n'avez pas encore fait confiance.</p></div>
+    </div></div>
+    <div class="ruban inverse"><div class="piste">
+      <div class="bouclier"><h3>Lien via Tor</h3><p>Clic droit sur un lien : il s'ouvre dans la fenêtre Tor, sans rien emporter.</p></div>
+      <div class="bouclier"><h3>Onglets éphémères</h3><p>Ils se ferment seuls quand vous les oubliez, et le site est effacé avec eux.</p></div>
+      <div class="bouclier"><h3>Profils Travail, Perso, Banque</h3><p>Trois mondes séparés, chacun sa couleur et ses cookies.</p></div>
+      <div class="bouclier"><h3>Panneau Seyra</h3><p>Votre messagerie chiffrée à côté de la page.</p></div>
+      <div class="bouclier"><h3>Rapport de page</h3><p>Traqueurs, prises d'empreinte, sites tiers : tout au clic sur la cigale.</p></div>
+      <div class="bouclier"><h3>Liens partagés propres</h3><p>Copier un lien retire les pisteurs.</p></div>
+      <div class="bouclier double" aria-hidden="true"><h3>Lien via Tor</h3><p>Clic droit sur un lien : il s'ouvre dans la fenêtre Tor, sans rien emporter.</p></div>
+      <div class="bouclier double" aria-hidden="true"><h3>Onglets éphémères</h3><p>Ils se ferment seuls quand vous les oubliez, et le site est effacé avec eux.</p></div>
+      <div class="bouclier double" aria-hidden="true"><h3>Profils Travail, Perso, Banque</h3><p>Trois mondes séparés, chacun sa couleur et ses cookies.</p></div>
+      <div class="bouclier double" aria-hidden="true"><h3>Panneau Seyra</h3><p>Votre messagerie chiffrée à côté de la page.</p></div>
+      <div class="bouclier double" aria-hidden="true"><h3>Rapport de page</h3><p>Traqueurs, prises d'empreinte, sites tiers : tout au clic sur la cigale.</p></div>
+      <div class="bouclier double" aria-hidden="true"><h3>Liens partagés propres</h3><p>Copier un lien retire les pisteurs.</p></div>
+    </div></div>
   </section>
 
-  <section class="versions large" id="telecharger">
-    <h2 class="apparait">Téléchargez La Cigale.</h2>
-    <p class="chapeau apparait">Libre et gratuite, pour Windows et Linux.</p>
-    <div class="action apparait"><a class="telecharger" href="https://github.com/urbanyl/la-cigale/releases/download/v1.7.0/LaCigale-1.7.0-windows-x64-installeur.exe">Télécharger pour Windows</a></div>
-    <ul class="apparait">
-      <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.7.0/LaCigale-1.7.0-windows-x64-installeur.exe"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5 11 4.5v7H4zM13 4.2 20 3v8.5h-7zM4 12.5h7v7l-7-1zM13 12.5h7V21l-7-1.2z"/></svg><span class="nom">Windows</span><span class="quoi">Installeur</span></a></li>
-      <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.7.0/LaCigale-1.7.0-windows-x64-portable.zip"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7a2 2 0 0 1 2-2H10l2 2h6.5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></svg><span class="nom">Windows portable</span><span class="quoi">Archive .zip, sans installation</span></a></li>
-      <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.7.0/la-cigale_1.7.0_amd64.deb"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg><span class="nom">Ubuntu et Debian</span><span class="quoi">Paquet .deb, ou dépôt APT</span></a></li>
-      <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.7.0/LaCigale-1.7.0-linux-x86_64.tar.gz"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="m7 10 3 2.5L7 15M12.5 15H17"/></svg><span class="nom">Autres Linux</span><span class="quoi">Archive .tar.gz</span></a></li>
-      <li><a href="https://github.com/urbanyl/la-cigale/releases"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg><span class="nom">Toutes les versions</span><span class="quoi">Sur GitHub, avec empreintes SHA-256</span></a></li>
-    </ul>
+  <section class="telecharger" id="telecharger">
+    <div class="large centre">
+      <img class="icone-app monte" src="images/icone.png" width="112" height="112" alt="">
+      <div class="entete monte" style="margin-bottom:0">
+        <h2>Téléchargez La Cigale.</h2>
+        <p class="chapeau">Libre et gratuite. Version 1.8.3, basée sur Firefox ESR 153.</p>
+      </div>
+      <div class="systemes">
+        <div class="systeme monte">
+          <div class="tete"><svg viewBox="0 0 24 24"><path d="M4 5.5 11 4.5v7H4zM13 4.2 20 3v8.5h-7zM4 12.5h7v7l-7-1zM13 12.5h7V21l-7-1.2z"/></svg><h3>Windows</h3></div>
+          <ul>
+            <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.8.3/LaCigale-1.8.3-windows-x64-installeur.exe">Installeur<span>.exe, sans droits admin</span></a></li>
+            <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.8.3/LaCigale-1.8.3-windows-x64-portable.zip">Portable<span>.zip, sans installation</span></a></li>
+            <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.8.3/LaCigale-1.8.3-en-windows-x64-portable.zip" hreflang="en">Portable, en anglais<span>.zip</span></a></li>
+          </ul>
+          <p class="note">Windows 10 et 11, 64 bits.</p>
+        </div>
+        <div class="systeme monte" style="--d:.08s">
+          <div class="tete"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.8"/><path d="M2 19h20"/></svg><h3>macOS</h3></div>
+          <ul>
+            <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.8.3/LaCigale-1.8.3-macos.dmg">Image disque<span>.dmg, Intel et Apple Silicon</span></a></li>
+          </ul>
+          <p class="note">En français. Non signée par un compte développeur Apple : au premier lancement, clic droit sur l'application, puis « Ouvrir ».</p>
+        </div>
+        <div class="systeme monte" style="--d:.16s">
+          <div class="tete"><svg viewBox="0 0 24 24"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg><h3>Linux</h3></div>
+          <ul>
+            <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.8.3/la-cigale_1.8.3_amd64.deb">Ubuntu et Debian<span>.deb, ou dépôt APT</span></a></li>
+            <li><a href="https://github.com/urbanyl/la-cigale/releases/download/v1.8.3/LaCigale-1.8.3-linux-x86_64.tar.gz">Autres Linux<span>.tar.gz</span></a></li>
+          </ul>
+          <p class="note">64 bits, en français.</p>
+        </div>
+      </div>
+      <p class="tous monte"><a class="fleche" href="https://github.com/urbanyl/la-cigale/releases">Toutes les versions, avec empreintes SHA-256</a></p>
+    </div>
   </section>
 
-  <blockquote class="citation apparait">
+  <blockquote class="citation large monte" style="margin:0 auto">
     <p>« Nul ne sera l'objet d'immixtions arbitraires dans sa vie privée, sa famille, son domicile ou sa correspondance. »</p>
     <footer>Déclaration universelle des droits de l'homme, article 12</footer>
   </blockquote>
 </main>
 <footer class="bas">
-  <nav aria-label="Liens du site">
+  <div class="large">
+    <nav aria-label="Liens du site">
       <a href="faq/">Questions fréquentes</a>
       <a href="comparaison/">La Cigale, LibreWolf ou Brave ?</a>
       <a href="securite/">Sécurité</a>
@@ -169,9 +289,10 @@
       <a href="confidentialite/">Confidentialité</a>
       <a href="conditions/">Conditions</a>
       <a href="licences/">Licences</a>
-  </nav>
-  <p>La Cigale est un logiciel libre sous licence MPL-2.0, basé sur Firefox ESR.</p>
+    </nav>
+    <p>La Cigale est un logiciel libre sous licence MPL-2.0, basé sur Firefox ESR. Firefox est une marque de la Mozilla Foundation.</p>
+  </div>
 </footer>
-<script src="apparition.js" defer></script>
+<script src="accueil.js?v=1" defer></script>
 </body>
 </html>
